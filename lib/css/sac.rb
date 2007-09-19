@@ -185,6 +185,7 @@ class CSS::SAC
 
   def ruleset
     select = selector
+    self.document_handler.start_selector(select.map { |x| x.value })
     return nil unless select
     start = @position
     return nil unless next_token(:l_curly)
@@ -202,6 +203,7 @@ class CSS::SAC
       }
     end
     return nil unless next_token(:r_curly)
+    self.document_handler.end_selector(select.map { |x| x.value })
     zero_or_more(:s)
   end
 
@@ -222,7 +224,11 @@ class CSS::SAC
   end
 
   def selector
-    return any
+    selectors = []
+    while s = any
+      selectors << s
+    end
+    selectors
   end
 
   def value

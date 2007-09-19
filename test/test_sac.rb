@@ -1,4 +1,6 @@
+require 'rubygems'
 require 'test/unit'
+require 'flexmock/test_unit'
 require 'css/sac'
 
 class SACParserTest < Test::Unit::TestCase
@@ -49,8 +51,17 @@ class SACParserTest < Test::Unit::TestCase
     @sac.parse('@aaron { color: black; }')
     assert_equal(11, @sac.tokens.length)
   end
-  
-  def test_something
-    
+
+  def test_selector
+    flexmock(@sac.document_handler).
+      should_receive(:start_selector).
+      with(['div', 'h1']).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_selector).
+      with(['div', 'h1']).once
+
+    @sac.parse('div h1 { color: black; }')
+    assert_equal(13, @sac.tokens.length)
+    flexmock_verify
   end
 end
