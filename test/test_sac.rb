@@ -64,4 +64,26 @@ class SACParserTest < Test::Unit::TestCase
     assert_equal(13, @sac.tokens.length)
     flexmock_verify
   end
+  
+  def test_an_example_of_assert_tokens
+    assert_tokens("body { color: pink; }",
+      :ident, :l_curly, :ident, :delim, [:ident, "pink"], :semi, :r_curly)
+  end
+  
+  def assert_tokens(text, *expected)
+    parser = CSS::SAC.new
+    parser.parse(text)
+    
+    tokens = parser.tokens.reject { |t| t.name == :s }
+    assert_equal(tokens.size, expected.size)
+    
+    count = 1
+    
+    tokens.zip(expected).each do |sets|
+      token, expected_name, expected_value = sets.flatten
+      assert_equal(expected_name, token.name, "token #{count} name")
+      assert_equal(expected_value, token.value, "token #{count} value") if expected_value
+      count += 1
+    end
+  end
 end

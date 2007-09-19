@@ -67,6 +67,7 @@ class CSS::SAC
     @position = 0
     stylesheet
     self.document_handler.end_document(string)
+    self.document_handler
   end
 
   alias :parseStyleSheet :parse_style_sheet
