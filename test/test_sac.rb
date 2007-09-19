@@ -9,16 +9,39 @@ class SACParserTest < Test::Unit::TestCase
   end
   
   def test_parse_simple
-    @sac.parse('
+    text = '
       @import "subs.css";
       * {  margin: 0px; }
       body {
         margin: 0px;
         padding: 0px;
-      }
-    ')
-
-    assert_equal(39, @sac.tokens.length)
+      }'
+    
+    assert_tokens(text,
+      [:atkeyword, "@import"],
+      [:string, "\"subs.css\""],
+      :semi,
+      [:delim, "*"],
+      :l_curly,
+      [:ident, "margin"],
+      [:delim, ":"],
+      [:percentage, "0"],
+      [:ident, "px"],
+      :semi,
+      :r_curly,
+      [:ident, "body"],
+      :l_curly,
+      [:ident, "margin"],
+      [:delim, ":"],
+      [:percentage, "0"],
+      [:ident, "px"],
+      :semi,
+      [:ident, "padding"],
+      [:delim, ":"],
+      [:percentage, "0"],
+      [:ident, "px"],
+      :semi,
+      :r_curly)
   end
 
   def test_at_import
@@ -78,6 +101,8 @@ class SACParserTest < Test::Unit::TestCase
     assert_equal(tokens.size, expected.size)
     
     count = 1
+    
+    # puts tokens.collect { |t| [t.name, t.value] }.inspect
     
     tokens.zip(expected).each do |sets|
       token, expected_name, expected_value = sets.flatten
