@@ -37,7 +37,7 @@ class CSS::SAC
     token(:string,        /#{m(:string)}/)
     token(:invalid,       /#{m(:invalid)}/)
     token(:hash,          /##{m(:name)}/)
-    token(:number,        /#{m(:num)}/)
+    token(:number,        /(#{m(:num)})/)
     token(:percentage,    /(#{m(:num)})%/)
     token(:dimension,     /#{m(:num)}#{m(:ident)}/)
     token(:unicode_range, /U\+[0-9a-f?]{1,6}(-[0-9a-f]{1,6})?/)
