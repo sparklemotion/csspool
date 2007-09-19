@@ -10,52 +10,91 @@ class CSS::SAC
   attr_accessor :document_handler
 
   def initialize
-    @lexer_tokens = {}
+    @lexer_tokens = []
     @macros       = {}
     @tokens       = []
 
     # http://www.w3.org/TR/CSS21/syndata.html
-    macro(:unicode,       /\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?/)
-    macro(:w,             /[ \t\r\n\f]*/)
-    macro(:nonascii,      /[^\0-\177]/)
-    macro(:num,           /[0-9]+|[0-9]*\.[0-9]+/)
-    macro(:nl,            /\n|\r\n|\r|\f/)
-    macro(:escape,        /(#{m(:unicode)}|\\[^\n\r\f0-9a-f])/)
-    macro(:nmstart,       /([_a-z]|#{m(:nonascii)}|#{m(:escape)})/)
-    macro(:nmchar,        /([_a-z0-9-]|#{m(:nonascii)}|#{m(:escape)})/)
-    macro(:name,          /#{m(:nmchar)}+/i)
-    macro(:ident,         /[-]?#{m(:nmstart)}#{m(:nmchar)}*/)
-    macro(:string1,       /(\"([^\n\r\f\\"]|\\#{m(:nl)}|#{m(:escape)})*\")/)
-    macro(:string2,       /\'([^\n\r\f\\']|\\#{m(:nl)}|#{m(:escape)})*\'/)
-    macro(:string,        /#{m(:string1)}|#{m(:string2)}/)
-    macro(:invalid1,      /\"([^\n\r\f\\"]|\\#{m(:nl)}|#{m(:escape)})*/)
-    macro(:invalid2,      /\'([^\n\r\f\\']|\\#{m(:nl)}|#{m(:escape)})*/)
-    macro(:invalid,       /#{m(:invalid1)}|#{m(:invalid2)}/)
+    macro(:h, /([0-9a-f])/ )
+    macro(:nonascii, /([\200-\377])/ )
+    macro(:nl, /(\n|\r\n|\r|\f)/ )
+    macro(:unicode, /(\\#{m(:h)}{1,6}(\r\n|[ \t\r\n\f])?)/ )
+    macro(:escape, /(#{m(:unicode)}|\\[^\r\n\f0-9a-f])/ )
+    macro(:nmstart, /([_a-z]|#{m(:nonascii)}|#{m(:escape)})/ )
+    macro(:nmchar, /([_a-z0-9-]|#{m(:nonascii)}|#{m(:escape)})/ )
+    macro(:string1, /(\"([^\n\r\f\\\"]|\\#{m(:nl)}|#{m(:escape)})*\")/ )
+    macro(:string2, /(\'([^\n\r\f\\']|\\#{m(:nl)}|#{m(:escape)})*\')/ )
+    macro(:invalid1, /(\"([^\n\r\f\\\"]|\\#{m(:nl)}|#{m(:escape)})*)/ )
+    macro(:invalid2, /(\'([^\n\r\f\\']|\\#{m(:nl)}|#{m(:escape)})*)/ )
+    macro(:comment, /(\/\*[^*]*\*+([^\/*][^*]*\*+)*\/)/ )
+    macro(:ident, /(-?#{m(:nmstart)}#{m(:nmchar)}*)/ )
+    macro(:name, /(#{m(:nmchar)}+)/ )
+    macro(:num, /([0-9]+|[0-9]*\.[0-9]+)/ )
+    macro(:string, /(#{m(:string1)}|#{m(:string2)})/ )
+    macro(:invalid, /(#{m(:invalid1)}|#{m(:invalid2)})/ )
+    macro(:url, /(([!#\$%&*-~]|#{m(:nonascii)}|#{m(:escape)})*)/ )
+    macro(:s, /([ \t\r\n\f]+)/ )
+    macro(:w, /(#{m(:s)}?)/ )
+    macro(:A, /(a|\\0{0,4}(41|61)(\r\n|[ \t\r\n\f])?)/ )
+    macro(:C, /(c|\\0{0,4}(43|63)(\r\n|[ \t\r\n\f])?)/ )
+    macro(:D, /(d|\\0{0,4}(44|64)(\r\n|[ \t\r\n\f])?)/ )
+    macro(:E, /(e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?)/ )
+    macro(:G, /(g|\\0{0,4}(47|67)(\r\n|[ \t\r\n\f])?|\\g)/ )
+    macro(:H, /(h|\\0{0,4}(48|68)(\r\n|[ \t\r\n\f])?|\\h)/ )
+    macro(:I, /(i|\\0{0,4}(49|69)(\r\n|[ \t\r\n\f])?|\\i)/ )
+    macro(:K, /(k|\\0{0,4}(4b|6b)(\r\n|[ \t\r\n\f])?|\\k)/ )
+    macro(:M, /(m|\\0{0,4}(4d|6d)(\r\n|[ \t\r\n\f])?|\\m)/ )
+    macro(:N, /(n|\\0{0,4}(4e|6e)(\r\n|[ \t\r\n\f])?|\\n)/ )
+    macro(:O, /(o|\\0{0,4}(51|71)(\r\n|[ \t\r\n\f])?|\\o)/ )
+    macro(:P, /(p|\\0{0,4}(50|70)(\r\n|[ \t\r\n\f])?|\\p)/ )
+    macro(:R, /(r|\\0{0,4}(52|72)(\r\n|[ \t\r\n\f])?|\\r)/ )
+    macro(:S, /(s|\\0{0,4}(53|73)(\r\n|[ \t\r\n\f])?|\\s)/ )
+    macro(:T, /(t|\\0{0,4}(54|74)(\r\n|[ \t\r\n\f])?|\\t)/ )
+    macro(:X, /(x|\\0{0,4}(58|78)(\r\n|[ \t\r\n\f])?|\\x)/ )
+    macro(:Z, /(z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z)/ )
+    
+    token(/#{m(:s)}/) { return :S }
+    token(/\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
+    token(/#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//) {unput(' ')}
+    token(/<!--/) {return :CDO}
+    token(/-->/) {return :CDC;}
+    token(/~=/) {return :INCLUDES;}
+    token(/\|=/) {return :DASHMATCH;}
+    token(/#{m(:w)}\{/) {return :LBRACE;}
+    token(/#{m(:w)}\+/) {return :PLUS;}
+    token(/#{m(:w)}>/) {return :GREATER;}
+    token(/#{m(:w)},/) {return :COMMA;}
+    token(/#{m(:string)}/) {return :STRING;}
+    token(/#{m(:invalid)}/) {return :INVALID;}
+    token(/#{m(:ident)}/) {return :IDENT;}
+    token(/##{m(:name)}/) {return :HASH;}
+    token(/@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/) {return :IMPORT_SYM;}
+    token(/@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/) {return :PAGE_SYM;}
+    token(/@#{m(:M)}#{m(:E)}#{m(:D)}#{m(:I)}#{m(:A)}/) {return :MEDIA_SYM;}
+    token(/@#{m(:C)}#{m(:H)}#{m(:A)}#{m(:R)}#{m(:S)}#{m(:E)}#{m(:T)}/) {return :CHARSET_SYM;}
+    token(/!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/) {return :IMPORTANT_SYM;}
+    token(/#{m(:num)}#{m(:E)}#{m(:M)}/) {return :EMS;}
+    token(/#{m(:num)}#{m(:E)}#{m(:X)}/) {return :EXS;}
+    token(/#{m(:num)}#{m(:P)}#{m(:X)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:C)}#{m(:M)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:M)}#{m(:M)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:I)}#{m(:N)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:P)}#{m(:T)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:P)}#{m(:C)}/) {return :LENGTH;}
+    token(/#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/) {return :ANGLE;}
+    token(/#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/) {return :ANGLE;}
+    token(/#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/) {return :ANGLE;}
+    token(/#{m(:num)}#{m(:M)}#{m(:S)}/) {return :TIME;}
+    token(/#{m(:num)}#{m(:S)}/) {return :TIME;}
+    token(/#{m(:num)}#{m(:H)}#{m(:Z)}/) {return :FREQ;}
+    token(/#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/) {return :FREQ;}
+    token(/#{m(:num)}#{m(:ident)}/) {return :DIMENSION;}
+    token(/#{m(:num)}%/) {return :PERCENTAGE;}
+    token(/#{m(:num)}/) {return :NUMBER;}
+    token(/url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/) {return :URI;}
+    token(/url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/) {return :URI;}
+    token(/#{m(:ident)}\(\)/) {return :FUNCTION;}
 
-    token(:ident,         /#{m(:ident)}/)
-    token(:atkeyword,     /@#{m(:ident)}/)
-    token(:string,        /#{m(:string)}/)
-    token(:invalid,       /#{m(:invalid)}/)
-    token(:hash,          /##{m(:name)}/)
-    token(:number,        /(#{m(:num)})/)
-    token(:percentage,    /(#{m(:num)})%/)
-    token(:dimension,     /#{m(:num)}#{m(:ident)}/)
-    token(:unicode_range, /U\+[0-9a-f?]{1,6}(-[0-9a-f]{1,6})?/)
-    token(:cdo,           /<!--/)
-    token(:cdc,           /-->/)
-    token(:semi,          /;/)
-    token(:l_curly,       /\{/)
-    token(:r_curly,       /\}/)
-    token(:l_paren,       /\(/)
-    token(:r_paren,       /\)/)
-    token(:l_square,      /\[/)
-    token(:r_square,      /\]/)
-    token(:s,             /[ \t\r\n\f]+/)
-    token(:comment,       /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
-    token(:function,      /#{m(:ident)}\(/)
-    token(:includes,      /~=/)
-    token(:dashmatch,     /\|=/)
-    token(:uri,           /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)|url\(#{m(:w)}([!#\$%&*-~]|#{m(:nonascii)}|#{m(:escape)})*#{m(:w)}\)/)
 
     yield self if block_given?
     @document_handler ||= DocumentHandler.new()
@@ -65,7 +104,7 @@ class CSS::SAC
     self.document_handler.start_document(string)
     tokenize(string)
     @position = 0
-    stylesheet
+    #stylesheet
     self.document_handler.end_document(string)
     self.document_handler
   end
@@ -77,10 +116,10 @@ class CSS::SAC
     @tokens = []
     pos     = 0
     until string.empty?
-      tokens = @lexer_tokens.values.map { |tok|
+      tokens = @lexer_tokens.map { |tok|
         match = tok.lex_pattern.match(string) || next
         next unless match.pre_match.length == 0 && match.to_s.length > 0
-        Token.new(tok.name, match.to_s, pos)
+        Token.new(tok, match.to_s, pos)
       }.compact.sort_by { |x| x.value.length }
 
       if tokens.length == 0
@@ -254,12 +293,11 @@ class CSS::SAC
     list
   end
 
-  LexToken = Struct.new(:name, :pattern, :lex_pattern, :block)
+  LexToken = Struct.new(:pattern, :lex_pattern, :block)
   Token = Struct.new(:name, :value, :pos)
 
-  def token(name, pattern = nil, &block)
-    @lexer_tokens[name] = LexToken.new(
-      name,
+  def token(pattern = nil, &block)
+    @lexer_tokens << LexToken.new(
       pattern,
       Regexp.new('^' + pattern.source, Regexp::IGNORECASE),
       block

@@ -84,6 +84,7 @@ class SACParserTest < Test::Unit::TestCase
       with(['div', 'h1']).once
 
     @sac.parse('div h1 { color: black; }')
+    #p @sac.tokens.map { |x| x.value }
     assert_equal(13, @sac.tokens.length)
     flexmock_verify
   end
