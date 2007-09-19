@@ -38,7 +38,7 @@ class CSS::SAC
     token(:invalid,       /#{m(:invalid)}/)
     token(:hash,          /##{m(:name)}/)
     token(:number,        /#{m(:num)}/)
-    token(:percentage,    /#{m(:num)}%/)
+    token(:percentage,    /(#{m(:num)})%/)
     token(:dimension,     /#{m(:num)}#{m(:ident)}/)
     token(:unicode_range, /U\+[0-9a-f?]{1,6}(-[0-9a-f]{1,6})?/)
     token(:cdo,           /<!--/)
@@ -186,24 +186,28 @@ class CSS::SAC
 
   def ruleset
     select = selector
-    self.document_handler.start_selector(select.map { |x| x.value })
     return nil unless select
+    self.document_handler.start_selector(select.map { |x| x.value })
     start = @position
     return nil unless next_token(:l_curly)
     zero_or_more(:s)
 
-    decls = []
-    decl = declaration
-    if decl
-      decls << decl
-      loop {
-        unless next_token(:semi) && zero_or_more(:s) && decl = declaration
-          break
-        end
-        decls << decl
-      }
-    end
-    return nil unless next_token(:r_curly)
+    loop {
+      break if next_token(:r_curly)
+      next if next_token(:semi)
+      zero_or_more(:s)
+      (name, val) = declaration
+      next unless name && val
+
+      important = false
+      if val.reverse.slice(0, 2).map { |x| x.value } == ['important', '!']
+        important = true
+        val.slice!(-2..-1)
+      end
+      self.document_handler.property(name.value,
+                                     val.map { |x| x.value },
+                                     important)
+    }
     self.document_handler.end_selector(select.map { |x| x.value })
     zero_or_more(:s)
   end
@@ -211,13 +215,14 @@ class CSS::SAC
   def declaration
     next_token(:delim)
     zero_or_more(:s)
-    property()
+    prop = property()
     zero_or_more(:s)
 
     tok = next_token(:delim)
     tok && tok.value == ':'
     zero_or_more(:s)
-    value()
+    val = value()
+    (prop && val) ? [prop, val] : nil
   end
 
   def property

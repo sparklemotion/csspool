@@ -25,7 +25,7 @@ class SACParserTest < Test::Unit::TestCase
       :l_curly,
       [:ident, "margin"],
       [:delim, ":"],
-      [:percentage, "0"],
+      [:number, "0"],
       [:ident, "px"],
       :semi,
       :r_curly,
@@ -33,12 +33,12 @@ class SACParserTest < Test::Unit::TestCase
       :l_curly,
       [:ident, "margin"],
       [:delim, ":"],
-      [:percentage, "0"],
+      [:number, "0"],
       [:ident, "px"],
       :semi,
       [:ident, "padding"],
       [:delim, ":"],
-      [:percentage, "0"],
+      [:number, "0"],
       [:ident, "px"],
       :semi,
       :r_curly)
@@ -85,6 +85,27 @@ class SACParserTest < Test::Unit::TestCase
 
     @sac.parse('div h1 { color: black; }')
     assert_equal(13, @sac.tokens.length)
+    flexmock_verify
+  end
+
+  def test_properties
+    flexmock(@sac.document_handler).
+      should_receive(:property).
+      with('color', ['black'], false).once
+    @sac.parse('div h1 { color: black; }')
+    flexmock_verify
+
+    flexmock(@sac.document_handler).
+      should_receive(:property).never
+    @sac.parse('div h1 { }')
+    flexmock_verify
+  end
+
+  def test_important_properties
+    flexmock(@sac.document_handler).
+      should_receive(:property).
+      with('color', ['black'], true).once
+    @sac.parse('div h1 { color: black !important; }')
     flexmock_verify
   end
   
