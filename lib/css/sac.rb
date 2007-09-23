@@ -119,7 +119,7 @@ class CSS::SAC
       tokens = @lexer_tokens.map { |tok|
         match = tok.lex_pattern.match(string) || next
         next unless match.pre_match.length == 0 && match.to_s.length > 0
-        Token.new(tok, match.to_s, pos)
+        Token.new(tok.name, match.to_s, pos)
       }.compact.sort_by { |x| x.value.length }
 
       if tokens.length == 0

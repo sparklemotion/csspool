@@ -4,6 +4,10 @@ require 'flexmock/test_unit'
 require 'css/sac'
 
 class ParserTest < Test::Unit::TestCase
+  def setup
+    @sac = CSS::SAC.new()
+  end
+
   def test_selector
     flexmock(@sac.document_handler).
       should_receive(:start_selector).

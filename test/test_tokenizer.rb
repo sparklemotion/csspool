@@ -83,7 +83,7 @@ class TokenizerTest < Test::Unit::TestCase
     parser = CSS::SAC.new
     parser.parse(text)
     
-    tokens = parser.tokens.reject { |t| t.name == :s }
+    tokens = parser.tokens.reject { |t| t.name == :S }
     assert_equal(tokens.size, expected.size)
     
     count = 1
