@@ -16,4 +16,7 @@ Hoe.new('csspool', '0.0.1') do |p|
   #p.changes         = p.paragraphs_of('CHANGELOG.txt', 0..2).join("\n\n")
 end
 
-
+desc "Build the RACC parser"
+task :build do
+  system("racc lib/parser.y -o lib/css/parser.rb")
+end
