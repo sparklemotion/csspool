@@ -53,47 +53,47 @@ class CSS::SAC
     macro(:X, /(x|\\0{0,4}(58|78)(\r\n|[ \t\r\n\f])?|\\x)/ )
     macro(:Z, /(z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z)/ )
     
-    token(/#{m(:s)}/) { return :S }
-    token(/\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
-    token(/#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//) {unput(' ')}
-    token(/<!--/) {return :CDO}
-    token(/-->/) {return :CDC;}
-    token(/~=/) {return :INCLUDES;}
-    token(/\|=/) {return :DASHMATCH;}
-    token(/#{m(:w)}\{/) {return :LBRACE;}
-    token(/#{m(:w)}\+/) {return :PLUS;}
-    token(/#{m(:w)}>/) {return :GREATER;}
-    token(/#{m(:w)},/) {return :COMMA;}
-    token(/#{m(:string)}/) {return :STRING;}
-    token(/#{m(:invalid)}/) {return :INVALID;}
-    token(/#{m(:ident)}/) {return :IDENT;}
-    token(/##{m(:name)}/) {return :HASH;}
-    token(/@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/) {return :IMPORT_SYM;}
-    token(/@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/) {return :PAGE_SYM;}
-    token(/@#{m(:M)}#{m(:E)}#{m(:D)}#{m(:I)}#{m(:A)}/) {return :MEDIA_SYM;}
-    token(/@#{m(:C)}#{m(:H)}#{m(:A)}#{m(:R)}#{m(:S)}#{m(:E)}#{m(:T)}/) {return :CHARSET_SYM;}
-    token(/!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/) {return :IMPORTANT_SYM;}
-    token(/#{m(:num)}#{m(:E)}#{m(:M)}/) {return :EMS;}
-    token(/#{m(:num)}#{m(:E)}#{m(:X)}/) {return :EXS;}
-    token(/#{m(:num)}#{m(:P)}#{m(:X)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:C)}#{m(:M)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:M)}#{m(:M)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:I)}#{m(:N)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:P)}#{m(:T)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:P)}#{m(:C)}/) {return :LENGTH;}
-    token(/#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/) {return :ANGLE;}
-    token(/#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/) {return :ANGLE;}
-    token(/#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/) {return :ANGLE;}
-    token(/#{m(:num)}#{m(:M)}#{m(:S)}/) {return :TIME;}
-    token(/#{m(:num)}#{m(:S)}/) {return :TIME;}
-    token(/#{m(:num)}#{m(:H)}#{m(:Z)}/) {return :FREQ;}
-    token(/#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/) {return :FREQ;}
-    token(/#{m(:num)}#{m(:ident)}/) {return :DIMENSION;}
-    token(/#{m(:num)}%/) {return :PERCENTAGE;}
-    token(/#{m(:num)}/) {return :NUMBER;}
-    token(/url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/) {return :URI;}
-    token(/url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/) {return :URI;}
-    token(/#{m(:ident)}\(\)/) {return :FUNCTION;}
+    token(:S, /#{m(:s)}/)
+    token(:COMMENT, /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
+    token(:COMMENT, /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
+    token(:CDO, /<!--/)
+    token(:CDC, /-->/)
+    token(:INCLUDES, /~=/)
+    token(:DASHMATCH, /\|=/)
+    token(:LBRACE, /#{m(:w)}\{/)
+    token(:PLUS, /#{m(:w)}\+/)
+    token(:GREATER, /#{m(:w)}>/)
+    token(:COMMA, /#{m(:w)},/)
+    token(:STRING, /#{m(:string)}/)
+    token(:INVALID, /#{m(:invalid)}/)
+    token(:IDENT, /#{m(:ident)}/)
+    token(:HASH, /##{m(:name)}/)
+    token(:IMPORT_SYM, /@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/)
+    token(:PAGE_SYM, /@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/)
+    token(:MEDIA_SYM, /@#{m(:M)}#{m(:E)}#{m(:D)}#{m(:I)}#{m(:A)}/)
+    token(:CHARSET_SYM, /@#{m(:C)}#{m(:H)}#{m(:A)}#{m(:R)}#{m(:S)}#{m(:E)}#{m(:T)}/)
+    token(:IMPORTANT_SYM, /!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/)
+    token(:EMS, /#{m(:num)}#{m(:E)}#{m(:M)}/)
+    token(:EXS, /#{m(:num)}#{m(:E)}#{m(:X)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:X)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:C)}#{m(:M)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:M)}#{m(:M)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:I)}#{m(:N)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:T)}/)
+    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:C)}/)
+    token(:ANGLE, /#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/)
+    token(:ANGLE, /#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/)
+    token(:ANGLE, /#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/)
+    token(:TIME, /#{m(:num)}#{m(:M)}#{m(:S)}/)
+    token(:TIME, /#{m(:num)}#{m(:S)}/)
+    token(:FREQ, /#{m(:num)}#{m(:H)}#{m(:Z)}/)
+    token(:FREQ, /#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/)
+    token(:DIMENSION, /#{m(:num)}#{m(:ident)}/)
+    token(:PERCENTAGE, /#{m(:num)}%/)
+    token(:NUMBER, /#{m(:num)}/)
+    token(:URI, /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/)
+    token(:URI, /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/)
+    token(:FUNCTION, /#{m(:ident)}\(\)/)
 
 
     yield self if block_given?
@@ -293,11 +293,12 @@ class CSS::SAC
     list
   end
 
-  LexToken = Struct.new(:pattern, :lex_pattern, :block)
+  LexToken = Struct.new(:name, :pattern, :lex_pattern, :block)
   Token = Struct.new(:name, :value, :pos)
 
-  def token(pattern = nil, &block)
+  def token(name, pattern = nil, &block)
     @lexer_tokens << LexToken.new(
+      name,
       pattern,
       Regexp.new('^' + pattern.source, Regexp::IGNORECASE),
       block

@@ -1,1 +1,2 @@
-require 'test_sac'
+require 'test_parser'
+require 'test_tokenizer'
