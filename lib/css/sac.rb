@@ -1,12 +1,6 @@
 require 'racc/parser'
-
-module CSS
-  class SAC < Racc::Parser
-  end
-end
-
-require 'css/document_handler'
 require 'css/parser'
+require 'css/document_handler'
 
 class CSS::SAC < Racc::Parser
   attr_reader :tokens
