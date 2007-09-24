@@ -1,5 +1,6 @@
 require 'racc/parser'
 require 'css/parser'
+require 'css/tokens'
 require 'css/document_handler'
 
 class CSS::SAC < Racc::Parser
@@ -113,7 +114,7 @@ class CSS::SAC < Racc::Parser
 
   def next_token
     return [false, false] if @position >= @tokens.length 
-    v = @tokens[@position].yacc_value
+    v = @tokens[@position].to_yacc
     @position += 1
     v
   end
@@ -133,12 +134,12 @@ class CSS::SAC < Racc::Parser
       tokens = @lexer_tokens.map { |tok|
         match = tok.lex_pattern.match(string) || next
         next unless match.pre_match.length == 0 && match.to_s.length > 0
-        Token.new(tok.name, match.to_s, pos, [tok.name, match.to_s])
+        Token.new(tok.name, match.to_s, pos)
       }.compact.sort_by { |x| x.value.length }
 
       if tokens.length == 0
         match   = /^./.match(string)
-        tokens  = [Token.new(:delim, match.to_s, pos, [match.to_s, match.to_s])]
+        tokens  = [DelimToken.new(:delim, match.to_s, pos)]
       end
 
       token = tokens.last
@@ -147,9 +148,6 @@ class CSS::SAC < Racc::Parser
       pos += token.value.length
     end
   end
-
-  LexToken = Struct.new(:name, :pattern, :lex_pattern, :block)
-  Token = Struct.new(:name, :value, :pos, :yacc_value)
 
   def token(name, pattern = nil, &block)
     @lexer_tokens << LexToken.new(
@@ -164,8 +162,4 @@ class CSS::SAC < Racc::Parser
     regex ? @macros[name] = regex : @macros[name].source
   end
   alias :m :macro
-
-  def has_token?
-    @position < @tokens.length
-  end
 end
