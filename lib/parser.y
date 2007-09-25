@@ -1,8 +1,17 @@
 class CSS::SAC
 
-token FUNCTION INCLUDES DASHMATCH LBRACE HASH PLUS GREATER IDENT S STRING IDENT COMMA URI CDO CDC IMPORT_SYM
+token FUNCTION INCLUDES DASHMATCH LBRACE HASH PLUS GREATER IDENT S STRING IDENT
+token COMMA URI CDO CDC NUMBER PERCENTAGE LENGTH EMS EXS ANGLE TIME FREQ
+token IMPORTANT_SYM IMPORT_SYM
 
 rule
+/*
+stylesheet
+  : [ CHARSET_SYM STRING ';' ]?
+    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
+    [ [ ruleset | media | page ] [S|CDO|CDC]* ]*
+  ;
+*/
   stylesheet
     : s_cdo_cdc_0toN import_0toN ruleset
     ;
@@ -14,14 +23,60 @@ rule
   medium
     : IDENT s_0toN
     ;
-  /*
-    ruleset
-      : selector [ COMMA S* selector ]*
-        LBRACE S* declaration [ ';' S* declaration ]* '}' S*
-      ;
-  */
   ruleset
-    : selector_1toN LBRACE s_0toN '}' s_0toN
+    : selector_1toN LBRACE s_0toN declaration_1toN '}' s_0toN
+    ;
+  declaration_1toN
+    : declaration ';' s_0toN declaration_1toN
+    | declaration
+    ;
+  declaration
+    : property ':' s_0toN expr prio
+    | property ':' s_0toN expr { p val }
+    |
+    ;
+  prio
+    : IMPORTANT_SYM s_0toN
+    ;
+  property
+    : IDENT s_0toN
+    ;
+  expr
+    : operator expr
+    | term
+    ;
+  operator
+    : '/' s_0toN
+    | COMMA s_0toN
+    |
+    ;
+  term
+    : unary_operator num_or_length
+    | num_or_length
+    | STRING s_0toN
+    | IDENT s_0toN
+    | URI s_0toN
+    | hexcolor
+    | function
+    ;
+  unary_operator
+    : '-' | PLUS
+    ;
+  num_or_length
+    : NUMBER s_0toN
+    | PERCENTAGE s_0toN
+    | LENGTH s_0toN
+    | EMS s_0toN
+    | EXS s_0toN
+    | ANGLE s_0toN
+    | TIME s_0toN
+    | FREQ s_0toN
+    ;
+  hexcolor
+    : HASH s_0toN
+    ;
+  function
+    : FUNCTION s_0toN expr ')' s_0toN
     ;
   selector_1toN
     : selector COMMA s_0toN selector_1toN
