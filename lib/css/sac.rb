@@ -1,7 +1,8 @@
 require 'racc/parser'
+
 require 'css/parser'
-require 'css/tokens'
 require 'css/sac/lexeme'
+require 'css/sac/token'
 require 'css/document_handler'
 
 class CSS::SAC < Racc::Parser
@@ -10,8 +11,8 @@ class CSS::SAC < Racc::Parser
 
   def initialize
     @lexemes = []
-    @macros       = {}
-    @tokens       = []
+    @macros = {}
+    @tokens = []
 
     # http://www.w3.org/TR/CSS21/syndata.html
     macro(:h, /([0-9a-f])/ )
@@ -140,7 +141,7 @@ class CSS::SAC < Racc::Parser
       self.document_handler.comment(n_token.value)
       return next_token
     end
-    n_token.to_yacc
+    n_token.to_racc_token
   end
 
   def on_error(error_token_id, error_value, value_stack)
@@ -163,7 +164,7 @@ class CSS::SAC < Racc::Parser
 
       if tokens.length == 0
         match   = /^./.match(string)
-        tokens  = [DelimToken.new(:delim, match.to_s, pos)]
+        tokens  = [DelimiterToken.new(match.to_s, pos)]
       end
 
       token = tokens.last
