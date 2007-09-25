@@ -1,7 +1,5 @@
-require 'css/sac' # FIXME
-
 module CSS
-  class SAC # FIXME
+  module SAC
     class Lexeme
       attr_reader :name, :pattern
       

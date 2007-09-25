@@ -5,7 +5,7 @@ require 'css/sac'
 
 class ParserTest < Test::Unit::TestCase
   def setup
-    @sac = CSS::SAC.new()
+    @sac = CSS::SAC::Parser.new()
   end
 
   def test_empty

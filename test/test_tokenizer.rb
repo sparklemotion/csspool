@@ -1,12 +1,13 @@
 require 'rubygems'
 require 'test/unit'
+
 require 'css/sac'
 
 # NOTE: these aren't valid tests!
 
 class TokenizerTest < Test::Unit::TestCase
   def setup
-    @sac = CSS::SAC.new()
+    @sac = CSS::SAC::Parser.new()
   end
   
   def test_parse_simple
@@ -89,8 +90,7 @@ class TokenizerTest < Test::Unit::TestCase
   end
   
   def assert_tokens(text, *expected)
-    parser = CSS::SAC.new
-    parser.parse(text)
+    parser = CSS::SAC.parse(text)
     
     tokens = parser.tokens.reject { |t| t.name == :S }
     #puts tokens.collect { |t| [t.name, t.value].inspect }.join(",\n")

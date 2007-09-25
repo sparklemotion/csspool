@@ -18,5 +18,5 @@ end
 
 desc "Build the RACC parser"
 task :build do
-  system("racc lib/parser.y -o lib/css/parser.rb")
+  system("racc lib/parser.y -o lib/css/sac/generated_parser.rb")
 end
