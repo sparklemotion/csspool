@@ -99,14 +99,12 @@ class CSS::SAC < Racc::Parser
   end
 
   def parse_style_sheet(string)
-    self.document_handler.start_document(string)
+    @yydebug = true
     tokenize(string)
     @position = 0
-    #stylesheet
-    self.document_handler.end_document(string)
-    self.document_handler
-    @yydebug = true
+    self.document_handler.start_document(string)
     do_parse
+    self.document_handler.end_document(string)
   end
 
   alias :parseStyleSheet :parse_style_sheet

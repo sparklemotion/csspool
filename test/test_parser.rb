@@ -10,6 +10,8 @@ class ParserTest < Test::Unit::TestCase
 
   def test_selector
     flexmock(@sac.document_handler).
+      should_receive(:start_document).ordered.once
+    flexmock(@sac.document_handler).
       should_receive(:start_selector).ordered.
       with(['div', 'h1']).once
     flexmock(@sac.document_handler).
@@ -18,6 +20,8 @@ class ParserTest < Test::Unit::TestCase
     flexmock(@sac.document_handler).
       should_receive(:end_selector).ordered.
       with(['div', 'h1']).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_document).ordered.once
 
     @sac.parse('div h1 { color: black; }')
     flexmock_verify
