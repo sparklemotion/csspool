@@ -1,6 +1,7 @@
 require 'racc/parser'
 require 'css/parser'
 require 'css/tokens'
+require 'css/sac/lexeme'
 require 'css/document_handler'
 
 class CSS::SAC < Racc::Parser
@@ -8,7 +9,7 @@ class CSS::SAC < Racc::Parser
   attr_accessor :document_handler
 
   def initialize
-    @lexer_tokens = []
+    @lexemes = []
     @macros       = {}
     @tokens       = []
 
@@ -52,8 +53,12 @@ class CSS::SAC < Racc::Parser
     macro(:Z, /(z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z)/ )
     
     token(:S, /#{m(:s)}/)
-    token(:COMMENT, /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
-    token(:COMMENT, /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//)
+    
+    token :COMMENT do |patterns|
+      patterns << /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
+      patterns << /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
+    end
+    
     token(:CDO, /<!--/)
     token(:CDC, /-->/)
     token(:INCLUDES, /~=/)
@@ -73,26 +78,42 @@ class CSS::SAC < Racc::Parser
     token(:IMPORTANT_SYM, /!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/)
     token(:EMS, /#{m(:num)}#{m(:E)}#{m(:M)}/)
     token(:EXS, /#{m(:num)}#{m(:E)}#{m(:X)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:X)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:C)}#{m(:M)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:M)}#{m(:M)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:I)}#{m(:N)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:T)}/)
-    token(:LENGTH, /#{m(:num)}#{m(:P)}#{m(:C)}/)
-    token(:ANGLE, /#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/)
-    token(:ANGLE, /#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/)
-    token(:ANGLE, /#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/)
-    token(:TIME, /#{m(:num)}#{m(:M)}#{m(:S)}/)
-    token(:TIME, /#{m(:num)}#{m(:S)}/)
-    token(:FREQ, /#{m(:num)}#{m(:H)}#{m(:Z)}/)
-    token(:FREQ, /#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/)
+    
+    token :LENGTH do |patterns|
+      patterns << /#{m(:num)}#{m(:P)}#{m(:X)}/
+      patterns << /#{m(:num)}#{m(:C)}#{m(:M)}/
+      patterns << /#{m(:num)}#{m(:M)}#{m(:M)}/
+      patterns << /#{m(:num)}#{m(:I)}#{m(:N)}/
+      patterns << /#{m(:num)}#{m(:P)}#{m(:T)}/
+      patterns << /#{m(:num)}#{m(:P)}#{m(:C)}/
+    end
+    
+    token :ANGLE do |patterns|
+      patterns << /#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/
+      patterns << /#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/
+      patterns << /#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/
+    end
+    
+    token :TIME do |patterns|
+      patterns << /#{m(:num)}#{m(:M)}#{m(:S)}/
+      patterns << /#{m(:num)}#{m(:S)}/
+    end
+    
+    token :FREQ do |patterns|
+      patterns << /#{m(:num)}#{m(:H)}#{m(:Z)}/
+      patterns << /#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/
+    end
+    
     token(:DIMENSION, /#{m(:num)}#{m(:ident)}/)
     token(:PERCENTAGE, /#{m(:num)}%/)
     token(:NUMBER, /#{m(:num)}/)
-    token(:URI, /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/)
-    token(:URI, /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/)
+    
+    token :URI do |patterns|
+      patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
+      patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
+    end
+    
     token(:FUNCTION, /#{m(:ident)}\(\)/)
-
 
     yield self if block_given?
     @document_handler ||= DocumentHandler.new()
@@ -134,10 +155,10 @@ class CSS::SAC < Racc::Parser
     @tokens = []
     pos     = 0
     until string.empty?
-      tokens = @lexer_tokens.map { |tok|
-        match = tok.lex_pattern.match(string) || next
+      tokens = @lexemes.map { |lexeme|
+        match = lexeme.pattern.match(string) || next
         next unless match.pre_match.length == 0 && match.to_s.length > 0
-        Token.new(tok.name, match.to_s, pos)
+        Token.new(lexeme.name, match.to_s, pos)
       }.compact.sort_by { |x| x.value.length }
 
       if tokens.length == 0
@@ -151,18 +172,14 @@ class CSS::SAC < Racc::Parser
       pos += token.value.length
     end
   end
-
-  def token(name, pattern = nil, &block)
-    @lexer_tokens << LexToken.new(
-      name,
-      pattern,
-      Regexp.new('^' + pattern.source, Regexp::IGNORECASE),
-      block
-    )
+  
+  def token(name, pattern=nil, &block)
+    @lexemes << Lexeme.new(name, pattern, &block)
   end
 
-  def macro(name, regex = nil)
+  def macro(name, regex=nil)
     regex ? @macros[name] = regex : @macros[name].source
   end
+  
   alias :m :macro
 end

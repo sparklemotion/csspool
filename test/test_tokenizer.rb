@@ -2,6 +2,8 @@ require 'rubygems'
 require 'test/unit'
 require 'css/sac'
 
+# NOTE: these aren't valid tests!
+
 class TokenizerTest < Test::Unit::TestCase
   def setup
     @sac = CSS::SAC.new()
@@ -17,30 +19,27 @@ class TokenizerTest < Test::Unit::TestCase
       }'
     
     assert_tokens(text,
-      [:atkeyword, "@import"],
-      [:string, "\"subs.css\""],
-      :semi,
+      [:IMPORT_SYM, "@import"],
+      [:STRING, "\"subs.css\""],
+      [:delim, ";"],
       [:delim, "*"],
-      :l_curly,
-      [:ident, "margin"],
+      [:LBRACE, " {"],
+      [:IDENT, "margin"],
       [:delim, ":"],
-      [:number, "0"],
-      [:ident, "px"],
-      :semi,
-      :r_curly,
-      [:ident, "body"],
-      :l_curly,
-      [:ident, "margin"],
+      [:LENGTH, "0px"],
+      [:delim, ";"],
+      [:delim, "}"],
+      [:IDENT, "body"],
+      [:LBRACE, " {"],
+      [:IDENT, "margin"],
       [:delim, ":"],
-      [:number, "0"],
-      [:ident, "px"],
-      :semi,
-      [:ident, "padding"],
+      [:LENGTH, "0px"],
+      [:delim, ";"],
+      [:IDENT, "padding"],
       [:delim, ":"],
-      [:number, "0"],
-      [:ident, "px"],
-      :semi,
-      :r_curly)
+      [:LENGTH, "0px"],
+      [:delim, ";"],
+      [:delim, "}"])
   end
 
   def test_at_import
@@ -49,19 +48,29 @@ class TokenizerTest < Test::Unit::TestCase
   end
 
   def test_at_media
-    @sac.parse('@media print { h1 { color: black; } }')
-    assert_equal(19, @sac.tokens.length)
+    assert_tokens('@media print { h1 { color: black; } }',
+      [:MEDIA_SYM, "@media"],
+      [:IDENT, "print"],
+      [:LBRACE, " {"],
+      [:IDENT, "h1"],
+      [:LBRACE, " {"],
+      [:IDENT, "color"],
+      [:delim, ":"],
+      [:IDENT, "black"],
+      [:delim, ";"],
+      [:delim, "}"],
+      [:delim, "}"])
   end
 
   def test_at_page
     @sac.parse('@page print { color: black; }')
-    assert_equal(13, @sac.tokens.length)
+    assert_equal(12, @sac.tokens.length)
 
     @sac.parse('@page :left { color: black; }')
-    assert_equal(14, @sac.tokens.length)
+    assert_equal(13, @sac.tokens.length)
 
     @sac.parse('@page print :left { color: black; }')
-    assert_equal(16, @sac.tokens.length)
+    assert_equal(15, @sac.tokens.length)
   end
 
   def test_at_font_face
@@ -76,7 +85,7 @@ class TokenizerTest < Test::Unit::TestCase
 
   def test_an_example_of_assert_tokens
     assert_tokens("body { color: pink; }",
-      :ident, :l_curly, :ident, :delim, [:ident, "pink"], :semi, :r_curly)
+      :IDENT, :LBRACE, :IDENT, :delim, [:IDENT, "pink"], :delim, :delim)
   end
   
   def assert_tokens(text, *expected)
@@ -84,12 +93,12 @@ class TokenizerTest < Test::Unit::TestCase
     parser.parse(text)
     
     tokens = parser.tokens.reject { |t| t.name == :S }
-    assert_equal(tokens.size, expected.size)
+    #puts tokens.collect { |t| [t.name, t.value].inspect }.join(",\n")
+    
+    assert_equal(expected.size, tokens.size)
     
     count = 1
-    
-    # puts tokens.collect { |t| [t.name, t.value] }.inspect
-    
+        
     tokens.zip(expected).each do |sets|
       token, expected_name, expected_value = sets.flatten
       assert_equal(expected_name, token.name, "token #{count} name")
