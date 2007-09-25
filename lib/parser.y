@@ -2,7 +2,7 @@ class CSS::SAC
 
 token FUNCTION INCLUDES DASHMATCH LBRACE HASH PLUS GREATER IDENT S STRING IDENT
 token COMMA URI CDO CDC NUMBER PERCENTAGE LENGTH EMS EXS ANGLE TIME FREQ
-token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM
+token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM
 
 rule
 /*
@@ -13,7 +13,7 @@ stylesheet
   ;
 */
   stylesheet
-    : s_cdo_cdc_0toN import_0toN media
+    : s_cdo_cdc_0toN import_0toN page
     ;
   import
     : IMPORT_SYM s_0toN string_or_uri s_0toN medium_0toN ';' s_0toN {
@@ -25,6 +25,14 @@ stylesheet
     ;
   medium
     : IDENT s_0toN
+    ;
+  page
+    : PAGE_SYM s_0toN pseudo_page s_0toN LBRACE s_0toN declaration_1toN
+      '}' s_0toN
+    | PAGE_SYM s_0toN s_0toN LBRACE s_0toN declaration_1toN '}' s_0toN
+    ;
+  pseudo_page
+    : ':' IDENT
     ;
   ruleset_0toN
     : ruleset ruleset_0toN
