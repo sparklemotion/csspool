@@ -1,7 +1,7 @@
-require 'css/sac' # bleh module stuff
+require 'css/sac' # FIXME
 
 module CSS
-  class SAC # grr annoying: should be a module?
+  class SAC # FIXME
     class Lexeme
       attr_reader :name, :pattern
       
@@ -12,8 +12,6 @@ module CSS
         patterns = []
         
         patterns << pattern if pattern
-
-        # allow lots of patterns to be specified with 'match'
         yield(patterns) if block_given?
         
         if patterns.empty?
