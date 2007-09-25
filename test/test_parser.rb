@@ -8,6 +8,17 @@ class ParserTest < Test::Unit::TestCase
     @sac = CSS::SAC.new()
   end
 
+  def test_ignorable_at_rule
+    flexmock(@sac.document_handler).
+      should_receive(:start_document).ordered.once
+    flexmock(@sac.document_handler).
+      should_receive(:ignorable_at_rule).ordered.
+      with("blah").once
+    flexmock(@sac.document_handler).
+      should_receive(:end_document).ordered.once
+    @sac.parse('@blah "style.css";')
+  end
+
   def test_selector
     flexmock(@sac.document_handler).
       should_receive(:start_document).ordered.once
