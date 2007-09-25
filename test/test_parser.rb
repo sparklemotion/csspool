@@ -10,15 +10,16 @@ class ParserTest < Test::Unit::TestCase
 
   def test_selector
     flexmock(@sac.document_handler).
-      should_receive(:start_selector).
+      should_receive(:start_selector).ordered.
       with(['div', 'h1']).once
     flexmock(@sac.document_handler).
-      should_receive(:end_selector).
+      should_receive(:property).ordered.
+      with('color', ['black'], false).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_selector).ordered.
       with(['div', 'h1']).once
 
     @sac.parse('div h1 { color: black; }')
-    #p @sac.tokens.map { |x| x.value }
-    assert_equal(13, @sac.tokens.length)
     flexmock_verify
   end
 
@@ -39,7 +40,7 @@ class ParserTest < Test::Unit::TestCase
     flexmock(@sac.document_handler).
       should_receive(:property).
       with('color', ['black'], true).once
-    @sac.parse('div h1 { color: black !important; }')
+    @sac.parse('h1 { color: black !important; }')
     flexmock_verify
   end
 end

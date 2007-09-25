@@ -66,7 +66,9 @@ rule
     : IDENT s_0toN
     ;
   ruleset
-    : selector_1toN LBRACE s_0toN declaration_1toN '}' s_0toN
+    : selector_1toN LBRACE s_0toN declaration_1toN '}' s_0toN {
+        self.document_handler.end_selector(val.first)
+      }
     ;
   ruleset_0toN
     : ruleset ruleset_0toN
@@ -74,7 +76,7 @@ rule
     |
     ;
   selector
-    : simple_selector_1toN
+    : simple_selector_1toN { self.document_handler.start_selector(val.first) }
     ;
   selector_1toN
     : selector COMMA s_0toN selector_1toN
@@ -85,7 +87,9 @@ rule
     | hcap_1toN
     ;
   simple_selector_1toN
-    : simple_selector combinator simple_selector_1toN
+    : simple_selector combinator simple_selector_1toN {
+        result = [val.first, val.last].flatten
+      }
     | simple_selector
     ;
   class
@@ -103,8 +107,9 @@ rule
     | ':' IDENT
     ;
   declaration
-    : property ':' s_0toN expr prio
-    | property ':' s_0toN expr
+    : property ':' s_0toN expr prio_0or1 {
+        self.document_handler.property(val.first, val[3], !val[4].nil?)
+      }
     |
     ;
   declaration_1toN
@@ -114,9 +119,13 @@ rule
   prio
     : IMPORTANT_SYM s_0toN
     ;
+  prio_0or1
+    : prio
+    |
+    ;
   expr
-    : term operator expr
-    | term
+    : term operator expr { result = [val.first, val.last].flatten }
+    | term { result = [val.first] }
     ;
   term
     : unary_operator num_or_length

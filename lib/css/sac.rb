@@ -106,7 +106,7 @@ class CSS::SAC < Racc::Parser
     self.document_handler.end_document(string)
     self.document_handler
     @yydebug = true
-    #do_parse
+    do_parse
   end
 
   alias :parseStyleSheet :parse_style_sheet
