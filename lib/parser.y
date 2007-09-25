@@ -2,18 +2,21 @@ class CSS::SAC
 
 token FUNCTION INCLUDES DASHMATCH LBRACE HASH PLUS GREATER IDENT S STRING IDENT
 token COMMA URI CDO CDC NUMBER PERCENTAGE LENGTH EMS EXS ANGLE TIME FREQ
-token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM
+token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM CHARSET_SYM
 
 rule
-/*
-stylesheet
-  : [ CHARSET_SYM STRING ';' ]?
-    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
-    [ [ ruleset | media | page ] [S|CDO|CDC]* ]*
-  ;
-*/
   stylesheet
-    : s_cdo_cdc_0toN import_0toN page
+    : s_cdo_cdc_0toN CHARSET_SYM STRING ';' import_0toN ruleset_media_page_0toN
+    | s_cdo_cdc_0toN import_0toN ruleset_media_page_0toN
+    ;
+  ruleset_media_page_0toN
+    : ruleset s_cdo_cdc_0toN ruleset_media_page_0toN
+    | media s_cdo_cdc_0toN ruleset_media_page_0toN
+    | page s_cdo_cdc_0toN ruleset_media_page_0toN
+    | ruleset s_cdo_cdc_0toN
+    | media s_cdo_cdc_0toN
+    | page s_cdo_cdc_0toN
+    |
     ;
   import
     : IMPORT_SYM s_0toN string_or_uri s_0toN medium_0toN ';' s_0toN {
@@ -48,7 +51,7 @@ stylesheet
     ;
   declaration
     : property ':' s_0toN expr prio
-    | property ':' s_0toN expr { p val }
+    | property ':' s_0toN expr
     |
     ;
   prio
@@ -58,7 +61,7 @@ stylesheet
     : IDENT s_0toN
     ;
   expr
-    : operator expr
+    : term operator expr
     | term
     ;
   operator
@@ -114,10 +117,10 @@ stylesheet
     |
     ;
   hcap_1toN
-    : HASH hcap_0toN
-    | class hcap_0toN
-    | attrib hcap_0toN
-    | pseudo hcap_0toN
+    : HASH hcap_1toN
+    | class hcap_1toN
+    | attrib hcap_1toN
+    | pseudo hcap_1toN
     | HASH
     | class
     | attrib
