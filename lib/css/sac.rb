@@ -112,9 +112,14 @@ class CSS::SAC < Racc::Parser
 
   def next_token
     return [false, false] if @position >= @tokens.length 
-    v = @tokens[@position].to_yacc
+
+    n_token = @tokens[@position]
     @position += 1
-    v
+    if n_token.name == :COMMENT
+      self.document_handler.comment(n_token.value)
+      return next_token
+    end
+    n_token.to_yacc
   end
 
   def on_error(error_token_id, error_value, value_stack)

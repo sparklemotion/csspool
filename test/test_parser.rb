@@ -8,6 +8,19 @@ class ParserTest < Test::Unit::TestCase
     @sac = CSS::SAC.new()
   end
 
+  def test_empty
+    assert_nothing_raised {
+      @sac.parse('')
+    }
+  end
+
+  def test_comment
+    flexmock(@sac.document_handler).
+      should_receive(:comment).ordered.
+      with("/* sup bro */").once
+    @sac.parse('/* sup bro */')
+  end
+
   def test_ignorable_at_rule
     flexmock(@sac.document_handler).
       should_receive(:start_document).ordered.once
