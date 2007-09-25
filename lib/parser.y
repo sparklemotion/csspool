@@ -34,7 +34,12 @@ rule
     |
     ;
   media
-    : MEDIA_SYM s_0toN medium_1toN LBRACE s_0toN ruleset_0toN '}' s_0toN
+    : MEDIA_SYM s_0toN medium_rollup LBRACE s_0toN ruleset_0toN '}' s_0toN {
+        self.document_handler.end_media(val[2])
+      }
+    ;
+  medium_rollup
+    : medium_1toN { self.document_handler.start_media(val.first) }
     ;
   medium
     : IDENT s_0toN
@@ -96,7 +101,7 @@ rule
     : simple_selector combinator simple_selector_1toN {
         result = [val.first, val.last].flatten
       }
-    | simple_selector
+    | simple_selector { result = [val.first] }
     ;
   class
     : '.' IDENT

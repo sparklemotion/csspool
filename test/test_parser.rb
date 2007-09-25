@@ -14,6 +14,35 @@ class ParserTest < Test::Unit::TestCase
     }
   end
 
+  def test_media
+    flexmock(@sac.document_handler).
+      should_receive(:start_media).ordered.
+        with(['print', 'tv']).once
+    flexmock(@sac.document_handler).
+      should_receive(:start_selector).ordered.
+      with(['h1']).once
+    flexmock(@sac.document_handler).
+      should_receive(:property).ordered.
+      with('color', ['black'], false).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_selector).ordered.
+      with(['h1']).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_media).ordered.
+        with(['print', 'tv']).once
+    @sac.parse('@media print, tv { h1 { color: black } }')
+  end
+
+  def test_media_single
+    flexmock(@sac.document_handler).
+      should_receive(:start_media).ordered.
+        with(['print']).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_media).ordered.
+        with(['print']).once
+    @sac.parse('@media print { h1 { color: black } }')
+  end
+
   def test_comment
     flexmock(@sac.document_handler).
       should_receive(:comment).ordered.
