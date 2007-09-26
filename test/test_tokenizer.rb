@@ -8,6 +8,7 @@ require 'css/sac'
 class TokenizerTest < Test::Unit::TestCase
   def setup
     @sac = CSS::SAC::Parser.new()
+    @sac.error_handler = lambda { |*args| }
   end
   
   def test_parse_simple

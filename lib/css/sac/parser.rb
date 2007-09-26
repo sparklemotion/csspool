@@ -7,7 +7,7 @@ module CSS
   module SAC
     class Parser < CSS::SAC::GeneratedParser
       attr_reader :tokens
-      attr_accessor :document_handler
+      attr_accessor :document_handler, :error_handler
 
       def initialize
         @lexemes = []
@@ -116,6 +116,13 @@ module CSS
 
         token(:FUNCTION, /#{m(:ident)}\(\)/)
 
+        @error_handler = lambda { |error_token_id, error_value, value_stack|
+          puts '#' * 50
+          puts token_to_str(error_token_id)
+          p error_value
+          p value_stack
+          puts '#' * 50
+        }
         yield self if block_given?
         @document_handler ||= DocumentHandler.new()
       end
@@ -129,7 +136,6 @@ module CSS
         self.document_handler.end_document(string)
       end
 
-      alias :parseStyleSheet :parse_style_sheet
       alias :parse :parse_style_sheet
 
       def next_token
@@ -144,13 +150,16 @@ module CSS
         n_token.to_racc_token
       end
 
-      def on_error(error_token_id, error_value, value_stack)
-        puts '#' * 50
-        puts token_to_str(error_token_id)
-        p error_value
-        p value_stack
-        puts '#' * 50
+      # Returns the parser version.  We return CSS2, but its actually
+      # CSS2.1.  No font-face tags.  Sorry.
+      def parser_version
+        "http://www.w3.org/TR/REC-CSS2"
       end
+
+      def on_error(error_token_id, error_value, value_stack)
+        error_handler.call(error_token_id, error_value, value_stack)
+      end
+      private :on_error
 
       def tokenize(string)
         @tokens = []
