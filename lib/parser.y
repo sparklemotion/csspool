@@ -20,7 +20,7 @@ rule
     ;
   import
     : IMPORT_SYM s_0toN string_or_uri s_0toN medium_0toN ';' s_0toN {
-        self.document_handler.import_style(val[2], val[4])
+        self.document_handler.import_style(val[2], val[4] || [])
       }
     ;
   ignorable_at
