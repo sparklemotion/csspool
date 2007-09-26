@@ -8,6 +8,19 @@ class ParserTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def test_page
+    flexmock(@sac.document_handler).
+      should_receive(:start_page).ordered.
+        with('foo', 'print').once
+    flexmock(@sac.document_handler).
+      should_receive(:property).ordered.
+      with('color', ['black'], false).once
+    flexmock(@sac.document_handler).
+      should_receive(:end_page).ordered.
+        with('foo', 'print').once
+    @sac.parse('@page foo:print { color: black }')
+  end
+
   def test_empty
     assert_nothing_raised {
       @sac.parse('')

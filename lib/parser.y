@@ -53,12 +53,24 @@ rule
     | medium { result = [val.first] }
     ;
   page
-    : PAGE_SYM s_0toN pseudo_page s_0toN LBRACE s_0toN declaration_1toN
-      '}' s_0toN
-    | PAGE_SYM s_0toN s_0toN LBRACE s_0toN declaration_1toN '}' s_0toN
+    : page_start s_0toN LBRACE s_0toN declaration_1toN '}' s_0toN {
+        page_stuff = val.first
+        self.document_handler.end_page(page_stuff[0], page_stuff[1])
+      }
     ;
-  pseudo_page
-    : ':' IDENT
+  page_start
+    : PAGE_SYM s_0toN optional_page optional_pseudo_page {
+        result = [val[2], val[3]]
+        self.document_handler.start_page(val[2], val[3])
+      }
+    ;
+  optional_page
+    : IDENT
+    |
+    ;
+  optional_pseudo_page
+    : ':' IDENT { result = val[1] }
+    |
     ;
   operator
     : '/' s_0toN
