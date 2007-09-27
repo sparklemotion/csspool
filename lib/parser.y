@@ -151,7 +151,7 @@ rule
     | term { result = [val.first] }
     ;
   term
-    : unary_operator num_or_length
+    : unary_operator num_or_length { result = val.join }
     | num_or_length
     | STRING s_0toN
     | IDENT s_0toN
@@ -170,7 +170,7 @@ rule
     | FREQ s_0toN
     ;
   function
-    : FUNCTION s_0toN expr ')' s_0toN
+    : FUNCTION s_0toN expr ')' s_0toN { result = "#{val[0]}#{val[2]}#{val[3]}" }
     ;
   hexcolor
     : HASH s_0toN

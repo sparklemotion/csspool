@@ -88,6 +88,10 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal(11, tokens.length)
   end
   
+  def test_function_token
+    assert_tokens("foo(aaron)", :FUNCTION, :IDENT, :delim)
+  end
+
   def test_an_example_of_assert_tokens
     assert_tokens("body { color: pink; }",
       :IDENT, :LBRACE, :IDENT, :delim, [:IDENT, "pink"], :delim, :delim)

@@ -108,7 +108,7 @@ module CSS
           patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
         end
 
-        token(:FUNCTION, /#{m(:ident)}\(\)/)
+        token(:FUNCTION, /#{m(:ident)}\(/)
 
         yield self if block_given?
       end

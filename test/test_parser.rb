@@ -114,6 +114,22 @@ class ParserTest < Test::Unit::TestCase
     flexmock_verify
   end
 
+  def test_properties_unary_op
+    flexmock(@sac.document_handler).
+      should_receive(:property).
+      with('position', ['-10em'], false).once
+    @sac.parse('div h1 { position: -10em; }')
+    flexmock_verify
+  end
+
+  def test_properties_function
+    flexmock(@sac.document_handler).
+      should_receive(:property).
+      with('position', ['test(aaron)'], false).once
+    @sac.parse('div h1 { position: test(aaron); }')
+    flexmock_verify
+  end
+
   def test_important_properties
     flexmock(@sac.document_handler).
       should_receive(:property).
