@@ -33,6 +33,18 @@ module CSS
 
       alias :parse :parse_style_sheet
 
+      # Returns the parser version.  We return CSS2, but its actually
+      # CSS2.1.  No font-face tags.  Sorry.
+      def parser_version
+        "http://www.w3.org/TR/REC-CSS2"
+      end
+
+      private # Bro.
+
+      def on_error(error_token_id, error_value, value_stack)
+        error_handler.call(error_token_id, error_value, value_stack)
+      end
+
       def next_token
         return [false, false] if @position >= @tokens.length 
 
@@ -44,17 +56,6 @@ module CSS
         end
         n_token.to_racc_token
       end
-
-      # Returns the parser version.  We return CSS2, but its actually
-      # CSS2.1.  No font-face tags.  Sorry.
-      def parser_version
-        "http://www.w3.org/TR/REC-CSS2"
-      end
-
-      def on_error(error_token_id, error_value, value_stack)
-        error_handler.call(error_token_id, error_value, value_stack)
-      end
-      private :on_error
     end
   end
 end
