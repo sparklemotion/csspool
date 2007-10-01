@@ -6,12 +6,28 @@ module CSS
                     :float_value,
                     :integer_value,
                     :string_value,
-                    :parameters
+                    :parameters,
+                    :function_name
 
       alias :to_s :string_value
     end
 
-    class LexicalColor < LexicalUnit
+    class Function < LexicalUnit
+      FUNCTIONS = {
+        'counter'   => :SAC_COUNTER_FUNCTION,
+        'counters'  => :SAC_COUNTERS_FUNCTION,
+        'rect'      => :SAC_RECT_FUNCTION,
+      }
+      def initialize(name, params)
+        self.string_value = "#{name}#{params.join(', ')})"
+        name =~ /^(.*)\(/
+        self.function_name = $1
+        self.parameters = params
+        self.lexical_unit_type = FUNCTIONS[self.function_name] || :SAC_FUNCTION
+      end
+    end
+
+    class Color < LexicalUnit
       def initialize(value)
         self.string_value = value
         self.lexical_unit_type = :SAC_RGBCOLOR

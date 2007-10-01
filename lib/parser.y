@@ -162,7 +162,7 @@ rule
     | STRING s_0toN { result = LexicalString.new(val.first) }
     | IDENT s_0toN { result = LexicalIdent.new(val.first) }
     | URI s_0toN { result = LexicalURI.new(val.first) }
-    | hexcolor { result = LexicalColor.new(val.first) }
+    | hexcolor { result = Color.new(val.first) }
     | function
     ;
   num_or_length
@@ -176,7 +176,9 @@ rule
     | FREQ s_0toN { result = Number.new(val.first) }
     ;
   function
-    : FUNCTION s_0toN expr ')' s_0toN { result = "#{val[0]}#{val[2]}#{val[3]}" }
+    : FUNCTION s_0toN expr ')' s_0toN {
+        result = Function.new(val[0], val[2])
+      }
     ;
   hexcolor
     : HASH s_0toN

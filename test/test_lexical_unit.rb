@@ -3,6 +3,19 @@ class LexicalUnitTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def test_function
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('background-color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_FUNCTION &&
+        list.first.string_value == "something(one, two, three)" &&
+        list.first.parameters.length == 3 &&
+        list.first.parameters.map { |x| x.to_s } == ['one','two','three'] &&
+        list.first.integer_value.nil?
+    }, false).once
+    @sac.parse('h1 { background-color: something(one, two, three); }')
+  end
+
   def test_color
     flexmock(@sac.document_handler).
       should_receive(:property).with('background-color', on { |list|
