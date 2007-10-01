@@ -137,6 +137,8 @@ module CSS
         tokens
       end
       
+      private
+      
       def token(name, pattern=nil, &block)
         @lexemes << Lexeme.new(name, pattern, &block)
       end
