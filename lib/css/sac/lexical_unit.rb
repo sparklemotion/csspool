@@ -4,12 +4,30 @@ module CSS
       attr_accessor :dimension_unit_text,
                     :lexical_unit_type,
                     :float_value,
-                    :integer_value
-      def initialize(value, unit, type)
-        self.float_value = value.to_f
-        self.integer_value = value.to_i
-        self.dimension_unit_text = unit.downcase
-        self.lexical_unit_type = type
+                    :integer_value,
+                    :string_value
+
+      alias :to_s :string_value
+    end
+
+    class LexicalString < LexicalUnit
+      def initialize(value)
+        self.string_value = value
+        self.lexical_unit_type = :SAC_STRING_VALUE
+      end
+    end
+
+    class LexicalIdent < LexicalUnit
+      def initialize(value)
+        self.string_value = value
+        self.lexical_unit_type = :SAC_IDENT
+      end
+    end
+
+    class LexicalURI < LexicalUnit
+      def initialize(value)
+        self.string_value = value.gsub(/^url\(/, '').gsub(/\)$/, '')
+        self.lexical_unit_type = :SAC_URI
       end
     end
 
@@ -37,10 +55,20 @@ module CSS
         'in'    => :SAC_INCH,
         'pt'    => :SAC_POINT,
         'pc'    => :SAC_PICA,
+        '%'     => :SAC_PERCENTAGE,
+        'em'    => :SAC_EM,
+        'ex'    => :SAC_EX,
       }
-      def initialize(value)
+      def initialize(value, unit = nil, type = nil)
         value =~ /^([0-9.]*)(.*)$/
-        super($1.to_f, $2, UNITS[$2.downcase])
+        value = $1
+        unit  ||= $2
+        type  ||= UNITS[self.dimension_unit_text]
+        self.string_value = "#{value}#{unit}"
+        self.float_value = value.to_f
+        self.integer_value = value.to_i
+        self.dimension_unit_text = unit.downcase
+        self.lexical_unit_type = UNITS[self.dimension_unit_text]
       end
     end
   end

@@ -17,8 +17,12 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:start_page).ordered.
         with('foo', 'print').once
     flexmock(@sac.document_handler).
-      should_receive(:property).ordered.
-      with('color', ['black'], false).once
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, false).once
     flexmock(@sac.document_handler).
       should_receive(:end_page).ordered.
         with('foo', 'print').once
@@ -47,8 +51,12 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:start_selector).ordered.
       with(['h1']).once
     flexmock(@sac.document_handler).
-      should_receive(:property).ordered.
-      with('color', ['black'], false).once
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, false).once
     flexmock(@sac.document_handler).
       should_receive(:end_selector).ordered.
       with(['h1']).once
@@ -93,8 +101,12 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:start_selector).ordered.
       with(['div', 'h1']).once
     flexmock(@sac.document_handler).
-      should_receive(:property).ordered.
-      with('color', ['black'], false).once
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, false).once
     flexmock(@sac.document_handler).
       should_receive(:end_selector).ordered.
       with(['div', 'h1']).once
@@ -107,8 +119,12 @@ class ParserTest < Test::Unit::TestCase
 
   def test_properties
     flexmock(@sac.document_handler).
-      should_receive(:property).
-      with('color', ['black'], false).once
+      should_receive(:property).with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, false).once
     @sac.parse('div h1 { color: black; }')
     flexmock_verify
 
@@ -139,8 +155,12 @@ class ParserTest < Test::Unit::TestCase
 
   def test_important_properties
     flexmock(@sac.document_handler).
-      should_receive(:property).
-      with('color', ['black'], true).once
+      should_receive(:property).with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, true).once
     @sac.parse('h1 { color: black !important; }')
     flexmock_verify
   end

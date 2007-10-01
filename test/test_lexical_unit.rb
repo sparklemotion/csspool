@@ -3,6 +3,45 @@ class LexicalUnitTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def test_uri
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('height', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_URI &&
+        list.first.string_value == "\"aaron\"" &&
+        list.first.integer_value.nil?
+    }, false).once
+
+    @sac.parse('h1 { height: url("aaron"); }')
+    flexmock_verify
+  end
+
+  def test_string
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('height', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_STRING_VALUE &&
+        list.first.string_value == "\"aaron\"" &&
+        list.first.integer_value.nil?
+    }, false).once
+
+    @sac.parse('h1 { height: "aaron"; }')
+    flexmock_verify
+  end
+
+  def test_ident
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('height', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "boo" &&
+        list.first.integer_value.nil?
+    }, false).once
+
+    @sac.parse('h1 { height: boo; }')
+    flexmock_verify
+  end
+
   def test_mm
     flexmock(@sac.document_handler).
       should_receive(:property).with('height', on { |list|

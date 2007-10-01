@@ -159,24 +159,18 @@ rule
         end
       }
     | num_or_length
-    | STRING s_0toN
-    | IDENT s_0toN
-    | URI s_0toN
+    | STRING s_0toN { result = LexicalString.new(val.first) }
+    | IDENT s_0toN { result = LexicalIdent.new(val.first) }
+    | URI s_0toN { result = LexicalURI.new(val.first) }
     | hexcolor
     | function
     ;
   num_or_length
-    : NUMBER s_0toN { result = LexicalUnit.new(val.first, '', :SAC_INTEGER) }
-    | PERCENTAGE s_0toN {
-        result = LexicalUnit.new(val.first.gsub('%',''), '%', :SAC_PERCENTAGE)
-      }
+    : NUMBER s_0toN { result = Number.new(val.first, '', :SAC_INTEGER) }
+    | PERCENTAGE s_0toN { result = Number.new(val.first) }
     | LENGTH s_0toN { result = Number.new(val.first) }
-    | EMS s_0toN {
-        result = LexicalUnit.new(/^([0-9]*)/.match(val.first)[1], 'em', :SAC_EM)
-      }
-    | EXS s_0toN {
-        result = LexicalUnit.new(/^([0-9]*)/.match(val.first)[1], 'ex', :SAC_EX)
-      }
+    | EMS s_0toN { result = Number.new(val.first) }
+    | EXS s_0toN { result = Number.new(val.first) }
     | ANGLE s_0toN { result = Number.new(val.first) }
     | TIME s_0toN { result = Number.new(val.first) }
     | FREQ s_0toN { result = Number.new(val.first) }
