@@ -151,7 +151,13 @@ rule
     | term { result = [val.first] }
     ;
   term
-    : unary_operator num_or_length { result = val.join }
+    : unary_operator num_or_length {
+        result = val.last
+        if val.first == '-' && !Number::NON_NEGATIVE_UNITS.include?(result.lexical_unit_type)
+          result.float_value = (0 - result.float_value)
+          result.integer_value = (0 - result.integer_value)
+        end
+      }
     | num_or_length
     | STRING s_0toN
     | IDENT s_0toN
@@ -160,14 +166,20 @@ rule
     | function
     ;
   num_or_length
-    : NUMBER s_0toN
-    | PERCENTAGE s_0toN
-    | LENGTH s_0toN
-    | EMS s_0toN
-    | EXS s_0toN
-    | ANGLE s_0toN
-    | TIME s_0toN
-    | FREQ s_0toN
+    : NUMBER s_0toN { result = LexicalUnit.new(val.first, '', :SAC_INTEGER) }
+    | PERCENTAGE s_0toN {
+        result = LexicalUnit.new(val.first.gsub('%',''), '%', :SAC_PERCENTAGE)
+      }
+    | LENGTH s_0toN { result = Number.new(val.first) }
+    | EMS s_0toN {
+        result = LexicalUnit.new(/^([0-9]*)/.match(val.first)[1], 'em', :SAC_EM)
+      }
+    | EXS s_0toN {
+        result = LexicalUnit.new(/^([0-9]*)/.match(val.first)[1], 'ex', :SAC_EX)
+      }
+    | ANGLE s_0toN { result = Number.new(val.first) }
+    | TIME s_0toN { result = Number.new(val.first) }
+    | FREQ s_0toN { result = Number.new(val.first) }
     ;
   function
     : FUNCTION s_0toN expr ')' s_0toN { result = "#{val[0]}#{val[2]}#{val[3]}" }

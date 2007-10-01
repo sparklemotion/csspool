@@ -1,9 +1,13 @@
 require 'rubygems'
 require 'test/unit'
 require 'flexmock/test_unit'
+require 'flexmock/argument_types'
 require 'css/sac'
 
 class ParserTest < Test::Unit::TestCase
+  include FlexMock::TestCase
+  include FlexMock::ArgumentTypes
+
   def setup
     @sac = CSS::SAC::Parser.new()
   end
@@ -116,8 +120,11 @@ class ParserTest < Test::Unit::TestCase
 
   def test_properties_unary_op
     flexmock(@sac.document_handler).
-      should_receive(:property).
-      with('position', ['-10em'], false).once
+      should_receive(:property).with('position', on { |list|
+      list.length == 1 && list.first.dimension_unit_text == 'em' &&
+        list.first.lexical_unit_type == :SAC_EM &&
+        list.first.integer_value == -10
+    }, false).once
     @sac.parse('div h1 { position: -10em; }')
     flexmock_verify
   end

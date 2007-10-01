@@ -1,6 +1,7 @@
 require "css/sac/document_handler"
 require "css/sac/generated_parser"
 require "css/sac/tokenizer"
+require "css/sac/lexical_unit"
 
 module CSS
   module SAC
