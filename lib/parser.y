@@ -133,6 +133,10 @@ rule
     : property ':' s_0toN expr prio_0or1 {
         self.document_handler.property(val.first, val[3], !val[4].nil?)
       }
+    | property ':' s_0toN error s_0toN prio_0or1 {
+        error = ParseException.new("Unkown property: \"#{val[0]}: #{val[3]}\"")
+        self.error_handler.error(error)
+      }
     |
     ;
   declaration_1toN

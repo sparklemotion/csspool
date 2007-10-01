@@ -2,6 +2,7 @@ require "css/sac/document_handler"
 require "css/sac/error_handler"
 require "css/sac/generated_parser"
 require "css/sac/lexical_unit"
+require "css/sac/parse_exception"
 require "css/sac/tokenizer"
 
 module CSS
@@ -37,11 +38,11 @@ module CSS
       private # Bro.
 
       def on_error(error_token_id, error_value, value_stack)
-        #puts '#' * 50
-        #puts token_to_str(error_token_id)
-        #p error_value
-        #p value_stack
-        #puts '#' * 50
+        puts '#' * 50
+        puts token_to_str(error_token_id)
+        p error_value
+        p value_stack
+        puts '#' * 50
       end
 
       def next_token
