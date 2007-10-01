@@ -162,7 +162,7 @@ rule
     | STRING s_0toN { result = LexicalString.new(val.first) }
     | IDENT s_0toN { result = LexicalIdent.new(val.first) }
     | URI s_0toN { result = LexicalURI.new(val.first) }
-    | hexcolor
+    | hexcolor { result = LexicalColor.new(val.first) }
     | function
     ;
   num_or_length

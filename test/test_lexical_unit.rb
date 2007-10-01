@@ -3,6 +3,36 @@ class LexicalUnitTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def test_color
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('background-color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_RGBCOLOR &&
+        list.first.string_value == "#345" &&
+        list.first.parameters.length == 3 &&
+        list.first.parameters.map { |x| x.integer_value } == [3,4,5] &&
+        list.first.integer_value.nil?
+    }, false).once
+
+    @sac.parse('h1 { background-color: #345; }')
+    flexmock_verify
+  end
+
+  def test_color_6
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('background-color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_RGBCOLOR &&
+        list.first.string_value == "#330405" &&
+        list.first.parameters.length == 3 &&
+        list.first.parameters.map { |x| x.integer_value } == [51,4,5] &&
+        list.first.integer_value.nil?
+    }, false).once
+
+    @sac.parse('h1 { background-color: #330405; }')
+    flexmock_verify
+  end
+
   def test_uri
     flexmock(@sac.document_handler).
       should_receive(:property).with('height', on { |list|

@@ -5,9 +5,26 @@ module CSS
                     :lexical_unit_type,
                     :float_value,
                     :integer_value,
-                    :string_value
+                    :string_value,
+                    :parameters
 
       alias :to_s :string_value
+    end
+
+    class LexicalColor < LexicalUnit
+      def initialize(value)
+        self.string_value = value
+        self.lexical_unit_type = :SAC_RGBCOLOR
+        if value =~ /^#(\d{1,2})(\d{1,2})(\d{1,2})$/
+          self.parameters = [
+            Number.new($1.hex, '', :SAC_INTEGER),
+            Number.new($2.hex, '', :SAC_INTEGER),
+            Number.new($3.hex, '', :SAC_INTEGER)
+          ]
+        else
+          self.parameters = [LexicalIdent.new(value)]
+        end
+      end
     end
 
     class LexicalString < LexicalUnit
@@ -60,9 +77,11 @@ module CSS
         'ex'    => :SAC_EX,
       }
       def initialize(value, unit = nil, type = nil)
-        value =~ /^([0-9.]*)(.*)$/
-        value = $1
-        unit  ||= $2
+        if value.is_a?(String)
+          value =~ /^([0-9.]*)(.*)$/
+          value = $1
+          unit  ||= $2
+        end
         type  ||= UNITS[self.dimension_unit_text]
         self.string_value = "#{value}#{unit}"
         self.float_value = value.to_f
