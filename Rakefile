@@ -4,6 +4,7 @@ require 'hoe'
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "lib")
 
 GENERATED_PARSER = "lib/css/sac/generated_parser.rb"
+GENERATED_PROPERTY_PARSER = "lib/css/sac/generated_property_parser.rb"
 
 Hoe.new('csspool', '0.0.1') do |p|
   p.rubyforge_name  = 'csspool'
@@ -23,5 +24,10 @@ file GENERATED_PARSER => "lib/parser.y" do |t|
   sh "racc -o #{t.name} #{t.prerequisites.first}"
 end
 
+file GENERATED_PROPERTY_PARSER => "lib/property_parser.y" do |t|
+  sh "racc -o #{t.name} #{t.prerequisites.first}"
+end
+
 # make sure the parser's up-to-date when we test
 Rake::Task[:test].prerequisites << GENERATED_PARSER
+Rake::Task[:test].prerequisites << GENERATED_PROPERTY_PARSER
