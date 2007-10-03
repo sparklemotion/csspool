@@ -1,6 +1,6 @@
 class CSS::SAC::GeneratedProperyParser
 
-token ANGLE COLOR URI PERCENTAGE LENGTH
+token ANGLE COLOR URI PERCENTAGE LENGTH EMS EXS
 
 rule
   property
@@ -11,6 +11,14 @@ rule
     | background_position
     | background_repeat
     | background
+    | border_collapse
+    | border_color
+    | border_spacing
+    ;
+  length
+    : LENGTH
+    | EMS
+    | EXS
     ;
   azimuth
     : 'azimuth' ANGLE
@@ -63,7 +71,7 @@ rule
     ;
   pl_left_center_right
     : PERCENTAGE
-    | LENGTH
+    | length
     | left_center_right
     ;
   left_center_right
@@ -73,7 +81,7 @@ rule
     ;
   optional_pl_top_center_bottom
     : PERCENTAGE
-    | LENGTH
+    | length
     | top_center_bottom
     |
     ;
@@ -102,4 +110,35 @@ rule
     | background_repeat_values
     | background_attachment_values
     | background_position_values
+    ;
+  border_collapse
+    : 'border-collapse' border_collapse_values
+    | 'border-collapse' 'inherit'
+    ; 
+  border_collapse_values
+    : 'collapse'
+    | 'separate'
+    ;
+  border_color
+    : 'border-color' border_color_values
+    | 'border-color' 'inherit'
+    ;
+  border_color_values
+    : color_or_transparent color_or_transparent color_or_transparent
+      color_or_transparent
+    | color_or_transparent color_or_transparent color_or_transparent
+    | color_or_transparent color_or_transparent
+    | color_or_transparent
+    ;
+  color_or_transparent
+    : COLOR
+    | 'transparent'
+    ;
+  border_spacing
+    : 'border-spacing' border_spacing_values
+    | 'border-spacing' 'inherit'
+    ;
+  border_spacing_values
+    : length length
+    | length
     ;
