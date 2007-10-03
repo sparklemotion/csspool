@@ -1,6 +1,6 @@
 class CSS::SAC::GeneratedProperyParser
 
-token ANGLE
+token ANGLE COLOR URI PERCENTAGE LENGTH
 
 rule
   property
@@ -9,6 +9,8 @@ rule
     | background_color
     | background_image
     | background_position
+    | background_repeat
+    | background
     ;
   azimuth
     : 'azimuth' ANGLE
@@ -27,25 +29,37 @@ rule
     | 'azimuth' 'inherit'
     ;
   background_attachment
-    : 'background-attachment' 'scroll'
-    | 'background-attachment' 'fixed'
+    : 'background-attachment' background_attachment_values
     | 'background-attachment' 'inherit'
     ;
+  background_attachment_values
+    : 'scroll'
+    | 'fixed'
+    ;
   background_color
-    : 'background-color' COLOR
-    | 'background-color' 'transparent'
+    : 'background-color' background_color_values
     | 'background-color' 'inherit'
     ;
+  background_color_values
+    : COLOR
+    | 'transparent'
+    ;
   background_image
-    : 'background-image' URI
-    | 'background-image' 'color'
+    : 'background-image' background_image_values
     | 'background-image' 'inherit'
     ;
+  background_image_values
+    : URI
+    | 'color'
+    ;
   background_position
-    : 'background-position' pl_left_center_right optional_pl_top_center_bottom
-    | 'background-position' left_center_right
-    | 'background-position' top_center_bottom
+    : 'background-position' background_position_values
     | 'background-position' 'inherit'
+    ;
+  background_position_values
+    : pl_left_center_right optional_pl_top_center_bottom
+    | left_center_right
+    | top_center_bottom
     ;
   pl_left_center_right
     : PERCENTAGE
@@ -67,4 +81,25 @@ rule
     : 'top'
     | 'center'
     | 'bottom'
+    ;
+  background_repeat
+    : 'background-repeat' background_repeat_values
+    | 'background-repeat' 'inherit'
+    ;
+  background_repeat_values
+    : 'repeat'
+    | 'repeat-x'
+    | 'repeat-y'
+    | 'no-repeat'
+    ;
+  background
+    : 'background' background_values
+    | 'background' 'inherit'
+    ;
+  background_values
+    : background_color_values
+    | background_image_values
+    | background_repeat_values
+    | background_attachment_values
+    | background_position_values
     ;
