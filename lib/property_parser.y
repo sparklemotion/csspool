@@ -14,6 +14,7 @@ rule
     | border_collapse
     | border_color
     | border_spacing
+    | border_style
     ;
   length
     : LENGTH
@@ -141,4 +142,27 @@ rule
   border_spacing_values
     : length length
     | length
+    ;
+  border_style
+    : 'border-style' border_style_values_1to4
+    | 'border-style' 'inherit'
+    ;
+  border_style_values_1to4
+    : border_style_values border_style_values border_style_values
+      border_style_values
+    | border_style_values border_style_values border_style_values
+    | border_style_values border_style_values
+    | border_style_values
+    ;
+  border_style_values
+    : 'none'
+    | 'hidden'
+    | 'dotted'
+    | 'dashed'
+    | 'solid'
+    | 'double'
+    | 'groove'
+    | 'ridge'
+    | 'inset'
+    | 'outset'
     ;
