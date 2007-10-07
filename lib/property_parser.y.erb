@@ -132,11 +132,14 @@ rule
     | 'background' 'inherit'
     ;
   background_values
-    : background_color_values
-    | background_image_values
-    | background_repeat_values
-    | background_attachment_values
-    | background_position_values
+<% %w{  background_color_values
+        background_image_values
+        background_repeat_values
+        background_attachment_values
+        background_position_values
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
     ;
   border_collapse
     : 'border-collapse' border_collapse_values
@@ -151,11 +154,9 @@ rule
     | 'border-color' 'inherit'
     ;
   border_color_values
-    : color_or_transparent color_or_transparent color_or_transparent
-      color_or_transparent
-    | color_or_transparent color_or_transparent color_or_transparent
-    | color_or_transparent color_or_transparent
-    | color_or_transparent
+<% (1..4).to_a.reverse.each_with_index do |num, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= (['color_or_transparent'] * num).join(' ') %>
+<% end %>
     ;
   color_or_transparent
     : color
@@ -193,7 +194,7 @@ rule
     | 'outset'
     ;
   border_trbl
-    : border_trbl_keys border_trbl_values
+    : border_trbl_keys border_values
     | border_trbl_keys 'inherit'
     ;
   border_trbl_keys
@@ -201,11 +202,6 @@ rule
     | 'border-right'
     | 'border-bottom'
     | 'border-left'
-    ;
-  border_trbl_values
-    : border_width_values
-    | border_style_values
-    | border_trbl_color_values
     ;
   border_trbl_color
     : border_trbl_color_keys border_trbl_color_values
@@ -267,4 +263,4 @@ rule
     <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
 <% end %>
     ;
-/* vim: set filetype=yacc : */
+/* vim: set filetype=racc : */
