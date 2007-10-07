@@ -15,11 +15,35 @@ rule
     | border_color
     | border_spacing
     | border_style
+    | border_trbl
+    | border_trbl_color
+    | border_trbl_style
+    | border_trbl_width
     ;
   length
     : LENGTH
     | EMS
     | EXS
+    ;
+  color
+    : COLOR
+    | 'aqua'
+    | 'black'
+    | 'blue'
+    | 'fuchsia'
+    | 'gray'
+    | 'green'
+    | 'lime'
+    | 'maroon'
+    | 'navy'
+    | 'olive'
+    | 'orange'
+    | 'purple'
+    | 'red'
+    | 'silver'
+    | 'teal'
+    | 'white'
+    | 'yellow'
     ;
   azimuth
     : 'azimuth' ANGLE
@@ -50,7 +74,7 @@ rule
     | 'background-color' 'inherit'
     ;
   background_color_values
-    : COLOR
+    : color
     | 'transparent'
     ;
   background_image
@@ -132,7 +156,7 @@ rule
     | color_or_transparent
     ;
   color_or_transparent
-    : COLOR
+    : color
     | 'transparent'
     ;
   border_spacing
@@ -165,4 +189,69 @@ rule
     | 'ridge'
     | 'inset'
     | 'outset'
+    ;
+  border_trbl
+    : border_trbl_keys border_trbl_values
+    | border_trbl_keys 'inherit'
+    ;
+  border_trbl_keys
+    : 'border-top'
+    | 'border-right'
+    | 'border-bottom'
+    | 'border-left'
+    ;
+  border_trbl_values
+    : border_width_values
+    | border_style_values
+    | border_trbl_color_values
+    ;
+  border_trbl_color
+    : border_trbl_color_keys border_trbl_color_values
+    | border_trbl_color_keys 'inherit'
+    ;
+  border_trbl_color_keys
+    : 'border-top-color'
+    | 'border-right-color'
+    | 'border-bottom-color'
+    | 'border-left-color'
+    ;
+  border_trbl_color_values
+    : color
+    ;
+  border_trbl_style
+    : border_trbl_style_keys border_style_values
+    | border_trbl_style_keys 'inherit'
+    ;
+  border_trbl_style_keys
+    : 'border-top-style'
+    | 'border-right-style'
+    | 'border-bottom-style'
+    | 'border-left-style'
+    ;
+  border_trbl_width
+    : border_trbl_width_keys border_width_values
+    | border_trbl_width_keys 'inherit'
+    ;
+  border_trbl_width_keys
+    : 'border-top-width'
+    | 'border-right-width'
+    | 'border-bottom-width'
+    | 'border-left-width'
+    ;
+  border_width
+    : 'border-width' border_width_values_1to4
+    | 'border-width' 'inherit'
+    ;
+  border_width_values
+    : 'thin'
+    | 'medium'
+    | 'thick'
+    | length
+    ;
+  border_width_values_1to4
+    : border_width_values border_width_values border_width_values
+      border_width_values
+    | border_width_values border_width_values border_width_values
+    | border_width_values border_width_values
+    | border_width_values
     ;
