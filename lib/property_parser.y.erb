@@ -19,6 +19,8 @@ rule
     | border_trbl_color
     | border_trbl_style
     | border_trbl_width
+    | border_width
+    | border
     ;
   length
     : LENGTH
@@ -249,9 +251,20 @@ rule
     | length
     ;
   border_width_values_1to4
-    : border_width_values border_width_values border_width_values
-      border_width_values
-    | border_width_values border_width_values border_width_values
-    | border_width_values border_width_values
-    | border_width_values
+<% (1..4).to_a.reverse.each_with_index do |num, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= (['border_width_values'] * num).join(' ') %>
+<% end %>
     ;
+  border
+    : 'border' border_values
+    | 'border' border_style_values
+    ;
+  border_values
+<% %w{  border_width_values
+        border_style_values
+        color
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    ;
+/* vim: set filetype=yacc : */

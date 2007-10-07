@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'erb'
 require 'hoe'
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "lib")
@@ -20,12 +21,36 @@ Hoe.new('csspool', '0.0.1') do |p|
   #p.changes         = p.paragraphs_of('CHANGELOG.txt', 0..2).join("\n\n")
 end
 
+class Array
+  def permutations
+    return [self] if size < 2
+    perm = []
+    each { |e| (self - [e]).permutations.each { |p| perm << ([e] + p) } }
+    perm
+  end
+
+  def permute_all_combinations
+    list = []
+    permutations.each do |perm|
+      while perm.length > 0
+        list << perm.dup
+        perm.shift
+      end
+    end
+    list.uniq.sort_by { |x| x.length }.reverse
+  end
+end
+
 file GENERATED_PARSER => "lib/parser.y" do |t|
   sh "racc -o #{t.name} #{t.prerequisites.first}"
 end
 
-file GENERATED_PROPERTY_PARSER => "lib/property_parser.y" do |t|
-  sh "racc -o #{t.name} #{t.prerequisites.first}"
+file GENERATED_PROPERTY_PARSER => "lib/property_parser.y.erb" do |t|
+  template = ERB.new(File.open(t.prerequisites.first, 'rb') { |x| x.read })
+  File.open("lib/property_parser.y", 'wb') { |f|
+    f.write template.result(binding)
+  }
+  sh "racc -o #{t.name} lib/property_parser.y"
 end
 
 # make sure the parser's up-to-date when we test
