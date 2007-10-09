@@ -1,6 +1,6 @@
 class CSS::SAC::GeneratedProperyParser
 
-token ANGLE COLOR URI PERCENTAGE LENGTH EMS EXS
+token ANGLE COLOR URI PERCENTAGE LENGTH EMS EXS STRING IDENT INTEGER COMMA
 
 rule
   property
@@ -21,6 +21,23 @@ rule
     | border_trbl_width
     | border_width
     | border
+    | bottom
+    | caption_side
+    | clear
+    | clip
+    | color_lex
+    | content
+    | counter_increment
+    | counter_reset
+    | cue_after
+    | cue_before
+    | cue
+    | cursor
+    | direction
+    | display
+    ;
+  percentage
+    : PERCENTAGE
     ;
   length
     : LENGTH
@@ -262,5 +279,173 @@ rule
       }.permute_all_combinations.each_with_index do |list, i| %>
     <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
 <% end %>
+    ;
+  bottom
+    : 'bottom' bottom_values
+    | 'bottom' 'inherit'
+    ;
+  bottom_values
+    : length
+    | percentage
+    | 'auto'
+    ;
+  caption_side
+    : 'caption-side' caption_side_values
+    | 'caption_side' 'inherit'
+    ;
+  caption_side_values
+    : 'top'
+    | 'bottom'
+    ;
+  clear
+    : 'clear' clear_values
+    | 'clear' 'inherit'
+    ;
+  clear_values
+    : 'none'
+    | 'left'
+    | 'right'
+    | 'both'
+    ;
+  clip
+    : 'clip' clip_values
+    | 'clip' 'inherit'
+    ;
+  clip_values
+    : shape
+    | 'auto'
+    ;
+  shape
+    : 'rect' shape_param shape_param shape_param shape_param
+    ;
+  shape_param
+    : length
+    | 'auto'
+    ;
+  color_lex
+    : 'color' color
+    | 'color' 'inherit'
+    ;
+  content
+    : 'content' content_values_1toN
+    | 'content' 'inherit'
+    ;
+  content_values_1toN
+    : content_values content_values_1toN
+    | content_values
+    ;
+  content_values
+    : 'none'
+    | 'normal'
+    | STRING
+    | URI
+    | counter
+    | 'open-quote'
+    | 'close-quote'
+    | 'no-open-quote'
+    | 'no-close-quote'
+    | 'attr' IDENT
+    ;
+  counter
+    : 'counter' IDENT list_style_type_values
+    | 'counter' IDENT
+    | 'counters' IDENT STRING list_style_type_values
+    | 'counters' IDENT STRING
+    ;
+  counter_increment
+    : 'counter-increment' counter_increment_values_1toN
+    | 'counter-increment' 'none'
+    | 'counter-increment' 'inherit'
+    ;
+  counter_increment_values_1toN
+    : counter_increment_values counter_increment_values_1toN
+    | counter_increment_values
+    ;
+  counter_increment_values
+    : IDENT INTEGER
+    | IDENT
+    ;
+  counter_reset
+    : 'counter-reset' counter_increment_values_1toN
+    | 'counter-reset' 'none'
+    | 'counter-reset' 'inherit'
+    ;
+  cue_after
+    : 'cue-after' cue_after_values
+    | 'cue-after' 'inherit'
+    ;
+  cue_after_values
+    : URI
+    | 'none'
+    ;
+  cue_before
+    : 'cue-before' cue_after_values
+    | 'cue-before' 'inherit'
+    ;
+  cue
+    : 'cue' cue_values
+    | 'cue' 'inherit'
+    ;
+  cue_values
+<% %w{  'cue-before'
+        'cue-after'
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    ;
+  cursor
+    : 'cursor' cursor_values
+    | 'cursor' 'inherit'
+    ;
+  cursor_values
+    : uri_0toN 'auto'
+    | uri_0toN 'crosshair'
+    | uri_0toN 'default'
+    | uri_0toN 'pointer'
+    | uri_0toN 'move'
+    | uri_0toN 'e-resize'
+    | uri_0toN 'ne-resize'
+    | uri_0toN 'nw-resize'
+    | uri_0toN 'n-resize'
+    | uri_0toN 'se-resize'
+    | uri_0toN 'sw-resize'
+    | uri_0toN 's-resize'
+    | uri_0toN 'w-resize'
+    | uri_0toN 'text'
+    | uri_0toN 'wait'
+    | uri_0toN 'help'
+    | uri_0toN 'progress'
+    ;
+  uri_0toN
+    : URI COMMA uri_0toN
+    | URI
+    |
+    ;
+  direction
+    : 'direction' 'ltr'
+    | 'direction' 'rtl'
+    | 'direction' 'inherit'
+    ;
+  display
+    : 'display' display_values
+    : 'display' 'inherit'
+    ;
+  display_values
+    : 'inline'
+    | 'block'
+    | 'list-item'
+    | 'run-in'
+    | 'inline-block'
+    | 'table'
+    | 'inline-table'
+    | 'table-row-group'
+    | 'table-header-group'
+    | 'table-footer-group'
+    | 'table-row'
+    | 'table-column-group'
+    | 'table-column'
+    | 'table-cell'
+    | 'table-caption'
+    | 'none'
     ;
 /* vim: set filetype=racc : */
