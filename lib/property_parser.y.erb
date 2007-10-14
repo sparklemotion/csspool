@@ -1,6 +1,7 @@
 class CSS::SAC::GeneratedProperyParser
 
 token ANGLE COLOR URI PERCENTAGE LENGTH EMS EXS STRING IDENT INTEGER COMMA
+token TIME NUMBER FREQ
 
 rule
   property
@@ -35,9 +36,88 @@ rule
     | cursor
     | direction
     | display
+    | elevation
+    | empty_cells
+    | float
+    | font_family
+    | font_size
+    | font_style
+    | font_variant
+    | font_weight
+    | font
+    | height
+    | left
+    | letter_spacing
+    | line_height
+    | list_style_image
+    | list_style_position
+    | list_style_type
+    | list_style
+    | margin_rltb
+    | margin
+    | max_height
+    | max_width
+    | min_height
+    | min_width
+    | orphans
+    | outline_color
+    | outline_style
+    | outline_width
+    | outline
+    | overflow
+    | padding_trbl
+    | padding
+    | page_break_ab 
+    | page_break_inside
+    | pause_ab
+    | pause
+    | pitch_range
+    | pitch
+    | play_during
+    | position
+    | quotes
+    | richness
+    | right
+    | speak_header
+    | speak_numeral
+    | speak_punctuation
+    | speak
+    | speech_rate
+    | stress
+    | table_layout
+    | text_align
+    | text_decoration
+    | text_indent
+    | text_transform
+    | top
+    | unicode_bidi
+    | vertical_align
+    | visibility
+    | voice_family
+    | volume
+    | white_space
+    | windows
+    | width
+    | word_spacing
+    | z_index
     ;
   percentage
     : PERCENTAGE
+    ;
+  time
+    : TIME
+    ;
+  number
+    : NUMBER
+    ;
+  integer
+    : NUMBER
+    ;
+  frequency
+    : FREQ
+    ;
+  string
+    : STRING
     ;
   length
     : LENGTH
@@ -447,5 +527,636 @@ rule
     | 'table-cell'
     | 'table-caption'
     | 'none'
+    ;
+  elevation
+    : 'elevation' elevation_values
+    | 'elevation' 'inherit'
+    ;
+  elevation_values
+    : ANGLE
+    | 'below'
+    | 'level'
+    | 'above'
+    | 'higher'
+    | 'lower'
+    ;
+  empty_cells
+    : 'empty-cells' 'show'
+    | 'empty-cells' 'hide'
+    | 'empty-cells' 'inherit'
+    ;
+  float
+    : 'float' 'left'
+    | 'float' 'right'
+    | 'float' 'none'
+    | 'float' 'inherit'
+    ;
+  font_family
+    : 'font-family' font_family_values
+    | 'font-family' 'inherit'
+    ;
+  font_family_values
+    : IDENT COMMA font_family_values
+    | IDENT
+    ;
+  font_size
+    : 'font-size' font_size_values
+    | 'font-size' 'inherit'
+    ;
+  font_size_values
+    : absolute_size
+    | relative_size
+    | length
+    | percentage
+    ;
+  absolute_size
+    : 'xx-small'
+    | 'x-small'
+    | 'small'
+    | 'medium'
+    | 'large'
+    | 'x-large'
+    | 'xx-large'
+    ;
+  relative_size
+    : 'larger'
+    | 'smaller'
+    ;
+  font_style
+    : 'font-style' font_style_values
+    | 'font-style' 'inherit'
+    ;
+  font_style_values
+    : 'normal'
+    | 'italic'
+    | 'oblique'
+    ;
+  font_variant
+    : 'font-variant' font_variant_values
+    | 'font-variant' 'inherit'
+    ;
+  font_variant_values
+    : 'normal'
+    | 'small-caps'
+    ;
+  font_weight
+    : 'font-weight' font_weight_values
+    | 'font-weight' 'inherit'
+    ;
+  font_weight_values
+    : 'normal'
+    | 'bold'
+    | 'lighter'
+    | NUMBER
+    ;
+  font
+    : 'font' font_values
+    | 'font' 'inherit'
+    ;
+  font_values
+    : font_style_variant_weight_0or1 font_size_values slash_line_height_0or1
+      font_family_values
+    | 'caption'
+    | 'icon'
+    | 'menu'
+    | 'message-box'
+    | 'small-caption'
+    | 'status-bar'
+    ;
+  font_style_variant_weight_0or1
+<% %w{  font_style_values
+        font_variant_values
+        font_weight_values
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    |
+    ;
+  slash_line_height_0or1
+    : '/' line_height_values
+    |
+    ;
+  height
+    : 'height' bottom_values
+    | 'height' 'inherit'
+    ;
+  left
+    : 'left' bottom_values
+    | 'left' 'inherit'
+    ;
+  letter_spacing
+    : 'letter-spacing' letter_spacing_values
+    | 'letter-spacing' 'inherit'
+    ;
+  letter_spacing_values
+    : 'normal'
+    | length
+    ;
+  line_height
+    : 'line-height' line_height_values
+    | 'line-height' 'inherit'
+    ;
+  line_height_values
+    : 'normal'
+    | number
+    | length
+    | percentage
+    ;
+  list_style_image
+    : 'list-style-image' list_style_image_values
+    | 'list-style-image' 'inherit'
+    ;
+  list_style_image_values
+    : URI
+    | 'none'
+    ;
+  list_style_position
+    : 'list-style-position' list_style_position_values
+    | 'list-style-position' 'inherit'
+    ;
+  list_style_position_values
+    : 'inside'
+    | 'outside'
+    ;
+  list_style_type
+    : 'list-style-type' list_style_type_values
+    | 'list-style-type' 'inherit'
+    ;
+  list_style_type_values
+    : 'disc'
+    | 'circle'
+    | 'square'
+    | 'decimal'
+    | 'decimal-leading-zero'
+    | 'lower-roman'
+    | 'upper-roman'
+    | 'lower-greek'
+    | 'lower-latin'
+    | 'upper-latin'
+    | 'armenian'
+    | 'georgian'
+    | 'lower-alpha'
+    | 'upper-alpha'
+    | 'none'
+    ;
+  list_style
+    : 'list-style' list_style_values
+    | 'list-style' 'inherit'
+    ;
+  list_style_values
+<% %w{  list_style_type_values
+        list_style_position_values
+        list_style_image_values
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    ;
+  margin_rltb
+    : margin_rltb_keys margin_width_values
+    | margin_rltb_keys 'inherit'
+    ;
+  margin_rltb_keys
+    : 'margin-right'
+    | 'margin-left'
+    | 'margin-top'
+    | 'margin-bottom'
+    ;
+  margin
+    : 'margin' margin_width_values_1to4
+    | 'margin' 'inherit'
+    ;
+  margin_width_values
+    : length
+    | percentage
+    | 'auto'
+    ;
+  margin_width_values_1to4
+<% (1..4).to_a.reverse.each_with_index do |num, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= (['margin_width_values'] * num).join(' ') %>
+<% end %>
+    ;
+  max_height
+    : 'max-height' max_height_values
+    | 'max-height' 'inherit'
+    ;
+  max_height_values
+    : length
+    | percentage
+    | 'none'
+    ;
+  max_width
+    : 'max-width' max_height_values
+    | 'max-width' 'inherit'
+    ;
+  min_height
+    : 'min-height' min_height_values
+    | 'min-height' 'inherit'
+    ;
+  min_height_values
+    : length
+    | percentage
+    ;
+  min_width
+    : 'min-width' min_height_values
+    | 'min-width' 'inherit'
+    ;
+  orphans
+    : 'oprphans' integer
+    | 'oprphans' 'inherit'
+    ;
+  outline_color
+    : 'outline-color' outline_color_values
+    | 'outline-color' 'inherit'
+    ;
+  outline_color_values
+    : color
+    | 'invert'
+    ;
+  outline_style
+    : 'outline-style' outline_style_values
+    | 'outline-style' 'inherit'
+    ;
+  outline_style_values
+    : border_style_values
+    ;
+  outline_width
+    : 'outline-width' outline_width_values
+    | 'outline-width' 'inherit'
+    ;
+  outline_width_values
+    : border_width_values
+    ;
+  outline
+    : 'outline' outline_values
+    | 'outline' 'inherit'
+    ;
+  outline_values
+<% %w{  outline_color_values
+        outline_style_values
+        outline_width_values
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    ;
+  overflow
+    : 'overflow' overflow_values
+    | 'overflow' 'inherit'
+    ;
+  overflow_values
+    : 'visible'
+    | 'hidden'
+    | 'scroll'
+    | 'auto'
+    ;
+  padding_trbl
+    : padding_trbl_keys padding_width
+    | padding_trbl_keys 'inherit'
+    ;
+  padding_trbl_keys
+    : 'padding-top'
+    | 'padding-right'
+    | 'padding-bottom'
+    | 'padding-left'
+    ;
+  padding_width
+    : length
+    | percentage
+    ;
+  padding
+    : 'padding' padding_width_1to4
+    | 'padding' 'inherit'
+    ;
+  padding_width_values
+    : length
+    | percentage
+    ;
+  padding_width_1to4
+<% (1..4).to_a.reverse.each_with_index do |num, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= (['padding_width_values'] * num).join(' ') %>
+<% end %>
+    ;
+  page_break_ab
+    : page_break_ab_keys page_break_ab_values
+    : page_break_ab_keys 'inherit'
+    ;
+  page_break_ab_keys
+    : 'page-break-after'
+    | 'page-break-before'
+    ;
+  page_break_ab_values
+    : 'auto'
+    | 'always'
+    | 'avoid'
+    | 'left'
+    | 'right'
+    ;
+  page_break_inside
+    : 'page-break-inside' page_break_inside_values
+    | 'page-break-inside' 'inherit'
+    ;
+  page_break_inside_values
+    : 'avoid'
+    | 'auto'
+    ;
+  pause_ab
+    : pause_ab_keys pause_ab_values
+    | pause_ab_keys 'inherit'
+    ;
+  pause_ab_keys
+    : 'pause-after'
+    | 'pause-before'
+    ;
+  pause_ab_values
+    : time
+    | percentage
+    ;
+  pause
+    : 'pause' pause_values
+    | 'pause' 'inherit'
+    ;
+  pause_values
+<% %w{  time
+        percentage
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    ;
+  pitch_range
+    : 'pitch-range' number
+    | 'pitch-range' 'inherit'
+    ;
+  pitch
+    : 'pitch' pitch_values
+    | 'pitch' 'inherit'
+    ;
+  pitch_values
+    : frequency
+    | 'x-low'
+    | 'low'
+    | 'medium'
+    | 'high'
+    | 'x-high'
+    ;
+  play_during
+    : 'play-during' play_during_values
+    | 'play-during' 'inherit'
+    ;
+  play_during_values
+    : URI mix_or_repeat_0or1
+    | 'auto'
+    | 'none'
+    ;
+  mix_or_repeat_0or1
+<% %w{  'mix'
+        'repeat'
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    |
+    ;
+  position
+    : 'position' position_values
+    | 'position' 'inherit'
+    ;
+  position_values
+    : 'static'
+    | 'relative'
+    | 'absolute'
+    | 'fixed'
+    ;
+  quotes
+    : 'quotes' quotes_values
+    | 'quotes' 'inherit'
+    ;
+  quotes_values
+    : string_pair_1toN
+    | 'none'
+    ;
+  string_pair_1toN
+    : string string string_pair_1toN
+    | string string
+    ;
+  richness
+    : 'richness' number
+    | 'richness' 'inherit'
+    ;
+  right
+    : 'right' bottom_values
+    | 'right' 'inherit'
+    ;
+  speak_header
+    : 'speak-header' speak_header_values
+    | 'speak-header' 'inherit'
+    ;
+  speak_header_values
+    : 'once'
+    | 'always'
+    ;
+  speak_numeral
+    : 'speak-numeral' speak_numeral_values
+    | 'speak-numeral' 'inherit'
+    ;
+  speak_numeral_values
+    : 'digits'
+    | 'continuous'
+    ;
+  speak_punctuation
+    : 'speak-punctuation' speak_punctuation_values
+    | 'speak-punctuation' 'inherit'
+    ;
+  speak_punctuation_values
+    : 'code'
+    | 'none'
+    ;
+  speak
+    : 'speak' speak_values
+    | 'speak' 'inherit'
+    ;
+  speak_values
+    : 'normal'
+    | 'none'
+    | 'spell-out'
+    ;
+  speech_rate
+    : 'speech-rate' speech_rate_values
+    | 'speech-rate' 'inherit'
+    ;
+  speech_rate_values
+    : number
+    | 'x-slow'
+    | 'slow'
+    | 'medium'
+    | 'fast'
+    | 'x-fast'
+    | 'faster'
+    | 'slower'
+    ;
+  stress
+    : 'stress' number
+    | 'stress' 'inherit'
+    ;
+  table_layout
+    : 'table-layout' table_layout_values
+    | 'table-layout' 'inherit'
+    ;
+  table_layout_values
+    : 'auto'
+    | 'fixed'
+    ;
+  text_align
+    : 'text-align' text_align_values
+    | 'text-align' 'inherit'
+    ;
+  text_align_values
+    : 'left'
+    | 'right'
+    | 'center'
+    | 'justify'
+    ;
+  text_decoration
+    : 'text-decoration' text_decoration_values
+    | 'text-decoration' 'inherit'
+    ;
+  text_decoration_values
+<% %w{  'underline'
+        'overline'
+        'line-through'
+        'blink'
+      }.permute_all_combinations.each_with_index do |list, i| %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+<% end %>
+    | 'none'
+    ;
+  text_indent
+    : 'text-indent' text_indent_values
+    | 'text-indent' 'inherit'
+    ;
+  text_indent_values
+    : length
+    | percentage
+    ;
+  text_transform
+    : 'text-transform' text_transform_values
+    | 'text-transform' 'inherit'
+    ;
+  text_transform_values
+    : 'capitalize'
+    | 'uppercase'
+    | 'lowercase'
+    | 'none'
+    ;
+  top
+    : 'top' bottom_values
+    | 'top' 'inherit'
+    ;
+  unicode_bidi
+    : 'unicode-bidi' unicode_bidi_values
+    | 'unicode-bidi' 'inherit'
+    ;
+  unicode_bidi_values
+    : 'normal'
+    | 'embed'
+    | 'bidi-override'
+    ;
+  vertical_align
+    : 'vertical-align' vertical_align_values
+    | 'vertical-align' 'inherit'
+    ;
+  vertical_align_values
+    : 'baseline'
+    | 'sub'
+    | 'super'
+    | 'top'
+    | 'text-top'
+    | 'middle'
+    | 'bottom'
+    | 'text-bottom'
+    | percentage
+    | length
+    ;
+  visibility
+    : 'visibility' visibility_values
+    | 'visibility' 'inherit'
+    ;
+  visibility_values
+    : 'visible'
+    | 'hidden'
+    | 'collapse'
+    ;
+  voice_family
+    : 'voice-family' voice_family_values
+    | 'voice-family' 'inherit'
+    ;
+  voice_family_values
+    : specific_voice_generic_voice_1toN
+    ;
+  specific_voice_generic_voice_1toN
+    : generic_voice COMMA specific_voice_generic_voice_1toN
+    | specific_voice COMMA specific_voice_generic_voice_1toN
+    | generic_voice
+    | specific_voice
+    ;
+  generic_voice
+    : 'male'
+    | 'female'
+    | 'child'
+    ;
+  specific_voice
+    : IDENT
+    | string
+    ;
+  volume
+    : 'volume' volume_values
+    | 'volume' 'inherit'
+    ;
+  volume_values
+    : number
+    | percentage
+    | 'silent'
+    | 'x-soft'
+    | 'soft'
+    | 'medium'
+    | 'loud'
+    | 'x-loud'
+    ;
+   white_space
+    : 'white-space' white_space_values
+    | 'white-space' 'inherit'
+    ;
+  white_space_values
+    : 'normal'
+    | 'pre'
+    | 'nowrap'
+    | 'pre-wrap'
+    | 'pre-line'
+    ;
+  windows
+    : 'windows' integer
+    | 'windows' 'inherit'
+    ;
+  width
+    : 'width' width_values
+    | 'width' 'inherit'
+    ;
+  width_values
+    : length
+    | percentage
+    | 'auto'
+    ;
+  word_spacing
+    : 'word-spacing' word_spacing_values
+    | 'word-spacing' 'inherit'
+    ;
+  word_spacing_values
+    : 'normal'
+    | length
+    ;
+  z_index
+    : 'z-index' z_index_values
+    | 'z-index' 'inherit'
+    ;
+  z_index_values
+    : 'auto'
+    | integer
     ;
 /* vim: set filetype=racc : */
