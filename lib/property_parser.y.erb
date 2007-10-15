@@ -363,6 +363,7 @@ rule
   border
     : 'border' border_values
     | 'border' border_style_values
+    | 'border' 'inherit'
     ;
   border_values
 <% %w{  border_width_values
@@ -383,7 +384,7 @@ rule
     ;
   caption_side
     : 'caption-side' caption_side_values
-    | 'caption_side' 'inherit'
+    | 'caption-side' 'inherit'
     ;
   caption_side_values
     : 'top'
@@ -408,7 +409,7 @@ rule
     | 'auto'
     ;
   shape
-    : 'rect' shape_param shape_param shape_param shape_param
+    : 'rect(' shape_param COMMA shape_param COMMA shape_param COMMA shape_param
     ;
   shape_param
     : length

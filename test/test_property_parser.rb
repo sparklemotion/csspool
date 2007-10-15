@@ -57,15 +57,24 @@ class PropertyParserTest < Test::Unit::TestCase
       'border-left-width' ] => ['thin', 'medium', 'thick', '10px', 'inherit'],
     'border-width' => ['thin', 'medium thin', 'thin medium 10px',
                         'thin thick 10px medium', 'inherit' ],
+    'border'  => [ 'thin', 'thin dotted', 'thin red dotted', 'inherit'],
+    'bottom'  => ['10em', '100%', 'auto', 'inherit'],
+    'caption-side'  => ['top', 'bottom', 'inherit'],
+    'clear' => ['none', 'left', 'right', 'both', 'inherit'],
+    'clip'  => ['auto', 'rect(5px, 40px, 45px, 5px)', 'inherit'],
+    'color' => ['aqua', 'black', 'blue', 'fuchsia', 'gray', 'green', 'lime',
+                'maroon', 'navy', 'olive', 'orange', 'purple', 'red', 'silver',
+                'teal', 'white', 'yellow', '#f00', '#aabbcc'],
+    'content' => ['normal', 'none', '"test"', 'open-quote "foo"',
+                  'url("http://example.com/test.png")', 'inherit'],
   }
 
   @@valid_value_tests.each do |k,v|
     [k].flatten.each do |key|
       define_method :"test_valid_#{key.to_s.gsub(/-/, '_')}" do
         v.each do |value|
-          tok = @tokenizer.tokenize("h1 { #{key}: #{value}; }").find_all { |x|
-            ![:LBRACE, :S].include?(x.name) &&
-              !['h1', '}', ':', ';'].include?(x.value)
+          tok = @tokenizer.tokenize("#{key} #{value}").find_all { |x|
+            ![:S, :delim].include?(x.name)
           }
           result = @property_parser.parse_tokens(tok)
           if result.nil?
