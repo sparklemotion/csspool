@@ -4,6 +4,7 @@ require "css/sac/generated_parser"
 require "css/sac/lexical_unit"
 require "css/sac/parse_exception"
 require "css/sac/tokenizer"
+require "css/sac/property_parser"
 
 module CSS
   module SAC
@@ -28,6 +29,7 @@ module CSS
       end
 
       alias :parse :parse_style_sheet
+      alias :parse_rule :parse_style_sheet
 
       # Returns the parser version.  We return CSS2, but its actually
       # CSS2.1.  No font-face tags.  Sorry.

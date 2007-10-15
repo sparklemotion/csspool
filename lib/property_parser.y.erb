@@ -1,7 +1,7 @@
-class CSS::SAC::GeneratedProperyParser
+class CSS::SAC::GeneratedPropertyParser
 
 token ANGLE COLOR URI PERCENTAGE LENGTH EMS EXS STRING IDENT INTEGER COMMA
-token TIME NUMBER FREQ
+token TIME NUMBER FREQ HASH
 
 rule
   property
@@ -126,6 +126,7 @@ rule
     ;
   color
     : COLOR
+    | HASH
     | 'aqua'
     | 'black'
     | 'blue'
@@ -146,19 +147,27 @@ rule
     ;
   azimuth
     : 'azimuth' ANGLE
-    | 'azimuth' 'left-side'
-    | 'azimuth' 'far-left'
-    | 'azimuth' 'left'
-    | 'azimuth' 'center-left'
-    | 'azimuth' 'center'
-    | 'azimuth' 'center-right'
-    | 'azimuth' 'right'
-    | 'azimuth' 'far-right'
-    | 'azimuth' 'right-side'
-    | 'azimuth' 'behind'
+    | 'azimuth' azimuth_side_and_behind
     | 'azimuth' 'leftwards'
     | 'azimuth' 'rightwards'
     | 'azimuth' 'inherit'
+    ;
+  azimuth_side_and_behind
+    : azimuth_side_values 'behind'
+    | 'behind' azimuth_side_values
+    | azimuth_side_values
+    | 'behind'
+    ;
+  azimuth_side_values
+    : 'left-side'
+    | 'far-left'
+    | 'left'
+    | 'center-left'
+    | 'center'
+    | 'center-right'
+    | 'right'
+    | 'far-right'
+    | 'right-side'
     ;
   background_attachment
     : 'background-attachment' background_attachment_values
@@ -182,7 +191,7 @@ rule
     ;
   background_image_values
     : URI
-    | 'color'
+    | 'none'
     ;
   background_position
     : 'background-position' background_position_values
@@ -190,6 +199,8 @@ rule
     ;
   background_position_values
     : pl_left_center_right optional_pl_top_center_bottom
+    | left_center_right top_center_bottom
+    | top_center_bottom left_center_right
     | left_center_right
     | top_center_bottom
     ;
@@ -312,6 +323,7 @@ rule
     ;
   border_trbl_color_values
     : color
+    | 'transparent'
     ;
   border_trbl_style
     : border_trbl_style_keys border_style_values
