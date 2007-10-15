@@ -86,7 +86,7 @@ class PropertyParserTest < Test::Unit::TestCase
           if result.nil?
             p tok
           end
-          assert(result)
+          assert_not_nil(result)
         end
       end
     end
