@@ -50,7 +50,13 @@ class PropertyParserTest < Test::Unit::TestCase
     [ 'border-top-style',
       'border-right-style',
       'border-bottom-style',
-      'border-left-style' ] => ['none', 'dotted', 'dashed', 'inherit']
+      'border-left-style' ] => ['none', 'dotted', 'dashed', 'inherit'],
+    [ 'border-top-width',
+      'border-right-width',
+      'border-bottom-width',
+      'border-left-width' ] => ['thin', 'medium', 'thick', '10px', 'inherit'],
+    'border-width' => ['thin', 'medium thin', 'thin medium 10px',
+                        'thin thick 10px medium', 'inherit' ],
   }
 
   @@valid_value_tests.each do |k,v|
