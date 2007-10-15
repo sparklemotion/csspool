@@ -67,6 +67,12 @@ class PropertyParserTest < Test::Unit::TestCase
                 'teal', 'white', 'yellow', '#f00', '#aabbcc'],
     'content' => ['normal', 'none', '"test"', 'open-quote "foo"',
                   'url("http://example.com/test.png")', 'inherit'],
+    [ 'counter-increment',
+      'counter-reset' ] => ['foo 10', 'foo', 'none', 'foo 10 bar 20','inherit'],
+    [ 'cue-after',
+      'cue-before' ]  => ['none', 'url("http://tenderlovemaking.com")',
+                          'inherit'],
+    'cue' => ['none url("http://tenderlovemaking.com")', 'none', 'inherit']
   }
 
   @@valid_value_tests.each do |k,v|

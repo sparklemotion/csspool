@@ -455,7 +455,7 @@ rule
     | counter_increment_values
     ;
   counter_increment_values
-    : IDENT INTEGER
+    : IDENT number
     | IDENT
     ;
   counter_reset
@@ -480,11 +480,9 @@ rule
     | 'cue' 'inherit'
     ;
   cue_values
-<% %w{  'cue-before'
-        'cue-after'
-      }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
-<% end %>
+    : cue_after_values cue_after_values
+    | cue_after_values
+    ;
     ;
   cursor
     : 'cursor' cursor_values
