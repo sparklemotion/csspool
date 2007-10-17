@@ -199,7 +199,7 @@ class PropertyParserTest < Test::Unit::TestCase
     [k].flatten.each do |key|
       define_method :"test_valid_#{key.to_s.gsub(/-/, '_')}" do
         v.each do |value|
-          tok = @tokenizer.tokenize("#{key} #{value}")
+          tok = @tokenizer.tokenize("#{key}: #{value}")
           result = @property_parser.parse_tokens(tok)
           if result.nil?
             p tok
