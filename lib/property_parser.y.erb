@@ -519,7 +519,7 @@ rule
     ;
   display
     : 'display' display_values
-    : 'display' 'inherit'
+    | 'display' 'inherit'
     ;
   display_values
     : 'inline'
@@ -563,12 +563,24 @@ rule
     | 'float' 'inherit'
     ;
   font_family
-    : 'font-family' font_family_values
+    : 'font-family' font_family_values_1toN
     | 'font-family' 'inherit'
     ;
+  font_family_values_1toN
+    : font_family_values COMMA font_family_values_1toN
+    | font_family_values
+    ;
   font_family_values
-    : IDENT COMMA font_family_values
-    | IDENT
+    : IDENT
+    | STRING
+    | generic_family
+    ;
+  generic_family
+    : 'serif'
+    | 'sans-serif'
+    | 'cursive'
+    | 'fantasy'
+    | 'monospace'
     ;
   font_size
     : 'font-size' font_size_values
@@ -617,8 +629,9 @@ rule
   font_weight_values
     : 'normal'
     | 'bold'
+    | 'bolder'
     | 'lighter'
-    | NUMBER
+    | NUMBER /* this is too loose. */
     ;
   font
     : 'font' font_values
@@ -626,7 +639,7 @@ rule
     ;
   font_values
     : font_style_variant_weight_0or1 font_size_values slash_line_height_0or1
-      font_family_values
+      font_family_values_1toN
     | 'caption'
     | 'icon'
     | 'menu'
@@ -772,8 +785,8 @@ rule
     | 'min-width' 'inherit'
     ;
   orphans
-    : 'oprphans' integer
-    | 'oprphans' 'inherit'
+    : 'orphans' integer
+    | 'orphans' 'inherit'
     ;
   outline_color
     : 'outline-color' outline_color_values
@@ -848,7 +861,7 @@ rule
     ;
   page_break_ab
     : page_break_ab_keys page_break_ab_values
-    : page_break_ab_keys 'inherit'
+    | page_break_ab_keys 'inherit'
     ;
   page_break_ab_keys
     : 'page-break-after'
@@ -882,15 +895,16 @@ rule
     | percentage
     ;
   pause
-    : 'pause' pause_values
+    : 'pause' pause_values_1or2
     | 'pause' 'inherit'
     ;
+  pause_values_1or2
+    : pause_values pause_values
+    | pause_values
+    ;
   pause_values
-<% %w{  time
-        percentage
-      }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
-<% end %>
+    : time
+    | percentage
     ;
   pitch_range
     : 'pitch-range' number

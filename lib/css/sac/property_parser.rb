@@ -9,13 +9,17 @@ module CSS
       end
 
       def parse_tokens(tokens)
-        @tokens = tokens.map { |token|
+        @tokens = tokens.find_all { |x| x.name != :S }.map { |token|
           if @token_table.has_key?(token.value)
             [token.value, token.value]
           else
-            token.to_racc_token
+            if token.name == :delim && !@token_table.has_key?(token.value)
+              nil
+            else
+              token.to_racc_token
+            end
           end
-        }
+        }.compact
 
         begin
           return do_parse
