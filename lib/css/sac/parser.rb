@@ -16,6 +16,8 @@ module CSS
       def initialize
         @error_handler = ErrorHandler.new
         @document_handler = DocumentHandler.new()
+        @property_parser = PropertyParser.new()
+        @tokenizer = TOKENIZER
       end
 
       def parse_style_sheet(string)
@@ -36,6 +38,9 @@ module CSS
       def parser_version
         "http://www.w3.org/TR/REC-CSS2"
       end
+
+      attr_reader :property_parser
+      attr_reader :tokenizer
 
       private # Bro.
 

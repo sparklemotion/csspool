@@ -131,7 +131,13 @@ rule
     ;
   declaration
     : property ':' s_0toN expr prio_0or1 {
-        self.document_handler.property(val.first, val[3], !val[4].nil?)
+        if value = self.property_parser.parse_tokens(
+          self.tokenizer.tokenize(val.flatten[0..-2].join(''))
+        )
+
+          self.document_handler.property(val.first, val[3], !val[4].nil?)
+          result = value
+        end
       }
     | property ':' s_0toN error s_0toN prio_0or1 {
         error = ParseException.new("Unkown property: \"#{val[0]}: #{val[3]}\"")
@@ -151,38 +157,30 @@ rule
     |
     ;
   expr
-    : term operator expr { result = [val.first, val.last].flatten }
-    | term { result = [val.first] }
+    : term operator expr { result = val }
+    | term
     ;
   term
-    : unary_operator num_or_length {
-        result = val.last
-        if val.first == '-' && !Number::NON_NEGATIVE_UNITS.include?(result.lexical_unit_type)
-          result.float_value = (0 - result.float_value)
-          result.integer_value = (0 - result.integer_value)
-        end
-      }
-    | num_or_length
-    | STRING s_0toN { result = LexicalString.new(val.first) }
-    | IDENT s_0toN { result = LexicalIdent.new(val.first) }
-    | URI s_0toN { result = LexicalURI.new(val.first) }
-    | hexcolor { result = Color.new(val.first) }
+    : unary_operator num_or_length { result = val }
+    | num_or_length { result = val }
+    | STRING s_0toN
+    | IDENT s_0toN
+    | URI s_0toN
+    | hexcolor
     | function
     ;
   num_or_length
-    : NUMBER s_0toN { result = Number.new(val.first, '', :SAC_INTEGER) }
-    | PERCENTAGE s_0toN { result = Number.new(val.first) }
-    | LENGTH s_0toN { result = Number.new(val.first) }
-    | EMS s_0toN { result = Number.new(val.first) }
-    | EXS s_0toN { result = Number.new(val.first) }
-    | ANGLE s_0toN { result = Number.new(val.first) }
-    | TIME s_0toN { result = Number.new(val.first) }
-    | FREQ s_0toN { result = Number.new(val.first) }
+    : NUMBER s_0toN
+    | PERCENTAGE s_0toN
+    | LENGTH s_0toN
+    | EMS s_0toN
+    | EXS s_0toN
+    | ANGLE s_0toN
+    | TIME s_0toN
+    | FREQ s_0toN
     ;
   function
-    : FUNCTION s_0toN expr ')' s_0toN {
-        result = Function.new(val[0], val[2])
-      }
+    : FUNCTION s_0toN expr ')' s_0toN { result = [val[0], val[2], val[3]] }
     ;
   hexcolor
     : HASH s_0toN
