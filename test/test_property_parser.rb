@@ -175,10 +175,19 @@ class PropertyParserTest < Test::Unit::TestCase
     },
 
     [ 'cue-after',
-      'cue-before' ]  => ['none', 'url("http://tenderlovemaking.com")',
+      'cue-before' ]  => {
+      :values => ['none', 'url("http://tenderlovemaking.com")',
                           'inherit'],
-    'cue' => ['none url("http://tenderlovemaking.com")', 'none', 'inherit'],
-    'cursor'  => [ 'url("http://tenderlovemaking.com"), url("http://tenderlovemaking.com") auto', 'inherit' ] +
+      :unit_types => [nil, :SAC_URI, nil],
+    },
+
+    'cue' => {
+      :values => ['none url("http://tenderlovemaking.com")', 'none', 'inherit'],
+      :unit_types => [[nil, :SAC_URI], nil, nil],
+    },
+
+    'cursor'  => {
+      :values => [ 'url("http://tenderlovemaking.com"), url("http://tenderlovemaking.com") auto', 'inherit' ] +
                  [
                   'auto', 'crosshair', 'default', 'pointer', 'move',
                   'e-resize', 'ne-resize', 'nw-resize', 'n-resize',
@@ -186,16 +195,39 @@ class PropertyParserTest < Test::Unit::TestCase
                   'wait', 'help', 'progress' ].map { |x|
                     "url(\"http://tenderlovemaking.com/\") #{x}"
                  },
-    'direction' => [  'ltr', 'rtl', 'inherit' ],
-    'display' => [  'inline', 'block', 'list-item', 'run-in', 'inline-block',
+      :unit_types => [[:SAC_URI, :SAC_URI, nil], nil] + [[:SAC_URI, nil]] * 17,
+    },
+
+    'direction' => {
+      :values => [  'ltr', 'rtl', 'inherit' ],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'display' => {
+      :values => [  'inline', 'block', 'list-item', 'run-in', 'inline-block',
                     'table', 'inline-table', 'table-row-group',
                     'table-header-group', 'table-footer-group', 'table-row',
                     'table-column-group', 'table-column', 'table-cell',
                     'table-caption', 'none', 'inherit' ],
-    'elevation' => ['98deg', 'below', 'level', 'above', 'higher', 'lower',
+      :unit_types => [nil] * 17,
+    },
+
+    'elevation' => {
+      :values => ['98deg', 'below', 'level', 'above', 'higher', 'lower',
                     'inherit'],
-    'empty-cells' => ['show', 'hide', 'inherit'],
-    'float'       => ['left', 'right', 'none', 'inherit'],
+      :unit_types => [:SAC_DEGREE] + [nil] * 6,
+    },
+
+    'empty-cells' => {
+      :values => ['show', 'hide', 'inherit'],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'float'       => {
+      :values => ['left', 'right', 'none', 'inherit'],
+      :unit_types => [nil, nil, nil, nil],
+    },
+
     'font-family' => ['Gill', 'Gill, serif', '"Aaron P", sans-serif',
                       'serif, sans-serif', 'serif', 'sans-serif', 'cursive',
                       'fantasy', 'monospace', 'inherit' ],

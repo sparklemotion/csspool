@@ -29,8 +29,7 @@ rule
     | color_lex
     | content
     | counter_increment_or_reset
-    | cue_after
-    | cue_before
+    | cue_after_or_before
     | cue
     | cursor
     | direction
@@ -99,6 +98,9 @@ rule
     | width
     | word_spacing
     | z_index
+    ;
+  angle
+    : ANGLE { result = CSS::SAC::Number.new(val.first) }
     ;
   percentage
     : PERCENTAGE { result = CSS::SAC::Number.new(val.first) }
@@ -533,63 +535,68 @@ rule
     : ident number { result = val }
     | ident
     ;
-  cue_after
-    : 'cue-after' cue_after_values
-    | 'cue-after' 'inherit'
+  cue_after_or_before
+    : cue_after_or_before_keys cue_after_or_before_values { result = val[1] }
+    | cue_after_or_before_keys inherit { result = val[1] }
     ;
-  cue_after_values
-    : URI
-    | 'none'
+  cue_after_or_before_values
+    : uri
+    | none
     ;
-  cue_before
-    : 'cue-before' cue_after_values
-    | 'cue-before' 'inherit'
+  cue_after_or_before_keys
+    : 'cue-after'
+    | 'cue-before'
     ;
   cue
-    : 'cue' cue_values
-    | 'cue' 'inherit'
+    : 'cue' cue_values { result = val[1] }
+    | 'cue' inherit { result = val[1] }
     ;
   cue_values
-    : cue_after_values cue_after_values
-    | cue_after_values
+    : cue_after_or_before_values cue_after_or_before_values { result = val }
+    | cue_after_or_before_values
     ;
     ;
   cursor
-    : 'cursor' cursor_values
-    | 'cursor' 'inherit'
+    : 'cursor' cursor_values { result = val[1] }
+    | 'cursor' inherit { result = val[1] }
     ;
   cursor_values
-    : uri_0toN 'auto'
-    | uri_0toN 'crosshair'
-    | uri_0toN 'default'
-    | uri_0toN 'pointer'
-    | uri_0toN 'move'
-    | uri_0toN 'e-resize'
-    | uri_0toN 'ne-resize'
-    | uri_0toN 'nw-resize'
-    | uri_0toN 'n-resize'
-    | uri_0toN 'se-resize'
-    | uri_0toN 'sw-resize'
-    | uri_0toN 's-resize'
-    | uri_0toN 'w-resize'
-    | uri_0toN 'text'
-    | uri_0toN 'wait'
-    | uri_0toN 'help'
-    | uri_0toN 'progress'
+    : uri_0toN cursor_values_idents {
+        result = [val[0], LexicalIdent.new(val[1])].flatten.compact
+      }
+    ;
+  cursor_values_idents
+    : 'auto'
+    | 'crosshair'
+    | 'default'
+    | 'pointer'
+    | 'move'
+    | 'e-resize'
+    | 'ne-resize'
+    | 'nw-resize'
+    | 'n-resize'
+    | 'se-resize'
+    | 'sw-resize'
+    | 's-resize'
+    | 'w-resize'
+    | 'text'
+    | 'wait'
+    | 'help'
+    | 'progress'
     ;
   uri_0toN
-    : URI COMMA uri_0toN
-    | URI
+    : uri COMMA uri_0toN { result = [val.first, val.last] }
+    | uri
     |
     ;
   direction
-    : 'direction' 'ltr'
-    | 'direction' 'rtl'
-    | 'direction' 'inherit'
+    : 'direction' 'ltr' { result = LexicalIdent.new(val[1]) }
+    | 'direction' 'rtl' { result = LexicalIdent.new(val[1]) }
+    | 'direction' inherit { result = val[1] }
     ;
   display
-    : 'display' display_values
-    | 'display' 'inherit'
+    : 'display' display_values { result = LexicalIdent.new(val[1]) }
+    | 'display' inherit { result = val[1] }
     ;
   display_values
     : 'inline'
@@ -610,11 +617,14 @@ rule
     | 'none'
     ;
   elevation
-    : 'elevation' elevation_values
-    | 'elevation' 'inherit'
+    : 'elevation' elevation_values { result = val[1] }
+    | 'elevation' inherit { result = val[1] }
     ;
   elevation_values
-    : ANGLE
+    : angle
+    | elevation_values_ident { result = LexicalIdent.new(val.first) }
+    ;
+  elevation_values_ident
     | 'below'
     | 'level'
     | 'above'
@@ -622,15 +632,21 @@ rule
     | 'lower'
     ;
   empty_cells
-    : 'empty-cells' 'show'
-    | 'empty-cells' 'hide'
-    | 'empty-cells' 'inherit'
+    : 'empty-cells' empty_cells_values { result = LexicalIdent.new(val[1]) }
+    | 'empty-cells' inherit { result = val[1] }
+    ;
+  empty_cells_values
+    : 'show'
+    | 'hide'
     ;
   float
-    : 'float' 'left'
-    | 'float' 'right'
-    | 'float' 'none'
-    | 'float' 'inherit'
+    : 'float' float_values { result = LexicalIdent.new(val[1]) }
+    | 'float' inherit { result = val[1] }
+    ;
+  float_values
+    : 'left'
+    | 'right'
+    | 'none'
     ;
   font_family
     : 'font-family' font_family_values_1toN
