@@ -28,8 +28,7 @@ rule
     | clip
     | color_lex
     | content
-    | counter_increment
-    | counter_reset
+    | counter_increment_or_reset
     | cue_after
     | cue_before
     | cue
@@ -102,13 +101,13 @@ rule
     | z_index
     ;
   percentage
-    : PERCENTAGE
+    : PERCENTAGE { result = CSS::SAC::Number.new(val.first) }
     ;
   time
     : TIME
     ;
   number
-    : NUMBER
+    : NUMBER { result = CSS::SAC::Number.new(val.first) }
     ;
   integer
     : NUMBER
@@ -117,10 +116,28 @@ rule
     : FREQ
     ;
   string
-    : STRING
+    : STRING { result = LexicalString.new(val.first) }
+    ;
+  uri
+    : URI { result = LexicalURI.new(val.first) }
     ;
   length
     : length_values { result = CSS::SAC::Number.new(val.first) }
+    ;
+  auto
+    : 'auto' { result = LexicalIdent.new(val.first) }
+    ;
+  inherit
+    : 'inherit' { result = LexicalIdent.new(val.first) }
+    ;
+  ident
+    : IDENT { result = LexicalIdent.new(val.first) }
+    ;
+  none
+    : 'none' { result = LexicalIdent.new(val.first) }
+    ;
+  transparent
+    : 'transparent' { result = LexicalIdent.new(val.first) }
     ;
   length_values
     : LENGTH
@@ -152,15 +169,19 @@ rule
     | 'yellow'
     ;
   azimuth
-    : 'azimuth' ANGLE
-    | 'azimuth' azimuth_side_and_behind
-    | 'azimuth' 'leftwards'
-    | 'azimuth' 'rightwards'
-    | 'azimuth' 'inherit'
+    : 'azimuth' ANGLE { result = CSS::SAC::Number.new(val[1]) }
+    | 'azimuth' azimuth_side_and_behind {
+        result = [val[1]].flatten.map { |x|
+          LexicalIdent.new(x)
+        }
+      }
+    | 'azimuth' 'leftwards' { result = LexicalIdent.new(val[1]) }
+    | 'azimuth' 'rightwards' { result = LexicalIdent.new(val[1]) }
+    | 'azimuth' inherit { result = val[1] }
     ;
   azimuth_side_and_behind
-    : azimuth_side_values 'behind'
-    | 'behind' azimuth_side_values
+    : azimuth_side_values 'behind' { result = val }
+    | 'behind' azimuth_side_values { result = val }
     | azimuth_side_values
     | 'behind'
     ;
@@ -176,74 +197,92 @@ rule
     | 'right-side'
     ;
   background_attachment
-    : 'background-attachment' background_attachment_values
-    | 'background-attachment' 'inherit'
+    : 'background-attachment' background_attachment_values {
+        result = val[1]
+      }
+    | 'background-attachment' inherit { result = val[1] }
     ;
   background_attachment_values
+    : background_attachment_values_ident {
+        result = LexicalIdent.new(val.first)
+      }
+    ;
+  background_attachment_values_ident
     : 'scroll'
     | 'fixed'
     ;
   background_color
-    : 'background-color' background_color_values
-    | 'background-color' 'inherit'
+    : 'background-color' background_color_values { result = val[1] }
+    | 'background-color' inherit { result = val[1] }
     ;
   background_color_values
     : color
-    | 'transparent'
+    | transparent
     ;
   background_image
-    : 'background-image' background_image_values
-    | 'background-image' 'inherit'
+    : 'background-image' background_image_values { result = val[1] }
+    | 'background-image' inherit { result = val[1] }
     ;
   background_image_values
-    : URI
-    | 'none'
+    : uri
+    | 'none' { result = LexicalIdent.new(val.first) }
     ;
   background_position
-    : 'background-position' background_position_values
-    | 'background-position' 'inherit'
+    : 'background-position' background_position_values {
+        result = [val[1]].flatten.compact
+      }
+    | 'background-position' inherit { result = val[1] }
     ;
   background_position_values
-    : pl_left_center_right optional_pl_top_center_bottom
-    | left_center_right top_center_bottom
-    | top_center_bottom left_center_right
+    : pl_left_center_right optional_pl_top_center_bottom { result = val }
+    | left_center_right top_center_bottom { result = val }
+    | top_center_bottom left_center_right { result = val }
     | left_center_right
     | top_center_bottom
     ;
   pl_left_center_right
-    : PERCENTAGE
+    : percentage
     | length
     | left_center_right
     ;
   left_center_right
+    : left_center_right_values { result = LexicalIdent.new(val.first) }
+    ;
+  left_center_right_values
     : 'left'
     | 'center'
     | 'right'
     ;
   optional_pl_top_center_bottom
-    : PERCENTAGE
+    : percentage
     | length
     | top_center_bottom
     |
     ;
   top_center_bottom
+    : top_center_bottom_values { result = LexicalIdent.new(val.first) }
+    ;
+  top_center_bottom_values
     : 'top'
     | 'center'
     | 'bottom'
     ;
   background_repeat
-    : 'background-repeat' background_repeat_values
-    | 'background-repeat' 'inherit'
+    : 'background-repeat' background_repeat_values { result = val[1] }
+    | 'background-repeat' inherit { result = val[1] }
     ;
   background_repeat_values
+    : background_repeat_values_ident { result = LexicalIdent.new(val.first) }
+    ;
+  background_repeat_values_ident
     : 'repeat'
     | 'repeat-x'
     | 'repeat-y'
     | 'no-repeat'
     ;
   background
-    : 'background' background_values
-    | 'background' 'inherit'
+    : 'background' background_values { result = [val[1]].flatten.compact }
+    | 'background' inherit { result = val[1] }
     ;
   background_values
 <% %w{  background_color_values
@@ -252,50 +291,57 @@ rule
         background_attachment_values
         background_position_values
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> { result = val }
 <% end %>
     ;
   border_collapse
-    : 'border-collapse' border_collapse_values
-    | 'border-collapse' 'inherit'
+    : 'border-collapse' border_collapse_values {
+        result = LexicalIdent.new(val[1])
+      }
+    | 'border-collapse' inherit { result = val[1] }
     ; 
   border_collapse_values
     : 'collapse'
     | 'separate'
     ;
   border_color
-    : 'border-color' border_color_values
-    | 'border-color' 'inherit'
+    : 'border-color' border_color_values { result = val[1].flatten }
+    | 'border-color' inherit { result = val[1] }
     ;
   border_color_values
 <% (1..4).to_a.reverse.each_with_index do |num, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= (['color_or_transparent'] * num).join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= (['color_or_transparent'] * num).join(' ') %> { result = val }
 <% end %>
     ;
   color_or_transparent
     : color
-    | 'transparent'
+    | transparent
     ;
   border_spacing
-    : 'border-spacing' border_spacing_values { result = val[1] }
-    | 'border-spacing' 'inherit'
+    : 'border-spacing' border_spacing_values { result = [val[1]].flatten }
+    | 'border-spacing' inherit { result = val[1] }
     ;
   border_spacing_values
-    : length length
+    : length length { result = val }
     | length
     ;
   border_style
-    : 'border-style' border_style_values_1to4
-    | 'border-style' 'inherit'
+    : 'border-style' border_style_values_1to4 { result = [val[1]].flatten }
+    | 'border-style' inherit { result = val[1] }
     ;
   border_style_values_1to4
     : border_style_values border_style_values border_style_values
-      border_style_values
-    | border_style_values border_style_values border_style_values
-    | border_style_values border_style_values
+      border_style_values { result = val }
+    | border_style_values border_style_values border_style_values {
+        result = val
+      }
+    | border_style_values border_style_values { result = val }
     | border_style_values
     ;
   border_style_values
+    : border_style_values_ident { result = LexicalIdent.new(val.first) }
+    ;
+  border_style_values_ident
     : 'none'
     | 'hidden'
     | 'dotted'
@@ -308,8 +354,8 @@ rule
     | 'outset'
     ;
   border_trbl
-    : border_trbl_keys border_values
-    | border_trbl_keys 'inherit'
+    : border_trbl_keys border_values { result = [val[1]].flatten }
+    | border_trbl_keys inherit { result = val[1] }
     ;
   border_trbl_keys
     : 'border-top'
@@ -318,8 +364,8 @@ rule
     | 'border-left'
     ;
   border_trbl_color
-    : border_trbl_color_keys border_trbl_color_values
-    | border_trbl_color_keys 'inherit'
+    : border_trbl_color_keys border_trbl_color_values { result = val[1] }
+    | border_trbl_color_keys inherit { result = val[1] }
     ;
   border_trbl_color_keys
     : 'border-top-color'
@@ -329,11 +375,11 @@ rule
     ;
   border_trbl_color_values
     : color
-    | 'transparent'
+    | transparent
     ;
   border_trbl_style
-    : border_trbl_style_keys border_style_values
-    | border_trbl_style_keys 'inherit'
+    : border_trbl_style_keys border_style_values { result = val[1] }
+    | border_trbl_style_keys inherit { result = val[1] }
     ;
   border_trbl_style_keys
     : 'border-top-style'
@@ -342,8 +388,8 @@ rule
     | 'border-left-style'
     ;
   border_trbl_width
-    : border_trbl_width_keys border_width_values
-    | border_trbl_width_keys 'inherit'
+    : border_trbl_width_keys border_width_values { result = val[1] }
+    | border_trbl_width_keys inherit { result = val[1] }
     ;
   border_trbl_width_keys
     : 'border-top-width'
@@ -352,53 +398,56 @@ rule
     | 'border-left-width'
     ;
   border_width
-    : 'border-width' border_width_values_1to4
-    | 'border-width' 'inherit'
+    : 'border-width' border_width_values_1to4 { result = [val[1]].flatten }
+    | 'border-width' inherit { result = val[1] }
     ;
   border_width_values
+    : border_width_values_ident { result = LexicalIdent.new(val.first) }
+    | length
+    ;
+  border_width_values_ident
     : 'thin'
     | 'medium'
     | 'thick'
-    | length
     ;
   border_width_values_1to4
 <% (1..4).to_a.reverse.each_with_index do |num, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= (['border_width_values'] * num).join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= (['border_width_values'] * num).join(' ') %> { result = val }
 <% end %>
     ;
   border
-    : 'border' border_values
-    | 'border' border_style_values
-    | 'border' 'inherit'
+    : 'border' border_values { result = [val[1]].flatten }
+    | 'border' border_style_values { result = val[1] }
+    | 'border' inherit { result = val[1] }
     ;
   border_values
 <% %w{  border_width_values
         border_style_values
         color
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> { result = val }
 <% end %>
     ;
   bottom
-    : 'bottom' bottom_values
-    | 'bottom' 'inherit'
+    : 'bottom' bottom_values { result = val[1] }
+    | 'bottom' inherit { result = val[1] }
     ;
   bottom_values
     : length
     | percentage
-    | 'auto'
+    | auto
     ;
   caption_side
-    : 'caption-side' caption_side_values
-    | 'caption-side' 'inherit'
+    : 'caption-side' caption_side_values { result = LexicalIdent.new(val[1]) }
+    | 'caption-side' inherit { result = val[1] }
     ;
   caption_side_values
     : 'top'
     | 'bottom'
     ;
   clear
-    : 'clear' clear_values
-    | 'clear' 'inherit'
+    : 'clear' clear_values { result = LexicalIdent.new(val[1]) }
+    | 'clear' inherit { result = val[1] }
     ;
   clear_values
     : 'none'
@@ -408,11 +457,11 @@ rule
     ;
   clip
     : 'clip' clip_values { result = val[1] }
-    | 'clip' 'inherit'
+    | 'clip' inherit { result = val[1] }
     ;
   clip_values
     : shape
-    | 'auto'
+    | auto
     ;
   shape
     : 'rect(' shape_param COMMA shape_param COMMA shape_param COMMA
@@ -429,48 +478,60 @@ rule
     | 'color' 'inherit' { result = LexicalIdent.new(val[1]) }
     ;
   content
-    : 'content' content_values_1toN
-    | 'content' 'inherit'
+    : 'content' content_values_1toN { result = [val[1]].flatten }
+    | 'content' inherit { result = val[1] }
     ;
   content_values_1toN
-    : content_values content_values_1toN
+    : content_values content_values_1toN { result = val }
     | content_values
     ;
   content_values
+    : content_values_ident { result = LexicalIdent.new(val.first) }
+    | string
+    | uri
+    | counter
+    | 'attr(' ident {
+        result = Function.new(val[0], [val[1]])
+      }
+    ;
+  content_values_ident
     : 'none'
     | 'normal'
-    | STRING
-    | URI
-    | counter
     | 'open-quote'
     | 'close-quote'
     | 'no-open-quote'
     | 'no-close-quote'
-    | 'attr' IDENT
     ;
   counter
-    : 'counter' IDENT list_style_type_values
-    | 'counter' IDENT
-    | 'counters' IDENT STRING list_style_type_values
-    | 'counters' IDENT STRING
+    : 'counter(' IDENT list_style_type_values {
+        result = Function.new(val[0], [val[1], val[2]].flatten)
+      }
+    | 'counter(' IDENT { result = Function.new(val[0], [val[1]]) }
+    | 'counters(' IDENT string list_style_type_values {
+        result = Function.new(val[0], [val[1], val[2], val[3]].flatten)
+      }
+    | 'counters(' IDENT string {
+        result = Function.new(val[0], [val[1], val[2]])
+      }
     ;
-  counter_increment
-    : 'counter-increment' counter_increment_values_1toN
-    | 'counter-increment' 'none'
-    | 'counter-increment' 'inherit'
+  counter_increment_or_reset
+    : counter_increment_or_reset_keys counter_increment_values_1toN {
+        result = [val[1]].flatten
+      }
+    | counter_increment_or_reset_keys none { result = val[1] }
+    | counter_increment_or_reset_keys inherit { result = val[1] }
+    ;
+  counter_increment_or_reset_keys
+    : 'counter-increment'
+    | 'counter-reset'
     ;
   counter_increment_values_1toN
-    : counter_increment_values counter_increment_values_1toN
+    : counter_increment_values counter_increment_values_1toN { result = val }
     | counter_increment_values
     ;
   counter_increment_values
-    : IDENT number
-    | IDENT
-    ;
-  counter_reset
-    : 'counter-reset' counter_increment_values_1toN
-    | 'counter-reset' 'none'
-    | 'counter-reset' 'inherit'
+    : ident number { result = val }
+    | ident
     ;
   cue_after
     : 'cue-after' cue_after_values
@@ -761,7 +822,7 @@ rule
   margin_width_values
     : length
     | percentage
-    | 'auto'
+    | auto
     ;
   margin_width_values_1to4
 <% (1..4).to_a.reverse.each_with_index do |num, i| %>

@@ -1,3 +1,10 @@
+require 'test/unit'
+require 'rubygems'
+require 'test/unit'
+require 'flexmock/test_unit'
+require 'flexmock/argument_types'
+require 'css/sac'
+
 class LexicalUnitTest < Test::Unit::TestCase
   def setup
     @sac = CSS::SAC::Parser.new()

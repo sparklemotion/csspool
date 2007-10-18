@@ -17,58 +17,163 @@ class PropertyParserTest < Test::Unit::TestCase
   end
 
   @@valid_value_tests = {
-    :azimuth  =>  [ '10deg', 'left-side', 'far-left', 'left', 'center-left',
+    :azimuth  => {
+      :values =>  [ '10deg', 'left-side', 'far-left', 'left', 'center-left',
                     'right', 'far-right', 'right-side', 'behind', 'left behind',
                     'leftwards', 'rightwards', 'inherit'
                   ],
-    'background-attachment' => [ 'scroll', 'fixed', 'inherit' ],
-    'background-color'  => ['red', '#FFFFFF', 'transparent', 'inherit'],
-    'background-image' => [ 'url("http://example.com/test.png")', 'none',
-                            'inherit'],
-    'background-position' =>  [ '10%', '10px', 'left', 'center', 'right',
+      :unit_types => [ :SAC_DEGREE, nil, nil, nil, nil, nil, nil, nil, nil,
+                      [:SAC_IDENT, :SAC_IDENT], nil, nil, nil ],
+    },
+
+    'background-attachment' => {
+      :values => [ 'scroll', 'fixed', 'inherit' ],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'background-color'  => {
+      :values => ['red', '#FFFFFF', 'transparent', 'inherit'],
+      :unit_types => [nil, :SAC_RGBCOLOR, nil, nil ],
+    },
+
+    'background-image' => {
+      :values => [ 'url("http://example.com/test.png")', 'none', 'inherit'],
+      :unit_types => [ :SAC_URI, nil, nil ],
+    },
+
+    'background-position' => {
+      :values =>  [ '10%', '10px', 'left', 'center', 'right',
                                 '10% 10%', '10% top', 'left center',
                                 'center left', 'inherit'],
-    'background-repeat' => ['repeat', 'repeat-x', 'repeat-y', 'no-repeat',
+      :unit_types => [ :SAC_PERCENTAGE, :SAC_PIXEL, nil, nil, nil,
+        [:SAC_PERCENTAGE, :SAC_PERCENTAGE], [:SAC_PERCENTAGE, nil], [nil,nil],
+        [nil, nil], nil ],
+    },
+
+    'background-repeat' => {
+      :values => ['repeat', 'repeat-x', 'repeat-y', 'no-repeat',
                             'inherit'],
-    'background'  => ['red', 'url("http://example.com/test.png")', 'repeat',
+      :unit_types => [nil, nil, nil, nil, nil],
+    },
+
+    'background'  => {
+      :values => ['red', 'url("http://example.com/test.png")', 'repeat',
                       'scroll', 'left', 'red repeat', 'repeat red'],
-    'border-collapse' => ['collapse', 'separate', 'inherit'],
-    'border-color'  => ['black', '#aaa', 'black red blue green', 'black red',
+      :unit_types => [nil, :SAC_URI, nil,
+        nil, nil, [nil, nil], [nil, nil]],
+    },
+
+    'border-collapse' => {
+      :values => ['collapse', 'separate', 'inherit'],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'border-color'  => {
+      :values => ['black', '#aaa', 'black red blue green', 'black red',
                         'black red #aaa', 'inherit'],
-    'border-spacing'  => ['0.5em', '10px 0.5em', 'inherit'],
-    'border-style'    => ['none', 'hidden dotted', 'dashed solid groove',
+      :unit_types => [nil, :SAC_RGBCOLOR, [nil, nil, nil, nil], [nil, nil],
+        [nil, nil, :SAC_RGBCOLOR], nil],
+    },
+
+    'border-spacing'  => {
+      :values => ['0.5em', '10px 0.5em', 'inherit'],
+      :unit_types => [:SAC_EM, [:SAC_PIXEL, :SAC_EM], nil],
+    },
+
+    'border-style'    => {
+      :values => ['none', 'hidden dotted', 'dashed solid groove',
                           'outset inset ridge double'],
+      :unit_types => [nil, [nil, nil], [nil, nil, nil], [nil,nil,nil,nil]],
+    },
+
     [ 'border-top',
       'border-right',
       'border-bottom',
-      'border-left' ] => ['thin', 'red', 'hidden', '10px dashed',
+      'border-left' ] => {
+      :values => ['thin', 'red', 'hidden', '10px dashed',
                           'medium red dashed', 'inherit'],
+      :unit_types => [nil, nil, nil, [:SAC_PIXEL, nil], [nil, nil, nil], nil],
+    },
+
     [ 'border-top-color',
       'border-right-color',
       'border-bottom-color',
-      'border-left-color' ] => ['#fff', 'green', 'transparent', 'inherit'],
+      'border-left-color' ] => {
+      :values => ['#fff', 'green', 'transparent', 'inherit'],
+      :unit_types => [:SAC_RGBCOLOR, nil, nil, nil],
+    },
+
     [ 'border-top-style',
       'border-right-style',
       'border-bottom-style',
-      'border-left-style' ] => ['none', 'dotted', 'dashed', 'inherit'],
+      'border-left-style' ] => {
+      :values => ['none', 'dotted', 'dashed', 'inherit'],
+      :unit_types => [nil, nil, nil, nil],
+    },
+
     [ 'border-top-width',
       'border-right-width',
       'border-bottom-width',
-      'border-left-width' ] => ['thin', 'medium', 'thick', '10px', 'inherit'],
-    'border-width' => ['thin', 'medium thin', 'thin medium 10px',
+      'border-left-width' ] => {
+      :values => ['thin', 'medium', 'thick', '10px', 'inherit'],
+      :unit_types => [nil, nil, nil, :SAC_PIXEL, nil],
+    },
+
+    'border-width' => {
+      :values => ['thin', 'medium thin', 'thin medium 10px',
                         'thin thick 10px medium', 'inherit' ],
-    'border'  => [ 'thin', 'thin dotted', 'thin red dotted', 'inherit'],
-    'bottom'  => ['10em', '100%', 'auto', 'inherit'],
-    'caption-side'  => ['top', 'bottom', 'inherit'],
-    'clear' => ['none', 'left', 'right', 'both', 'inherit'],
-    'clip'  => ['auto', 'rect(5px, 40px, 45px, 5px)', 'inherit'],
-    'color' => ['aqua', 'black', 'blue', 'fuchsia', 'gray', 'green', 'lime',
+      :unit_types => [nil, [nil, nil], [nil, nil, :SAC_PIXEL],
+        [nil, nil, :SAC_PIXEL, nil], nil],
+    },
+
+    'border'  => {
+      :values => [ 'thin', 'thin dotted', 'thin red dotted', 'inherit'],
+      :unit_types => [nil, [nil, nil], [nil, nil, nil], nil]
+    },
+
+    'bottom'  => {
+      :values => ['10em', '100%', 'auto', 'inherit'],
+      :unit_types => [:SAC_EM, :SAC_PERCENTAGE, nil, nil],
+    },
+
+    'caption-side'  => {
+      :values => ['top', 'bottom', 'inherit'],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'clear' => {
+      :values => ['none', 'left', 'right', 'both', 'inherit'],
+      :unit_types => [nil, nil, nil, nil, nil],
+    },
+
+    'clip'  => {
+      :values => ['auto', 'rect(5px, 40px, 45px, 5px)', 'inherit'],
+      :unit_types => [nil, :SAC_RECT_FUNCTION, nil],
+    },
+
+    'color' => {
+      :values => ['aqua', 'black', 'blue', 'fuchsia', 'gray', 'green', 'lime',
                 'maroon', 'navy', 'olive', 'orange', 'purple', 'red', 'silver',
                 'teal', 'white', 'yellow', '#f00', '#aabbcc'],
-    'content' => ['normal', 'none', '"test"', 'open-quote "foo"',
-                  'url("http://example.com/test.png")', 'inherit'],
+      :unit_types => [nil, nil, nil, nil, nil, nil, nil,
+                      nil, nil, nil, nil, nil, nil, nil,
+                      nil, nil, nil, :SAC_RGBCOLOR, :SAC_RGBCOLOR],
+    },
+
+    'content' => {
+      :values => ['normal', 'none', '"test"', 'open-quote "foo"',
+                  'url("http://example.com/test.png")', 'inherit', 'attr(foo)'],
+      :unit_types => [nil, nil, :SAC_STRING_VALUE, [nil, :SAC_STRING_VALUE],
+        :SAC_URI, nil, :SAC_FUNCTION],
+    },
+
     [ 'counter-increment',
-      'counter-reset' ] => ['foo 10', 'foo', 'none', 'foo 10 bar 20','inherit'],
+      'counter-reset' ] => {
+      :values => ['foo 10', 'foo', 'none', 'foo 10 bar 20','inherit'],
+      :unit_types => [[nil, :SAC_INTEGER], nil, nil,
+        [nil, :SAC_INTEGER, nil, :SAC_INTEGER], nil],
+    },
+
     [ 'cue-after',
       'cue-before' ]  => ['none', 'url("http://tenderlovemaking.com")',
                           'inherit'],
@@ -198,13 +303,20 @@ class PropertyParserTest < Test::Unit::TestCase
   @@valid_value_tests.each do |k,v|
     [k].flatten.each do |key|
       define_method :"test_valid_#{key.to_s.gsub(/-/, '_')}" do
-        v.each do |value|
+        v[:values].each_with_index do |value, i|
           tok = @tokenizer.tokenize("#{key}: #{value}")
           result = @property_parser.parse_tokens(tok)
           if result.nil?
             p tok
           end
           assert_not_nil(result)
+
+          unit_types = [v[:unit_types][i] || :SAC_IDENT].flatten.map { |x|
+            x || :SAC_IDENT
+          }
+          result_types = [result].flatten.map { |x| x.lexical_unit_type }
+
+          assert_equal(unit_types, result_types, tok.inspect)
         end
       end
     end

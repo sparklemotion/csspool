@@ -103,7 +103,8 @@ module CSS
         self.float_value = value.to_f
         self.integer_value = value.to_i
         self.dimension_unit_text = unit.downcase
-        self.lexical_unit_type = UNITS[self.dimension_unit_text]
+        self.lexical_unit_type = UNITS[self.dimension_unit_text] ||
+          (value =~ /\./ ? :SAC_NUMBER : :SAC_INTEGER)
       end
     end
   end
