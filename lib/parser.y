@@ -135,7 +135,9 @@ rule
           self.tokenizer.tokenize(val.flatten[0..-2].join(''))
         )
 
-          self.document_handler.property(val.first, val[3], !val[4].nil?)
+          value = [value].flatten
+
+          self.document_handler.property(val.first, value, !val[4].nil?)
           result = value
         end
       }

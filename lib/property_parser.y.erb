@@ -126,8 +126,11 @@ rule
     ;
   color
     : COLOR
-    | HASH
-    | 'aqua'
+    | HASH { result = Color.new(val.first) }
+    | color_names { result = LexicalIdent.new(val.first) }
+    ;
+  color_names
+    : 'aqua'
     | 'black'
     | 'blue'
     | 'fuchsia'
@@ -401,7 +404,7 @@ rule
     | 'both'
     ;
   clip
-    : 'clip' clip_values
+    : 'clip' clip_values { result = val[1] }
     | 'clip' 'inherit'
     ;
   clip_values
@@ -409,15 +412,18 @@ rule
     | 'auto'
     ;
   shape
-    : 'rect(' shape_param COMMA shape_param COMMA shape_param COMMA shape_param
+    : 'rect(' shape_param COMMA shape_param COMMA shape_param COMMA
+      shape_param {
+        result = Function.new(val[0], [val[1], val[3], val[5], val[7]])
+      }
     ;
   shape_param
     : length
     | 'auto'
     ;
   color_lex
-    : 'color' color
-    | 'color' 'inherit'
+    : 'color' color { result = val[1] }
+    | 'color' 'inherit' { result = LexicalIdent.new(val[1]) }
     ;
   content
     : 'content' content_values_1toN

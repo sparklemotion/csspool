@@ -147,15 +147,15 @@ class ParserTest < Test::Unit::TestCase
 
   def test_properties_function
     flexmock(@sac.document_handler).
-      should_receive(:property).with('shape', on { |list|
+      should_receive(:property).with('clip', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
         list.first.lexical_unit_type == :SAC_RECT_FUNCTION &&
-        list.first.string_value == "rect(aaron)" &&
-        list.first.parameters.length == 1 &&
-        list.first.parameters.map { |x| x.to_s } == ['aaron'] &&
+        list.first.string_value == "rect(1in, 1in, 1in, 2in)" &&
+        list.first.parameters.length == 4 &&
+        list.first.parameters.map { |x| x.to_s } == %w{ 1in 1in 1in 2in } &&
         list.first.integer_value.nil?
     }, false).once
-    @sac.parse('div h1 { shape: rect(1, 1, 1, 1); }')
+    @sac.parse('div h1 { clip: rect(1in, 1in, 1in, 2in); }')
     flexmock_verify
   end
 
