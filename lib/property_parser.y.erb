@@ -120,6 +120,9 @@ rule
     : STRING
     ;
   length
+    : length_values { result = CSS::SAC::Number.new(val.first) }
+    ;
+  length_values
     : LENGTH
     | EMS
     | EXS
@@ -274,7 +277,7 @@ rule
     | 'transparent'
     ;
   border_spacing
-    : 'border-spacing' border_spacing_values
+    : 'border-spacing' border_spacing_values { result = val[1] }
     | 'border-spacing' 'inherit'
     ;
   border_spacing_values

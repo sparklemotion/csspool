@@ -136,12 +136,12 @@ class ParserTest < Test::Unit::TestCase
 
   def test_properties_unary_op
     flexmock(@sac.document_handler).
-      should_receive(:property).with('position', on { |list|
+      should_receive(:property).with('border-spacing', on { |list|
       list.length == 1 && list.first.dimension_unit_text == 'em' &&
         list.first.lexical_unit_type == :SAC_EM &&
         list.first.integer_value == -10
     }, false).once
-    @sac.parse('div h1 { position: -10em; }')
+    @sac.parse('div h1 { border-spacing: -10em; }')
     flexmock_verify
   end
 

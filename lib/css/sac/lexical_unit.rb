@@ -94,7 +94,7 @@ module CSS
       }
       def initialize(value, unit = nil, type = nil)
         if value.is_a?(String)
-          value =~ /^([0-9.]*)(.*)$/
+          value =~ /^(-?[0-9.]*)(.*)$/
           value = $1
           unit  ||= $2
         end

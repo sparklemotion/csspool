@@ -9,16 +9,25 @@ module CSS
       end
 
       def parse_tokens(tokens)
+        negate = false # Nasty hack for unary minus
         @tokens = tokens.find_all { |x| x.name != :S }.map { |token|
-          if @token_table.has_key?(token.value)
-            [token.value, token.value]
-          else
-            if token.name == :delim && !@token_table.has_key?(token.value)
-              nil
-            else
-              token.to_racc_token
-            end
+          tok = if @token_table.has_key?(token.value)
+                  [token.value, token.value]
+                else
+                  if token.name == :delim && !@token_table.has_key?(token.value)
+                    negate = true if token.value == '-'
+                    nil
+                  else
+                    token.to_racc_token
+                  end
+                end
+
+          if negate && tok
+            tok[1] = "-#{tok[1]}"
+            negate = false
           end
+
+          tok
         }.compact
 
         begin
