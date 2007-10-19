@@ -43,8 +43,7 @@ rule
     | font_variant
     | font_weight
     | font
-    | height
-    | left
+    | hlrt
     | letter_spacing
     | line_height
     | list_style_image
@@ -53,10 +52,8 @@ rule
     | list_style
     | margin_rltb
     | margin
-    | max_height
-    | max_width
-    | min_height
-    | min_width
+    | max_height_or_width
+    | min_height_or_width
     | orphans
     | outline_color
     | outline_style
@@ -75,7 +72,6 @@ rule
     | position
     | quotes
     | richness
-    | right
     | speak_header
     | speak_numeral
     | speak_punctuation
@@ -87,7 +83,6 @@ rule
     | text_decoration
     | text_indent
     | text_transform
-    | top
     | unicode_bidi
     | vertical_align
     | visibility
@@ -132,11 +127,17 @@ rule
   inherit
     : 'inherit' { result = LexicalIdent.new(val.first) }
     ;
+  invert
+    : 'invert' { result = LexicalIdent.new(val.first) }
+    ;
   ident
     : IDENT { result = LexicalIdent.new(val.first) }
     ;
   none
     : 'none' { result = LexicalIdent.new(val.first) }
+    ;
+  normal
+    : 'normal' { result = LexicalIdent.new(val.first) }
     ;
   transparent
     : 'transparent' { result = LexicalIdent.new(val.first) }
@@ -490,6 +491,8 @@ rule
   content_values
     : content_values_ident { result = LexicalIdent.new(val.first) }
     | string
+    | normal
+    | none
     | uri
     | counter
     | 'attr(' ident {
@@ -497,9 +500,7 @@ rule
       }
     ;
   content_values_ident
-    : 'none'
-    | 'normal'
-    | 'open-quote'
+    : 'open-quote'
     | 'close-quote'
     | 'no-open-quote'
     | 'no-close-quote'
@@ -649,17 +650,19 @@ rule
     | 'none'
     ;
   font_family
-    : 'font-family' font_family_values_1toN
-    | 'font-family' 'inherit'
+    : 'font-family' font_family_values_1toN { result = [val[1]].flatten }
+    | 'font-family' inherit { result = val[1] }
     ;
   font_family_values_1toN
-    : font_family_values COMMA font_family_values_1toN
+    : font_family_values COMMA font_family_values_1toN {
+        result = [val.first, val.last]
+      }
     | font_family_values
     ;
   font_family_values
-    : IDENT
-    | STRING
-    | generic_family
+    : ident
+    | string
+    | generic_family { result = LexicalIdent.new(val.first) }
     ;
   generic_family
     : 'serif'
@@ -669,12 +672,12 @@ rule
     | 'monospace'
     ;
   font_size
-    : 'font-size' font_size_values
-    | 'font-size' 'inherit'
+    : 'font-size' font_size_values { result = val[1] }
+    | 'font-size' inherit { result = val[1] }
     ;
   font_size_values
-    : absolute_size
-    | relative_size
+    : absolute_size { result = LexicalIdent.new(val.first) }
+    | relative_size { result = LexicalIdent.new(val.first) }
     | length
     | percentage
     ;
@@ -692,41 +695,50 @@ rule
     | 'smaller'
     ;
   font_style
-    : 'font-style' font_style_values
-    | 'font-style' 'inherit'
+    : 'font-style' font_style_values { result = val[1] }
+    | 'font-style' inherit { result = val[1] }
     ;
   font_style_values
-    : 'normal'
-    | 'italic'
+    : font_style_values_ident { result = LexicalIdent.new(val.first) }
+    | normal
+    ;
+  font_style_values_ident
+    : 'italic'
     | 'oblique'
     ;
   font_variant
-    : 'font-variant' font_variant_values
-    | 'font-variant' 'inherit'
+    : 'font-variant' font_variant_values { result = val[1] }
+    | 'font-variant' inherit { result = val[1] }
     ;
   font_variant_values
-    : 'normal'
-    | 'small-caps'
+    : 'small-caps' { result = LexicalIdent.new(val.first) }
+    | normal
     ;
   font_weight
-    : 'font-weight' font_weight_values
-    | 'font-weight' 'inherit'
+    : 'font-weight' font_weight_values { result = val[1] }
+    | 'font-weight' inherit { result = val[1] }
     ;
   font_weight_values
-    : 'normal'
-    | 'bold'
+    : font_weight_values_ident { result = LexicalIdent.new(val.first) }
+    | normal
+    | number /* this is too loose. */
+    ;
+  font_weight_values_ident
+    : 'bold'
     | 'bolder'
     | 'lighter'
-    | NUMBER /* this is too loose. */
     ;
   font
-    : 'font' font_values
-    | 'font' 'inherit'
+    : 'font' font_values { result = [val[1]].flatten.compact }
+    | 'font' inherit { result = val[1] }
     ;
   font_values
     : font_style_variant_weight_0or1 font_size_values slash_line_height_0or1
-      font_family_values_1toN
-    | 'caption'
+      font_family_values_1toN { result = val }
+    | font_values_ident { result = LexicalIdent.new(val.first) }
+    ;
+  font_values_ident
+    : 'caption'
     | 'icon'
     | 'menu'
     | 'message-box'
@@ -738,61 +750,70 @@ rule
         font_variant_values
         font_weight_values
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> { result = val }
 <% end %>
     |
     ;
   slash_line_height_0or1
-    : '/' line_height_values
+    : '/' line_height_values { result = val[1] }
     |
     ;
-  height
-    : 'height' bottom_values
-    | 'height' 'inherit'
+  hlrt
+    : hlrt_keys bottom_values { result = val[1] }
+    | hlrt_keys inherit { result = val[1] }
     ;
-  left
-    : 'left' bottom_values
-    | 'left' 'inherit'
+  hlrt_keys
+    : 'height'
+    | 'left'
+    | 'right'
+    | 'top'
     ;
   letter_spacing
-    : 'letter-spacing' letter_spacing_values
-    | 'letter-spacing' 'inherit'
+    : 'letter-spacing' letter_spacing_values { result = val[1] }
+    | 'letter-spacing' inherit { result = val[1] }
     ;
   letter_spacing_values
-    : 'normal'
+    : normal
     | length
     ;
   line_height
-    : 'line-height' line_height_values
-    | 'line-height' 'inherit'
+    : 'line-height' line_height_values { result = val[1] }
+    | 'line-height' inherit { result = val[1] }
     ;
   line_height_values
-    : 'normal'
+    : normal
     | number
     | length
     | percentage
     ;
   list_style_image
-    : 'list-style-image' list_style_image_values
-    | 'list-style-image' 'inherit'
+    : 'list-style-image' list_style_image_values { result = val[1] }
+    | 'list-style-image' inherit { result = val[1] }
     ;
   list_style_image_values
-    : URI
-    | 'none'
+    : uri
+    | none
     ;
   list_style_position
-    : 'list-style-position' list_style_position_values
-    | 'list-style-position' 'inherit'
+    : 'list-style-position' list_style_position_values { result = val[1] }
+    | 'list-style-position' inherit { result = val[1] }
     ;
   list_style_position_values
+    : list_style_position_ident { result = LexicalIdent.new(val.first) }
+    ;
+  list_style_position_ident
     : 'inside'
     | 'outside'
     ;
   list_style_type
-    : 'list-style-type' list_style_type_values
-    | 'list-style-type' 'inherit'
+    : 'list-style-type' list_style_type_values { result = val[1] }
+    | 'list-style-type' inherit { result = val[1] }
     ;
   list_style_type_values
+    : list_style_type_values_ident { result = LexicalIdent.new(val.first) }
+    | none
+    ;
+  list_style_type_values_ident
     : 'disc'
     | 'circle'
     | 'square'
@@ -807,23 +828,22 @@ rule
     | 'georgian'
     | 'lower-alpha'
     | 'upper-alpha'
-    | 'none'
     ;
   list_style
-    : 'list-style' list_style_values
-    | 'list-style' 'inherit'
+    : 'list-style' list_style_values { result = [val[1]].flatten }
+    | 'list-style' inherit { result = val[1] }
     ;
   list_style_values
 <% %w{  list_style_type_values
         list_style_position_values
         list_style_image_values
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> { result = val }
 <% end %>
     ;
   margin_rltb
-    : margin_rltb_keys margin_width_values
-    | margin_rltb_keys 'inherit'
+    : margin_rltb_keys margin_width_values { result = val[1] }
+    | margin_rltb_keys inherit { result = val[1] }
     ;
   margin_rltb_keys
     : 'margin-right'
@@ -832,8 +852,8 @@ rule
     | 'margin-bottom'
     ;
   margin
-    : 'margin' margin_width_values_1to4
-    | 'margin' 'inherit'
+    : 'margin' margin_width_values_1to4 { result = [val[1]].flatten }
+    | 'margin' inherit { result = val[1] }
     ;
   margin_width_values
     : length
@@ -842,75 +862,75 @@ rule
     ;
   margin_width_values_1to4
 <% (1..4).to_a.reverse.each_with_index do |num, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= (['margin_width_values'] * num).join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= (['margin_width_values'] * num).join(' ') %> { result = val }
 <% end %>
     ;
-  max_height
-    : 'max-height' max_height_values
-    | 'max-height' 'inherit'
+  max_height_or_width
+    : max_height_or_width_keys max_height_values { result = val[1] }
+    | max_height_or_width_keys inherit { result = val[1] }
+    ;
+  max_height_or_width_keys
+    : 'max-height'
+    | 'max-width'
     ;
   max_height_values
     : length
     | percentage
-    | 'none'
+    | none
     ;
-  max_width
-    : 'max-width' max_height_values
-    | 'max-width' 'inherit'
+  min_height_or_width
+    : min_height_or_width_keys min_height_values { result = val[1] }
+    | min_height_or_width_keys inherit { result = val[1] }
     ;
-  min_height
-    : 'min-height' min_height_values
-    | 'min-height' 'inherit'
+  min_height_or_width_keys
+    : 'min-height'
+    | 'min-width'
     ;
   min_height_values
     : length
     | percentage
     ;
-  min_width
-    : 'min-width' min_height_values
-    | 'min-width' 'inherit'
-    ;
   orphans
-    : 'orphans' integer
-    | 'orphans' 'inherit'
+    : 'orphans' integer { result = val[1] }
+    | 'orphans' inherit { result = val[1] }
     ;
   outline_color
-    : 'outline-color' outline_color_values
-    | 'outline-color' 'inherit'
+    : 'outline-color' outline_color_values { result = val[1] }
+    | 'outline-color' inherit { result = val[1] }
     ;
   outline_color_values
     : color
-    | 'invert'
+    | invert
     ;
   outline_style
-    : 'outline-style' outline_style_values
-    | 'outline-style' 'inherit'
+    : 'outline-style' outline_style_values { result = val[1] }
+    | 'outline-style' inherit { result = val[1] }
     ;
   outline_style_values
     : border_style_values
     ;
   outline_width
-    : 'outline-width' outline_width_values
-    | 'outline-width' 'inherit'
+    : 'outline-width' outline_width_values { result = val[1] }
+    | 'outline-width' inherit { result = val[1] }
     ;
   outline_width_values
     : border_width_values
     ;
   outline
-    : 'outline' outline_values
-    | 'outline' 'inherit'
+    : 'outline' outline_values { result = [val[1]].flatten }
+    | 'outline' inherit { result = val[1] }
     ;
   outline_values
 <% %w{  outline_color_values
         outline_style_values
         outline_width_values
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> { result = val }
 <% end %>
     ;
   overflow
-    : 'overflow' overflow_values
-    | 'overflow' 'inherit'
+    : 'overflow' overflow_values { result = LexicalIdent.new(val[1]) }
+    | 'overflow' inherit { result = val[1] }
     ;
   overflow_values
     : 'visible'
@@ -919,8 +939,8 @@ rule
     | 'auto'
     ;
   padding_trbl
-    : padding_trbl_keys padding_width
-    | padding_trbl_keys 'inherit'
+    : padding_trbl_keys padding_width { result = val[1] }
+    | padding_trbl_keys inherit { result = val[1] }
     ;
   padding_trbl_keys
     : 'padding-top'
@@ -1051,10 +1071,6 @@ rule
     : 'richness' number
     | 'richness' 'inherit'
     ;
-  right
-    : 'right' bottom_values
-    | 'right' 'inherit'
-    ;
   speak_header
     : 'speak-header' speak_header_values
     | 'speak-header' 'inherit'
@@ -1155,10 +1171,6 @@ rule
     | 'uppercase'
     | 'lowercase'
     | 'none'
-    ;
-  top
-    : 'top' bottom_values
-    | 'top' 'inherit'
     ;
   unicode_bidi
     : 'unicode-bidi' unicode_bidi_values

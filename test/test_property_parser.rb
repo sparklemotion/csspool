@@ -228,59 +228,162 @@ class PropertyParserTest < Test::Unit::TestCase
       :unit_types => [nil, nil, nil, nil],
     },
 
-    'font-family' => ['Gill', 'Gill, serif', '"Aaron P", sans-serif',
+    'font-family' => {
+      :values => ['Gill', 'Gill, serif', '"Aaron P", sans-serif',
                       'serif, sans-serif', 'serif', 'sans-serif', 'cursive',
                       'fantasy', 'monospace', 'inherit' ],
-    'font-size'   => ['xx-small', 'x-small', 'small', 'medium', 'large',
+      :unit_types => [nil, [nil, nil], [:SAC_STRING_VALUE, nil], [nil, nil],
+                      nil, nil],
+    },
+
+    'font-size'   => {
+      :values => ['xx-small', 'x-small', 'small', 'medium', 'large',
                       'x-large', 'xx-large', 'larger', 'smaller', '10in',
                       '50%', 'inherit'],
-    'font-style'  => ['normal', 'italic', 'oblique', 'inherit'],
-    'font-variant'=> ['normal', 'small-caps', 'inherit'],
-    'font-weight' => ['normal', 'bold', 'bolder', 'lighter', '100', '200',
+      :unit_types => [nil] * 9 + [:SAC_INCH, :SAC_PERCENTAGE, nil]
+    },
+
+    'font-style'  => {
+      :values => ['normal', 'italic', 'oblique', 'inherit'],
+      :unit_types => [nil] * 4,
+    },
+
+    'font-variant'=> {
+      :values => ['normal', 'small-caps', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
+    'font-weight' => {
+      :values => ['normal', 'bold', 'bolder', 'lighter', '100', '200',
                       '300', '400', '500', '600', '700', '800', '900',
                       'inherit'],
-    'font'        => ['x-large/110% "New Century Schoolbook", serif',
+      :unit_types => ([nil] * 4) + ([:SAC_INTEGER] * 9) + [nil],
+    },
+
+    'font'        => {
+      :values => ['x-large/110% "New Century Schoolbook", serif',
                       '12px/14px sans-serif', 'message-box', 'small-caption',
                       '80% sans-serif', 'caption', 'icon', 'menu',
                       'bold italic large Palatino, serif', 'status-bar',
                       'normal small-caps 120%/120% fantasy',
                     ],
-    ['height','left','right','top'] => ['100px', '100%', 'auto', 'inherit'],
-    'letter-spacing'  => ['normal', '100em', 'inherit'],
-    'line-height' => ['normal', '55', '100px', '49%', 'inherit'],
-    'list-style-image'  => ['url("http://tenderlovemaking.com")', 'none',
+      :unit_types => [[nil, :SAC_PERCENTAGE, :SAC_STRING_VALUE, nil],
+        [:SAC_PIXEL, :SAC_PIXEL, nil], nil, nil,
+        [:SAC_PERCENTAGE, nil], nil, nil, nil,
+        [nil] * 5, nil, [nil, nil, :SAC_PERCENTAGE, :SAC_PERCENTAGE, nil]],
+    },
+
+    ['height','left','right','top'] => {
+      :values => ['100px', '100%', 'auto', 'inherit'],
+      :unit_types => [:SAC_PIXEL, :SAC_PERCENTAGE, nil, nil ],
+    },
+
+    'letter-spacing'  => {
+      :values => ['normal', '100em', 'inherit'],
+      :unit_types => [nil, :SAC_EM, nil ],
+    },
+
+    'line-height' => {
+      :values => ['normal', '55', '100px', '49%', 'inherit'],
+      :unit_types => [nil, :SAC_INTEGER, :SAC_PIXEL, :SAC_PERCENTAGE, nil],
+    },
+
+    'list-style-image'  => {
+      :values => ['url("http://tenderlovemaking.com")', 'none',
                             'inherit'],
-    'list-style-position' => ['inside', 'outside', 'inherit'],
-    'list-style-type' => ['disc', 'circle', 'square', 'decimal',
+      :unit_types => [ :SAC_URI, nil, nil ]
+    },
+
+    'list-style-position' => {
+      :values => ['inside', 'outside', 'inherit'],
+      :unit_types => [nil, nil, nil],
+    },
+
+    'list-style-type' => {
+      :values => ['disc', 'circle', 'square', 'decimal',
                           'decimal-leading-zero', 'lower-roman', 'upper-roman',
                           'lower-greek', 'lower-latin', 'upper-latin',
                           'armenian', 'georgian', 'lower-alpha', 'upper-alpha',
                           'none', 'inherit'],
-    'list-style' => ['disc', 'inside', 'url("http://tenderlovemaking.com")',
+      :unit_types => [nil] * 16,
+    },
+
+    'list-style' => {
+      :values => ['disc', 'inside', 'url("http://tenderlovemaking.com")',
                     'disc url("http://tenderlovemaking.com") inside',
                     'inherit'],
+      :unit_types => [nil, nil, :SAC_URI, [nil, :SAC_URI, nil], nil],
+    },
+
     [ 'margin-right',
       'margin-left',
       'margin-top',
-      'margin-bottom' ] => ['100px', '50%', 'auto' ],
-    'margin' => ['auto', '100px', '50%', 'auto 100px', '100px 54% auto',
+      'margin-bottom' ] => {
+      :values => ['100px', '50%', 'auto' ],
+      :unit_types => [:SAC_PIXEL, :SAC_PERCENTAGE, nil],
+    },
+
+    'margin' => {
+      :values => ['auto', '100px', '50%', 'auto 100px', '100px 54% auto',
                 'auto 100px 90px 85px'],
+      :unit_types => [nil, :SAC_PIXEL, :SAC_PERCENTAGE, [nil, :SAC_PIXEL],
+        [:SAC_PIXEL, :SAC_PERCENTAGE, nil],
+        [nil, :SAC_PIXEL, :SAC_PIXEL, :SAC_PIXEL]],
+    },
+
     [ 'max-height',
-      'max-width' ] => ['10px', '60%', 'none', 'inherit'],
+      'max-width' ] => {
+      :values => ['10px', '60%', 'none', 'inherit'],
+      :unit_types => [:SAC_PIXEL, :SAC_PERCENTAGE, nil, nil],
+    },
+
     [ 'min-height',
-      'min-width' ] => ['10px', '60%', 'inherit'],
-    'orphans' => ['1000', 'inherit'],
-    'outline-color' => ['red', '#ddd', '#ab12ff', 'invert', 'inherit'],
-    'outline-style' => ['none', 'hidden', 'dotted', 'dashed', 'solid', 'double',
+      'min-width' ] => {
+      :values => ['10px', '60%', 'inherit'],
+      :unit_types => [:SAC_PIXEL, :SAC_PERCENTAGE, nil],
+    },
+
+    'orphans' => {
+      :values => ['1000', 'inherit'],
+      :unit_types => [:SAC_INTEGER, nil],
+    },
+
+    'outline-color' => {
+      :values => ['red', '#ddd', '#ab12ff', 'invert', 'inherit'],
+      :unit_types => [nil, :SAC_RGBCOLOR, :SAC_RGBCOLOR, nil, nil]
+    },
+
+    'outline-style' => {
+      :values => ['none', 'hidden', 'dotted', 'dashed', 'solid', 'double',
                         'groove', 'ridge', 'inset', 'outset', 'inherit'],
-    'outline-width' => ['thin', 'thick', 'medium', '100in'],
-    'outline' => ['red', 'hidden', '100in', 'hidden 100in red', 'hidden red',
+      :unit_types => [nil] * 11,
+    },
+
+    'outline-width' => {
+      :values => ['thin', 'thick', 'medium', '100in'],
+      :unit_types => [nil, nil, nil, :SAC_INCH],
+    },
+
+    'outline' => {
+      :values => ['red', 'hidden', '100in', 'hidden 100in red', 'hidden red',
                   '100in red', 'inherit'],
-    'overflow'  => ['visible', 'hidden', 'scroll', 'auto', 'inherit'],
+      :unit_types => [nil, nil, :SAC_INCH, [nil, :SAC_INCH, nil], [nil, nil],
+        [:SAC_INCH, nil], nil],
+    },
+
+    'overflow'  => {
+      :values => ['visible', 'hidden', 'scroll', 'auto', 'inherit'],
+      :unit_types => [nil] * 5,
+    },
+
     [ 'padding-top',
       'padding-right',
       'padding-bottom',
-      'padding-left' ]  => [ '100in', '100%', 'inherit' ],
+      'padding-left' ]  => {
+      :values => [ '100in', '100%', 'inherit' ],
+      :unit_types => [ :SAC_INCH, :SAC_PERCENTAGE, nil],
+    },
+
     'padding' => ['100in', '100in 100%', '2em 4in 5ex', '1ex 100% 5% 2%',
                   'inherit' ],
     [ 'page-break-after',

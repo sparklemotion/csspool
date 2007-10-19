@@ -142,6 +142,7 @@ class ParserTest < Test::Unit::TestCase
         list.first.integer_value == -10
     }, false).once
     @sac.parse('div h1 { border-spacing: -10em; }')
+    @sac.parse('div h1 { border: dashed black dotted; }')
     flexmock_verify
   end
 
