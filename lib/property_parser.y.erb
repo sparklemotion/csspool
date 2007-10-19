@@ -101,16 +101,16 @@ rule
     : PERCENTAGE { result = CSS::SAC::Number.new(val.first) }
     ;
   time
-    : TIME
+    : TIME { result = CSS::SAC::Number.new(val.first) }
     ;
   number
     : NUMBER { result = CSS::SAC::Number.new(val.first) }
     ;
   integer
-    : NUMBER
+    : NUMBER { result = CSS::SAC::Number.new(val.first) }
     ;
   frequency
-    : FREQ
+    : FREQ { result = CSS::SAC::Number.new(val.first) }
     ;
   string
     : STRING { result = LexicalString.new(val.first) }
@@ -953,8 +953,8 @@ rule
     | percentage
     ;
   padding
-    : 'padding' padding_width_1to4
-    | 'padding' 'inherit'
+    : 'padding' padding_width_1to4 { result = [val[1]].flatten }
+    | 'padding' inherit { result = val[1] }
     ;
   padding_width_values
     : length
@@ -962,12 +962,14 @@ rule
     ;
   padding_width_1to4
 <% (1..4).to_a.reverse.each_with_index do |num, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= (['padding_width_values'] * num).join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= (['padding_width_values'] * num).join(' ') %> { result = val }
 <% end %>
     ;
   page_break_ab
-    : page_break_ab_keys page_break_ab_values
-    | page_break_ab_keys 'inherit'
+    : page_break_ab_keys page_break_ab_values {
+        result = LexicalIdent.new(val[1])
+      }
+    | page_break_ab_keys inherit { result = val[1] }
     ;
   page_break_ab_keys
     : 'page-break-after'
@@ -981,16 +983,18 @@ rule
     | 'right'
     ;
   page_break_inside
-    : 'page-break-inside' page_break_inside_values
-    | 'page-break-inside' 'inherit'
+    : 'page-break-inside' page_break_inside_values {
+        result = LexicalIdent.new(val[1])
+      }
+    | 'page-break-inside' inherit { result = val[1] }
     ;
   page_break_inside_values
     : 'avoid'
     | 'auto'
     ;
   pause_ab
-    : pause_ab_keys pause_ab_values
-    | pause_ab_keys 'inherit'
+    : pause_ab_keys pause_ab_values { result = val[1] }
+    | pause_ab_keys inherit { result = val[1] }
     ;
   pause_ab_keys
     : 'pause-after'
@@ -1001,11 +1005,11 @@ rule
     | percentage
     ;
   pause
-    : 'pause' pause_values_1or2
-    | 'pause' 'inherit'
+    : 'pause' pause_values_1or2 { result = val[1] }
+    | 'pause' inherit { result = val[1] }
     ;
   pause_values_1or2
-    : pause_values pause_values
+    : pause_values pause_values { result = val }
     | pause_values
     ;
   pause_values
@@ -1013,41 +1017,46 @@ rule
     | percentage
     ;
   pitch_range
-    : 'pitch-range' number
-    | 'pitch-range' 'inherit'
+    : 'pitch-range' number { result = val[1] }
+    | 'pitch-range' inherit { result = val[1] }
     ;
   pitch
-    : 'pitch' pitch_values
-    | 'pitch' 'inherit'
+    : 'pitch' pitch_values { result = val[1] }
+    | 'pitch' inherit { result = val[1] }
     ;
   pitch_values
     : frequency
-    | 'x-low'
+    | pitch_values_ident { result = LexicalIdent.new(val.first) }
+    ;
+  pitch_values_ident
+    : 'x-low'
     | 'low'
     | 'medium'
     | 'high'
     | 'x-high'
     ;
   play_during
-    : 'play-during' play_during_values
-    | 'play-during' 'inherit'
+    : 'play-during' play_during_values { result = val[1] }
+    | 'play-during' inherit { result = val[1] }
     ;
   play_during_values
-    : URI mix_or_repeat_0or1
-    | 'auto'
-    | 'none'
+    : uri mix_or_repeat_0or1 { result = [val].flatten.compact }
+    | auto
+    | none
     ;
   mix_or_repeat_0or1
 <% %w{  'mix'
         'repeat'
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> {
+    result = val.map { |x| LexicalIdent.new(x) }
+  }
 <% end %>
     |
     ;
   position
-    : 'position' position_values
-    | 'position' 'inherit'
+    : 'position' position_values { result = LexicalIdent.new(val[1]) }
+    | 'position' inherit { result = val[1] }
     ;
   position_values
     : 'static'
@@ -1056,48 +1065,50 @@ rule
     | 'fixed'
     ;
   quotes
-    : 'quotes' quotes_values
-    | 'quotes' 'inherit'
+    : 'quotes' quotes_values { result = [val[1]].flatten }
+    | 'quotes' inherit { result = val[1] }
     ;
   quotes_values
     : string_pair_1toN
-    | 'none'
+    | none
     ;
   string_pair_1toN
-    : string string string_pair_1toN
-    | string string
+    : string string string_pair_1toN { result = val }
+    | string string { result = val }
     ;
   richness
-    : 'richness' number
-    | 'richness' 'inherit'
+    : 'richness' number { result = val[1] }
+    | 'richness' inherit { result = val[1] }
     ;
   speak_header
-    : 'speak-header' speak_header_values
-    | 'speak-header' 'inherit'
+    : 'speak-header' speak_header_values { result = LexicalIdent.new(val[1]) }
+    | 'speak-header' inherit { result = val[1] }
     ;
   speak_header_values
     : 'once'
     | 'always'
     ;
   speak_numeral
-    : 'speak-numeral' speak_numeral_values
-    | 'speak-numeral' 'inherit'
+    : 'speak-numeral' speak_numeral_values { result = LexicalIdent.new(val[1]) }
+    | 'speak-numeral' inherit { result = val[1] }
     ;
   speak_numeral_values
     : 'digits'
     | 'continuous'
     ;
   speak_punctuation
-    : 'speak-punctuation' speak_punctuation_values
-    | 'speak-punctuation' 'inherit'
+    : 'speak-punctuation' speak_punctuation_values {
+        result = LexicalIdent.new(val[1])
+      }
+    | 'speak-punctuation' inherit { result = val[1] }
     ;
   speak_punctuation_values
     : 'code'
     | 'none'
     ;
   speak
-    : 'speak' speak_values
-    | 'speak' 'inherit'
+    : 'speak' speak_values { result = LexicalIdent.new(val[1]) }
+    | 'speak' inherit { result = val[1] }
     ;
   speak_values
     : 'normal'
@@ -1105,12 +1116,12 @@ rule
     | 'spell-out'
     ;
   speech_rate
-    : 'speech-rate' speech_rate_values
-    | 'speech-rate' 'inherit'
+    : 'speech-rate' speech_rate_values { result = LexicalIdent.new(val[1]) }
+    | 'speech-rate' number { result = val[1] }
+    | 'speech-rate' inherit { result = val[1] }
     ;
   speech_rate_values
-    : number
-    | 'x-slow'
+    : 'x-slow'
     | 'slow'
     | 'medium'
     | 'fast'
@@ -1119,20 +1130,20 @@ rule
     | 'slower'
     ;
   stress
-    : 'stress' number
-    | 'stress' 'inherit'
+    : 'stress' number { result = val[1] }
+    | 'stress' inherit { result = val[1] }
     ;
   table_layout
-    : 'table-layout' table_layout_values
-    | 'table-layout' 'inherit'
+    : 'table-layout' table_layout_values { result = LexicalIdent.new(val[1]) }
+    | 'table-layout' inherit { result = val[1] }
     ;
   table_layout_values
     : 'auto'
     | 'fixed'
     ;
   text_align
-    : 'text-align' text_align_values
-    | 'text-align' 'inherit'
+    : 'text-align' text_align_values { result = LexicalIdent.new(val[1]) }
+    | 'text-align' inherit { result = val[1] }
     ;
   text_align_values
     : 'left'
@@ -1141,8 +1152,8 @@ rule
     | 'justify'
     ;
   text_decoration
-    : 'text-decoration' text_decoration_values
-    | 'text-decoration' 'inherit'
+    : 'text-decoration' text_decoration_values { result = val[1] }
+    | 'text-decoration' inherit { result = val[1] }
     ;
   text_decoration_values
 <% %w{  'underline'
@@ -1150,13 +1161,15 @@ rule
         'line-through'
         'blink'
       }.permute_all_combinations.each_with_index do |list, i| %>
-    <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %>
+  <%= i == 0 ? ':' : '|' %> <%= list.join(' ') %> {
+    result = val.map { |x| LexicalIdent.new(x) }
+  }
 <% end %>
-    | 'none'
+    | none
     ;
   text_indent
-    : 'text-indent' text_indent_values
-    | 'text-indent' 'inherit'
+    : 'text-indent' text_indent_values { result = val[1] }
+    | 'text-indent' inherit { result = val[1] }
     ;
   text_indent_values
     : length

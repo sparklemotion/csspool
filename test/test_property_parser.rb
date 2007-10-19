@@ -384,38 +384,127 @@ class PropertyParserTest < Test::Unit::TestCase
       :unit_types => [ :SAC_INCH, :SAC_PERCENTAGE, nil],
     },
 
-    'padding' => ['100in', '100in 100%', '2em 4in 5ex', '1ex 100% 5% 2%',
+    'padding' => {
+      :values => ['100in', '100in 100%', '2em 4in 5ex', '1ex 100% 5% 2%',
                   'inherit' ],
+      :unit_types => [:SAC_INCH, [:SAC_INCH, :SAC_PERCENTAGE],
+        [:SAC_EM, :SAC_INCH, :SAC_EX],
+        [:SAC_EX, :SAC_PERCENTAGE, :SAC_PERCENTAGE, :SAC_PERCENTAGE], nil ],
+    },
+
     [ 'page-break-after',
-      'page-break-before' ] => ['auto', 'always', 'avoid', 'left', 'right',
+      'page-break-before' ] => {
+      :values => ['auto', 'always', 'avoid', 'left', 'right',
                                 'inherit'],
-    'page-break-inside' => ['avoid', 'auto', 'inherit'],
+      :unit_types => [nil] * 6,
+    },
+
+    'page-break-inside' => {
+      :values => ['avoid', 'auto', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
     [ 'pause-after',
-      'pause-before' ]  => ['123ms', '321s', '10%', 'inherit'],
-    'pause' => ['10ms 19%', '10s 10ms', '10ms', 'inherit' ],
-    'pitch-range' => ['1000', 'inherit'],
-    'pitch' => ['10Hz', '100kHz', 'x-low', 'low', 'medium', 'high', 'x-high',
+      'pause-before' ]  => {
+      :values => ['123ms', '321s', '10%', 'inherit'],
+      :unit_types => [:SAC_MILLISECOND, :SAC_SECOND, :SAC_PERCENTAGE, nil],
+    },
+
+    'pause' => {
+      :values => ['10ms 19%', '10s 10ms', '10ms', 'inherit' ],
+      :unit_types => [[:SAC_MILLISECOND, :SAC_PERCENTAGE],
+        [:SAC_SECOND, :SAC_MILLISECOND], :SAC_MILLISECOND, nil],
+    },
+
+    'pitch-range' => {
+      :values => ['1000', 'inherit'],
+      :unit_types => [:SAC_INTEGER, nil],
+    },
+
+    'pitch' => {
+      :values => ['10Hz', '100kHz', 'x-low', 'low', 'medium', 'high', 'x-high',
                 'inherit'],
-    'play-during' => ['url("http://tenderlovemaking.com/")',
+      :unit_types => [:SAC_HERTZ, :SAC_KILOHERTZ] + [nil] * 6,
+    },
+
+    'play-during' => {
+      :values => ['url("http://tenderlovemaking.com/")',
                       'url("http://tenderlovemaking.com/") mix',
                       'url("http://tenderlovemaking.com/") repeat mix',
                       'auto', 'none', 'inherit'],
-    'position'  => ['static', 'relative', 'absolute', 'fixed', 'inherit'],
-    'quotes'  => ['"one" "two"', 'none', 'inherit'],
-    'richness'  => ['1000', 'inherit'],
-    'speak-header'  => ['once', 'always', 'inherit'],
-    'speak-numeral' => ['digits', 'continuous', 'inherit'],
-    'speak-punctuation' => ['code', 'none', 'inherit'],
-    'speak' => ['normal', 'none', 'spell-out', 'inherit'],
-    'speech-rate' => ['1000', 'x-slow', 'slow', 'medium', 'fast', 'x-fast',
+      :unit_types => [:SAC_URI, [:SAC_URI, nil], [:SAC_URI, nil, nil],
+        nil, nil, nil],
+    },
+
+    'position'  => {
+      :values => ['static', 'relative', 'absolute', 'fixed', 'inherit'],
+      :unit_types => [nil] * 5,
+    },
+
+    'quotes'  => {
+      :values => ['"one" "two"', 'none', 'inherit'],
+      :unit_types => [[:SAC_STRING_VALUE, :SAC_STRING_VALUE], nil, nil],
+    },
+
+    'richness'  => {
+      :values => ['1000', 'inherit'],
+      :unit_types => [:SAC_INTEGER, nil],
+    },
+
+    'speak-header'  => {
+      :values => ['once', 'always', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
+    'speak-numeral' => {
+      :values => ['digits', 'continuous', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
+    'speak-punctuation' => {
+      :values => ['code', 'none', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
+    'speak' => {
+      :values => ['normal', 'none', 'spell-out', 'inherit'],
+      :unit_types => [nil] * 4,
+    },
+
+    'speech-rate' => {
+      :values => ['1000', 'x-slow', 'slow', 'medium', 'fast', 'x-fast',
                       'faster', 'slower', 'inherit'],
-    'stress'  => ['69', 'inherit'],
-    'table-layout'  => ['auto', 'fixed', 'inherit'],
-    'text-align' => ['left', 'right', 'center', 'justify', 'inherit'],
-    'text-decoration' => ['none', 'underline', 'overline underline',
+      :unit_types => [:SAC_INTEGER] + [nil] * 8,
+    },
+
+    'stress'  => {
+      :values => ['69', 'inherit'],
+      :unit_types => [:SAC_INTEGER, nil],
+    },
+
+    'table-layout'  => {
+      :values => ['auto', 'fixed', 'inherit'],
+      :unit_types => [nil] * 3,
+    },
+
+    'text-align' => {
+      :values => ['left', 'right', 'center', 'justify', 'inherit'],
+      :unit_types => [nil] * 5,
+    },
+
+    'text-decoration' => {
+      :values => ['none', 'underline', 'overline underline',
                           'blink line-through underline',
                           'underline blink overline line-through', 'inherit'],
-    'text-indent' => ['69in', '69%', 'inherit'],
+      :unit_types => [nil, nil, [nil, nil], [nil, nil, nil],
+        [nil, nil, nil, nil], nil],
+    },
+
+    'text-indent' => {
+      :values => ['69in', '69%', 'inherit'],
+      :unit_types => [:SAC_INCH, :SAC_PERCENTAGE, nil],
+    },
+
     'text-transform'  => ['capitalize', 'uppercase', 'lowercase', 'none',
                           'inherit'],
     'unicode-bidi' => ['normal', 'embed', 'bidi-override', 'inherit'],
