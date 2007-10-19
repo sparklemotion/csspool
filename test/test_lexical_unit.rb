@@ -10,6 +10,14 @@ class LexicalUnitTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def test_invalid_property
+    flexmock(@sac.document_handler).
+      should_receive(:property).never
+
+    @sac.parse('h1 { background-color: lakdjsfhlakdhjsf; }')
+    flexmock_verify
+  end
+
   def test_color
     flexmock(@sac.document_handler).
       should_receive(:property).with('background-color', on { |list|
