@@ -505,23 +505,64 @@ class PropertyParserTest < Test::Unit::TestCase
       :unit_types => [:SAC_INCH, :SAC_PERCENTAGE, nil],
     },
 
-    'text-transform'  => ['capitalize', 'uppercase', 'lowercase', 'none',
-                          'inherit'],
-    'unicode-bidi' => ['normal', 'embed', 'bidi-override', 'inherit'],
-    'vertical-align'  => ['baseline', 'sub', 'super', 'top', 'text-top',
+    'text-transform'  => {
+      :values => ['capitalize', 'uppercase', 'lowercase', 'none', 'inherit'],
+      :unit_types => [nil] * 5,
+    },
+
+    'unicode-bidi' => {
+      :values => ['normal', 'embed', 'bidi-override', 'inherit'],
+      :unit_types => [nil] * 4,
+    },
+
+    'vertical-align'  => {
+      :values => ['baseline', 'sub', 'super', 'top', 'text-top',
                           'middle', 'bottom', 'text-bottom', '70%', '100in',
                           'inherit'],
-    'visibility' => ['visible', 'hidden', 'collapse', 'inherit'],
-    'voice-family' => ['romeo, male', 'juliet, female', 'male', 'male, female',
+      :unit_types => ([nil] * 8) + [:SAC_PERCENTAGE, :SAC_INCH, nil],
+    },
+
+    'visibility' => {
+      :values => ['visible', 'hidden', 'collapse', 'inherit'],
+      :unit_types => [nil] * 4,
+    },
+
+    'voice-family' => {
+      :values => ['romeo, male', 'juliet, female', 'male', 'male, female',
                         'inherit'],
-    'volume'  => ['10', '10%', 'silent', 'x-soft', 'soft', 'medium', 'loud',
+      :unit_types => [[nil, nil], [nil, nil], nil, [nil, nil], nil],
+    },
+
+    'volume'  => {
+      :values => ['10', '10%', 'silent', 'x-soft', 'soft', 'medium', 'loud',
                   'x-loud', 'inherit'],
-    'white-space' => ['normal', 'pre', 'nowrap', 'pre-wrap', 'pre-line',
-                      'inherit'],
-    'windows' => ['169', 'inherit'],
-    'width' => ['100em', '50%', 'auto', 'inherit'],
-    'word-spacing'  => ['normal', '10in', 'inherit'],
-    'z-index' => ['auto', '10', 'inherit'],
+      :unit_types => [:SAC_INTEGER, :SAC_PERCENTAGE] + ([nil] * 7),
+    },
+
+    'white-space' => {
+      :values => ['normal', 'pre', 'nowrap', 'pre-wrap', 'pre-line', 'inherit'],
+      :unit_types => [nil] * 6,
+    },
+
+    'windows' => {
+      :values => ['169', 'inherit'],
+      :unit_types => [:SAC_INTEGER, nil],
+    },
+
+    'width' => {
+      :values => ['100em', '50%', 'auto', 'inherit'],
+      :unit_types => [:SAC_EM, :SAC_PERCENTAGE, nil, nil],
+    },
+
+    'word-spacing'  => {
+      :values => ['normal', '10in', 'inherit'],
+      :unit_types => [nil, :SAC_INCH, nil],
+    },
+
+    'z-index' => {
+      :values => ['auto', '10', 'inherit'],
+      :unit_types => [nil, :SAC_INTEGER, nil],
+    },
   }
 
   @@valid_value_tests.each do |k,v|

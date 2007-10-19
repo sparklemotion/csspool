@@ -1176,8 +1176,10 @@ rule
     | percentage
     ;
   text_transform
-    : 'text-transform' text_transform_values
-    | 'text-transform' 'inherit'
+    : 'text-transform' text_transform_values {
+        result = LexicalIdent.new(val[1])
+      }
+    | 'text-transform' inherit { result = val[1] }
     ;
   text_transform_values
     : 'capitalize'
@@ -1186,8 +1188,8 @@ rule
     | 'none'
     ;
   unicode_bidi
-    : 'unicode-bidi' unicode_bidi_values
-    | 'unicode-bidi' 'inherit'
+    : 'unicode-bidi' unicode_bidi_values { result = LexicalIdent.new(val[1]) }
+    | 'unicode-bidi' inherit { result = val[1] }
     ;
   unicode_bidi_values
     : 'normal'
@@ -1195,10 +1197,15 @@ rule
     | 'bidi-override'
     ;
   vertical_align
-    : 'vertical-align' vertical_align_values
-    | 'vertical-align' 'inherit'
+    : 'vertical-align' vertical_align_values { result = val[1] }
+    | 'vertical-align' inherit { result = val[1] }
     ;
   vertical_align_values
+    : vertical_align_values_ident { result = LexicalIdent.new(val[1]) }
+    | percentage
+    | length
+    ;
+  vertical_align_values_ident
     : 'baseline'
     | 'sub'
     | 'super'
@@ -1207,12 +1214,10 @@ rule
     | 'middle'
     | 'bottom'
     | 'text-bottom'
-    | percentage
-    | length
     ;
   visibility
-    : 'visibility' visibility_values
-    | 'visibility' 'inherit'
+    : 'visibility' visibility_values { result = LexicalIdent.new(val[1]) }
+    | 'visibility' inherit { result = val[1] }
     ;
   visibility_values
     : 'visible'
@@ -1220,35 +1225,45 @@ rule
     | 'collapse'
     ;
   voice_family
-    : 'voice-family' voice_family_values
-    | 'voice-family' 'inherit'
+    : 'voice-family' voice_family_values { result = val[1] }
+    | 'voice-family' inherit { result = val[1] }
     ;
   voice_family_values
-    : specific_voice_generic_voice_1toN
+    : specific_voice_generic_voice_1toN { result = val.flatten }
     ;
   specific_voice_generic_voice_1toN
-    : generic_voice COMMA specific_voice_generic_voice_1toN
-    | specific_voice COMMA specific_voice_generic_voice_1toN
+    : generic_voice COMMA specific_voice_generic_voice_1toN {
+        result = [val.first, val.last]
+      }
+    | specific_voice COMMA specific_voice_generic_voice_1toN {
+        result = [val.first, val.last]
+      }
     | generic_voice
     | specific_voice
     ;
   generic_voice
+    : generic_voice_ident { result = LexicalIdent.new(val[1]) }
+    ;
+  generic_voice_ident
     : 'male'
     | 'female'
     | 'child'
     ;
   specific_voice
-    : IDENT
+    : ident
     | string
     ;
   volume
-    : 'volume' volume_values
-    | 'volume' 'inherit'
+    : 'volume' volume_values { result = val[1] }
+    | 'volume' inherit { result = val[1] }
     ;
   volume_values
     : number
     | percentage
-    | 'silent'
+    | volume_values_ident { result = LexicalIdent.new(val[1]) }
+    ;
+  volume_values_ident
+    : 'silent'
     | 'x-soft'
     | 'soft'
     | 'medium'
@@ -1256,8 +1271,8 @@ rule
     | 'x-loud'
     ;
    white_space
-    : 'white-space' white_space_values
-    | 'white-space' 'inherit'
+    : 'white-space' white_space_values { result = LexicalIdent.new(val[1]) }
+    | 'white-space' inherit { result = val[1] }
     ;
   white_space_values
     : 'normal'
@@ -1267,32 +1282,32 @@ rule
     | 'pre-line'
     ;
   windows
-    : 'windows' integer
-    | 'windows' 'inherit'
+    : 'windows' integer { result = val[1] }
+    | 'windows' inherit { result = val[1] }
     ;
   width
-    : 'width' width_values
-    | 'width' 'inherit'
+    : 'width' width_values { result = val[1] }
+    | 'width' inherit { result = val[1] }
     ;
   width_values
     : length
     | percentage
-    | 'auto'
+    | auto
     ;
   word_spacing
-    : 'word-spacing' word_spacing_values
-    | 'word-spacing' 'inherit'
+    : 'word-spacing' word_spacing_values { result = val[1] }
+    | 'word-spacing' inherit { result = val[1] }
     ;
   word_spacing_values
-    : 'normal'
+    : 'normal' { result = LexicalIdent.new(val.first) }
     | length
     ;
   z_index
-    : 'z-index' z_index_values
-    | 'z-index' 'inherit'
+    : 'z-index' z_index_values { result = val[1] }
+    | 'z-index' inherit { result = val[1] }
     ;
   z_index_values
-    : 'auto'
+    : auto
     | integer
     ;
 /* vim: set filetype=racc : */
