@@ -30,7 +30,7 @@ rule
     ;
   import_0toN
     : import s_cdo_cdc_0toN import_0toN
-    : ignorable_at s_cdo_cdc_0toN import_0toN
+    | ignorable_at s_cdo_cdc_0toN import_0toN
     |
     ;
   media

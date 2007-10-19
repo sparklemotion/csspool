@@ -43,6 +43,17 @@ class ParserTest < Test::Unit::TestCase
     flexmock_verify
   end
 
+  def test_multi_import
+    flexmock(@sac.document_handler).
+      should_receive(:import_style).ordered.
+        with('"subs.css"', []).once
+    flexmock(@sac.document_handler).
+      should_receive(:import_style).ordered.
+        with('"subs1.css"', []).once
+    @sac.parse('@import "subs.css"; @import "subs1.css";')
+    flexmock_verify
+  end
+
   def test_media
     flexmock(@sac.document_handler).
       should_receive(:start_media).ordered.
