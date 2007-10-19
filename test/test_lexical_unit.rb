@@ -10,19 +10,6 @@ class LexicalUnitTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
-  def test_function
-    flexmock(@sac.document_handler).
-      should_receive(:property).with('background-color', on { |list|
-      list.length == 1 && list.first.dimension_unit_text.nil? &&
-        list.first.lexical_unit_type == :SAC_FUNCTION &&
-        list.first.string_value == "something(one, two, three)" &&
-        list.first.parameters.length == 3 &&
-        list.first.parameters.map { |x| x.to_s } == ['one','two','three'] &&
-        list.first.integer_value.nil?
-    }, false).once
-    @sac.parse('h1 { background-color: something(one, two, three); }')
-  end
-
   def test_color
     flexmock(@sac.document_handler).
       should_receive(:property).with('background-color', on { |list|
@@ -55,40 +42,40 @@ class LexicalUnitTest < Test::Unit::TestCase
 
   def test_uri
     flexmock(@sac.document_handler).
-      should_receive(:property).with('height', on { |list|
+      should_receive(:property).with('content', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
         list.first.lexical_unit_type == :SAC_URI &&
         list.first.string_value == "\"aaron\"" &&
         list.first.integer_value.nil?
     }, false).once
 
-    @sac.parse('h1 { height: url("aaron"); }')
+    @sac.parse('h1 { content: url("aaron"); }')
     flexmock_verify
   end
 
   def test_string
     flexmock(@sac.document_handler).
-      should_receive(:property).with('height', on { |list|
+      should_receive(:property).with('content', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
         list.first.lexical_unit_type == :SAC_STRING_VALUE &&
         list.first.string_value == "\"aaron\"" &&
         list.first.integer_value.nil?
     }, false).once
 
-    @sac.parse('h1 { height: "aaron"; }')
+    @sac.parse('h1 { content: "aaron"; }')
     flexmock_verify
   end
 
   def test_ident
     flexmock(@sac.document_handler).
-      should_receive(:property).with('height', on { |list|
+      should_receive(:property).with('color', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
         list.first.lexical_unit_type == :SAC_IDENT &&
-        list.first.string_value == "boo" &&
+        list.first.string_value == "black" &&
         list.first.integer_value.nil?
     }, false).once
 
-    @sac.parse('h1 { height: boo; }')
+    @sac.parse('h1 { color: black; }')
     flexmock_verify
   end
 
