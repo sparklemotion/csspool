@@ -580,8 +580,14 @@ class PropertyParserTest < Test::Unit::TestCase
             x || :SAC_IDENT
           }
           result_types = [result].flatten.map { |x| x.lexical_unit_type }
+          result_strings = [result].flatten.map { |x| x.to_s }
 
           assert_equal(unit_types, result_types, tok.inspect)
+          assert(result_strings.length > 0)
+          result_strings.each do |rs|
+            assert(rs)
+            assert_match(rs, value)
+          end
         end
       end
     end

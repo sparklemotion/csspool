@@ -1201,7 +1201,7 @@ rule
     | 'vertical-align' inherit { result = val[1] }
     ;
   vertical_align_values
-    : vertical_align_values_ident { result = LexicalIdent.new(val[1]) }
+    : vertical_align_values_ident { result = LexicalIdent.new(val.first) }
     | percentage
     | length
     ;
@@ -1242,7 +1242,7 @@ rule
     | specific_voice
     ;
   generic_voice
-    : generic_voice_ident { result = LexicalIdent.new(val[1]) }
+    : generic_voice_ident { result = LexicalIdent.new(val.first) }
     ;
   generic_voice_ident
     : 'male'
@@ -1260,7 +1260,7 @@ rule
   volume_values
     : number
     | percentage
-    | volume_values_ident { result = LexicalIdent.new(val[1]) }
+    | volume_values_ident { result = LexicalIdent.new(val.first) }
     ;
   volume_values_ident
     : 'silent'
