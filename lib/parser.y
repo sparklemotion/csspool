@@ -118,20 +118,21 @@ rule
     | simple_selector
     ;
   class
-    : '.' IDENT
+    : '.' IDENT { result = AttributeCondition.class_condition(val[1]) }
     ;
   element_name
-    : IDENT | '*'
+    : IDENT { result = ElementSelector.new(val.first) }
+    | '*' { result = SimpleSelector.new() }
     ;
   attrib
     : '[' s_0toN IDENT s_0toN attrib_val_0or1 ']' {
-        result = AttributeCondition.new(val[2], val[4])
+        result = AttributeCondition.attribute_condition(val[2], val[4])
       }
     ;
   pseudo
     : ':' FUNCTION s_0toN IDENT s_0toN ')'
     | ':' FUNCTION s_0toN s_0toN ')'
-    | ':' IDENT
+    | ':' IDENT { AttributeCondition.pseudo_class_condition(val[1]) }
     ;
   declaration
     : property ':' s_0toN expr prio_0or1 {
@@ -196,14 +197,17 @@ rule
     |
     ;
   hcap_1toN
-    : HASH hcap_1toN { result = val }
+    : attribute_id hcap_1toN { result = val }
     | class hcap_1toN { result = val }
     | attrib hcap_1toN { result = val }
     | pseudo hcap_1toN { result = val }
-    | HASH
+    | attribute_id
     | class
     | attrib
     | pseudo
+    ;
+  attribute_id
+    : HASH { result = AttributeCondition.attribute_id(val.first) }
     ;
   attrib_val_0or1
     : eql_incl_dash s_0toN IDENT s_0toN { result = [val.first, val[2]] }

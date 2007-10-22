@@ -1,7 +1,7 @@
 module CSS
   module SAC
     class Condition
-      attr_reader :condition_type
+      attr_accessor :condition_type
     end
   end
 end

@@ -7,6 +7,7 @@ require "css/sac/tokenizer"
 require "css/sac/property_parser"
 require "css/sac/condition"
 require "css/sac/attribute_condition"
+require "css/sac/selectors"
 
 module CSS
   module SAC

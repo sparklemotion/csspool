@@ -59,8 +59,7 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:start_media).ordered.
         with(['print', 'tv']).once
     flexmock(@sac.document_handler).
-      should_receive(:start_selector).ordered.
-      with(['h1']).once
+      should_receive(:start_selector).ordered.once
     flexmock(@sac.document_handler).
       should_receive(:property).ordered.with('color', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
@@ -69,8 +68,7 @@ class ParserTest < Test::Unit::TestCase
         list.first.integer_value.nil?
     }, false).once
     flexmock(@sac.document_handler).
-      should_receive(:end_selector).ordered.
-      with(['h1']).once
+      should_receive(:end_selector).ordered.once
     flexmock(@sac.document_handler).
       should_receive(:end_media).ordered.
         with(['print', 'tv']).once
@@ -109,8 +107,7 @@ class ParserTest < Test::Unit::TestCase
     flexmock(@sac.document_handler).
       should_receive(:start_document).ordered.once
     flexmock(@sac.document_handler).
-      should_receive(:start_selector).ordered.
-      with(['div', ' ', 'h1']).once
+      should_receive(:start_selector).ordered.once
     flexmock(@sac.document_handler).
       should_receive(:property).ordered.with('color', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
@@ -119,8 +116,7 @@ class ParserTest < Test::Unit::TestCase
         list.first.integer_value.nil?
     }, false).once
     flexmock(@sac.document_handler).
-      should_receive(:end_selector).ordered.
-      with(['div', ' ', 'h1']).once
+      should_receive(:end_selector).ordered.once
     flexmock(@sac.document_handler).
       should_receive(:end_document).ordered.once
 
