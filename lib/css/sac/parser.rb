@@ -5,6 +5,8 @@ require "css/sac/lexical_unit"
 require "css/sac/parse_exception"
 require "css/sac/tokenizer"
 require "css/sac/property_parser"
+require "css/sac/condition"
+require "css/sac/attribute_condition"
 
 module CSS
   module SAC

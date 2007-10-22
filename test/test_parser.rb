@@ -110,7 +110,7 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:start_document).ordered.once
     flexmock(@sac.document_handler).
       should_receive(:start_selector).ordered.
-      with(['div', 'h1']).once
+      with(['div', ' ', 'h1']).once
     flexmock(@sac.document_handler).
       should_receive(:property).ordered.with('color', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
@@ -120,7 +120,7 @@ class ParserTest < Test::Unit::TestCase
     }, false).once
     flexmock(@sac.document_handler).
       should_receive(:end_selector).ordered.
-      with(['div', 'h1']).once
+      with(['div', ' ', 'h1']).once
     flexmock(@sac.document_handler).
       should_receive(:end_document).ordered.once
 

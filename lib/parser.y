@@ -90,7 +90,7 @@ rule
     ;
   ruleset
     : selector_1toN LBRACE s_0toN declaration_1toN '}' s_0toN {
-        self.document_handler.end_selector(val.first)
+        self.document_handler.end_selector([val.first].flatten.compact)
       }
     ;
   ruleset_0toN
@@ -99,21 +99,23 @@ rule
     |
     ;
   selector
-    : simple_selector_1toN { self.document_handler.start_selector(val.first) }
+    : simple_selector_1toN {
+        self.document_handler.start_selector([val.first].flatten.compact)
+      }
     ;
   selector_1toN
     : selector COMMA s_0toN selector_1toN
     | selector
     ;
   simple_selector
-    : element_name hcap_0toN
+    : element_name hcap_0toN { result = val }
     | hcap_1toN
     ;
   simple_selector_1toN
     : simple_selector combinator simple_selector_1toN {
-        result = [val.first, val.last].flatten
+        result = val.flatten
       }
-    | simple_selector { result = [val.first] }
+    | simple_selector
     ;
   class
     : '.' IDENT
@@ -122,7 +124,9 @@ rule
     : IDENT | '*'
     ;
   attrib
-    : '[' s_0toN IDENT s_0toN attrib_val_0or1 ']'
+    : '[' s_0toN IDENT s_0toN attrib_val_0or1 ']' {
+        result = AttributeCondition.new(val[2], val[4])
+      }
     ;
   pseudo
     : ':' FUNCTION s_0toN IDENT s_0toN ')'
@@ -192,18 +196,18 @@ rule
     |
     ;
   hcap_1toN
-    : HASH hcap_1toN
-    | class hcap_1toN
-    | attrib hcap_1toN
-    | pseudo hcap_1toN
+    : HASH hcap_1toN { result = val }
+    | class hcap_1toN { result = val }
+    | attrib hcap_1toN { result = val }
+    | pseudo hcap_1toN { result = val }
     | HASH
     | class
     | attrib
     | pseudo
     ;
   attrib_val_0or1
-    : eql_incl_dash s_0toN IDENT s_0toN
-    | eql_incl_dash s_0toN STRING s_0toN
+    : eql_incl_dash s_0toN IDENT s_0toN { result = [val.first, val[2]] }
+    | eql_incl_dash s_0toN STRING s_0toN { result = [val.first, val[2]] }
     |
     ;
   eql_incl_dash
