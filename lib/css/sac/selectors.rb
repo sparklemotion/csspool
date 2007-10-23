@@ -20,5 +20,15 @@ module CSS
         @local_name = name
       end
     end
+
+    class ConditionalSelector < SimpleSelector
+      attr_accessor :condition, :simple_selector
+      alias :selector :simple_selector
+
+      def initialize(selector, condition)
+        @condition  = condition
+        @selector   = selector
+      end
+    end
   end
 end

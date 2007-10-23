@@ -14,4 +14,8 @@ class SelectorParserTest < Test::Unit::TestCase
   def test_attribute
     @sac.parse('h1[foo="warning"] { }')
   end
+
+  def test_attribute
+    @sac.parse('#foo#bar#baz { }')
+  end
 end

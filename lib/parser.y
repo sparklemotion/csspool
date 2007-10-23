@@ -108,8 +108,16 @@ rule
     | selector
     ;
   simple_selector
-    : element_name hcap_0toN { result = val }
-    | hcap_1toN
+    : element_name hcap_0toN {
+        result =  if val[1].nil?
+                    val.first
+                  else
+                    ConditionalSelector.new(val.first, val[1])
+                  end
+      }
+    | hcap_1toN {
+        result = ConditionalSelector.new(SimpleSelector.new(), val.first)
+      }
     ;
   simple_selector_1toN
     : simple_selector combinator simple_selector_1toN {
@@ -197,7 +205,9 @@ rule
     |
     ;
   hcap_1toN
-    : attribute_id hcap_1toN { result = val }
+    : attribute_id hcap_1toN {
+        result = CombinatorCondition.new(val[0], val[1])
+      }
     | class hcap_1toN { result = val }
     | attrib hcap_1toN { result = val }
     | pseudo hcap_1toN { result = val }
