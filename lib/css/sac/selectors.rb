@@ -27,7 +27,8 @@ module CSS
 
       def initialize(selector, condition)
         @condition  = condition
-        @selector   = selector
+        @simple_selector   = selector
+        @selector_type = :SAC_CONDITIONAL_SELECTOR
       end
     end
   end

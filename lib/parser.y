@@ -116,7 +116,7 @@ rule
                   end
       }
     | hcap_1toN {
-        result = ConditionalSelector.new(SimpleSelector.new(), val.first)
+        result = ConditionalSelector.new(nil, val.first)
       }
     ;
   simple_selector_1toN
@@ -140,7 +140,7 @@ rule
   pseudo
     : ':' FUNCTION s_0toN IDENT s_0toN ')'
     | ':' FUNCTION s_0toN s_0toN ')'
-    | ':' IDENT { AttributeCondition.pseudo_class_condition(val[1]) }
+    | ':' IDENT { result = AttributeCondition.pseudo_class_condition(val[1]) }
     ;
   declaration
     : property ':' s_0toN expr prio_0or1 {
@@ -208,9 +208,15 @@ rule
     : attribute_id hcap_1toN {
         result = CombinatorCondition.new(val[0], val[1])
       }
-    | class hcap_1toN { result = val }
-    | attrib hcap_1toN { result = val }
-    | pseudo hcap_1toN { result = val }
+    | class hcap_1toN {
+        result = CombinatorCondition.new(val[0], val[1])
+      }
+    | attrib hcap_1toN {
+        result = CombinatorCondition.new(val[0], val[1])
+      }
+    | pseudo hcap_1toN {
+        result = CombinatorCondition.new(val[0], val[1])
+      }
     | attribute_id
     | class
     | attrib
