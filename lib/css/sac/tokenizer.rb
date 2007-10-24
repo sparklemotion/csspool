@@ -6,7 +6,6 @@ module CSS
     class Tokenizer
       def initialize(&block)
         @lexemes = []
-        @sc_lexemes = []
         @macros = {}
 
         # http://www.w3.org/TR/CSS21/syndata.html
@@ -50,32 +49,32 @@ module CSS
 
         token(:S, /#{m(:s)}/)
 
-        sc_token :COMMENT do |patterns|
+        token :COMMENT do |patterns|
           patterns << /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
           patterns << /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
         end
 
-        sc_token(:CDO, /<!--/)
-        sc_token(:CDC, /-->/)
-        sc_token(:INCLUDES, /~=/)
-        sc_token(:DASHMATCH, /\|=/)
-        sc_token(:LBRACE, /#{m(:w)}\{/)
-        sc_token(:PLUS, /#{m(:w)}\+/)
-        sc_token(:GREATER, /#{m(:w)}>/)
-        sc_token(:COMMA, /#{m(:w)},/)
-        sc_token(:STRING, /#{m(:string)}/)
-        sc_token(:INVALID, /#{m(:invalid)}/)
+        token(:CDO, /<!--/)
+        token(:CDC, /-->/)
+        token(:INCLUDES, /~=/)
+        token(:DASHMATCH, /\|=/)
+        token(:LBRACE, /#{m(:w)}\{/)
+        token(:PLUS, /#{m(:w)}\+/)
+        token(:GREATER, /#{m(:w)}>/)
+        token(:COMMA, /#{m(:w)},/)
+        token(:STRING, /#{m(:string)}/)
+        token(:INVALID, /#{m(:invalid)}/)
         token(:IDENT, /#{m(:ident)}/)
-        sc_token(:HASH, /##{m(:name)}/)
-        sc_token(:IMPORT_SYM, /@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/)
-        sc_token(:PAGE_SYM, /@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/)
-        sc_token(:MEDIA_SYM, /@#{m(:M)}#{m(:E)}#{m(:D)}#{m(:I)}#{m(:A)}/)
-        sc_token(:CHARSET_SYM, /@#{m(:C)}#{m(:H)}#{m(:A)}#{m(:R)}#{m(:S)}#{m(:E)}#{m(:T)}/)
-        sc_token(:IMPORTANT_SYM, /!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/)
-        sc_token(:EMS, /#{m(:num)}#{m(:E)}#{m(:M)}/)
-        sc_token(:EXS, /#{m(:num)}#{m(:E)}#{m(:X)}/)
+        token(:HASH, /##{m(:name)}/)
+        token(:IMPORT_SYM, /@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/)
+        token(:PAGE_SYM, /@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/)
+        token(:MEDIA_SYM, /@#{m(:M)}#{m(:E)}#{m(:D)}#{m(:I)}#{m(:A)}/)
+        token(:CHARSET_SYM, /@#{m(:C)}#{m(:H)}#{m(:A)}#{m(:R)}#{m(:S)}#{m(:E)}#{m(:T)}/)
+        token(:IMPORTANT_SYM, /!(#{m(:w)}|#{m(:comment)})*#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}#{m(:A)}#{m(:N)}#{m(:T)}/)
+        token(:EMS, /#{m(:num)}#{m(:E)}#{m(:M)}/)
+        token(:EXS, /#{m(:num)}#{m(:E)}#{m(:X)}/)
 
-        sc_token :LENGTH do |patterns|
+        token :LENGTH do |patterns|
           patterns << /#{m(:num)}#{m(:P)}#{m(:X)}/
           patterns << /#{m(:num)}#{m(:C)}#{m(:M)}/
           patterns << /#{m(:num)}#{m(:M)}#{m(:M)}/
@@ -84,32 +83,32 @@ module CSS
           patterns << /#{m(:num)}#{m(:P)}#{m(:C)}/
         end
 
-        sc_token :ANGLE do |patterns|
+        token :ANGLE do |patterns|
           patterns << /#{m(:num)}#{m(:D)}#{m(:E)}#{m(:G)}/
           patterns << /#{m(:num)}#{m(:R)}#{m(:A)}#{m(:D)}/
           patterns << /#{m(:num)}#{m(:G)}#{m(:R)}#{m(:A)}#{m(:D)}/
         end
 
-        sc_token :TIME do |patterns|
+        token :TIME do |patterns|
           patterns << /#{m(:num)}#{m(:M)}#{m(:S)}/
           patterns << /#{m(:num)}#{m(:S)}/
         end
 
-        sc_token :FREQ do |patterns|
+        token :FREQ do |patterns|
           patterns << /#{m(:num)}#{m(:H)}#{m(:Z)}/
           patterns << /#{m(:num)}#{m(:K)}#{m(:H)}#{m(:Z)}/
         end
 
-        token(:DIMENSION, /#{m(:num)}#{m(:ident)}/) # This is an unknown unit
-        sc_token(:PERCENTAGE, /#{m(:num)}%/)
+        token(:DIMENSION, /#{m(:num)}#{m(:ident)}/)
+        token(:PERCENTAGE, /#{m(:num)}%/)
         token(:NUMBER, /#{m(:num)}/)
 
-        sc_token :URI do |patterns|
+        token :URI do |patterns|
           patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
           patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
         end
 
-        sc_token(:FUNCTION, /#{m(:ident)}\(/)
+        token(:FUNCTION, /#{m(:ident)}\(/)
 
         yield self if block_given?
       end
@@ -119,30 +118,16 @@ module CSS
         pos = 0
         
         until string.empty?
-          token = nil
-          @sc_lexemes.each { |lexeme|
-            match = lexeme.pattern.match(string)
-            if match && match.pre_match.length == 0 && match.to_s.length > 0
-              token = Token.new(lexeme.name, match.to_s, pos)
-              break
-            end
-          }
+          matches = @lexemes.collect do |lexeme|
+            match = lexeme.pattern.match(string) || next
+            Token.new(lexeme.name, match.to_s, pos)
+          end.compact.sort_by { |x| x.value.length }
 
-          unless token
-            matches = @lexemes.collect do |lexeme|
-              match = lexeme.pattern.match(string) || next
-              next unless match.pre_match.length == 0 && match.to_s.length > 0
-              Token.new(lexeme.name, match.to_s, pos)
-            end.compact.sort_by { |x| x.value.length }
-
-            token = 
-              if matches.empty?
-                DelimiterToken.new(/^./.match(string).to_s, pos)
-              else
-                matches.last
-              end
+          if matches.empty?
+            matches << DelimiterToken.new(/^./.match(string).to_s, pos)
           end
 
+          token = matches.last
           tokens << token
           string = string.slice(Range.new(token.value.length, -1))
           pos += token.value.length
@@ -155,11 +140,6 @@ module CSS
       
       def token(name, pattern=nil, &block)
         @lexemes << Lexeme.new(name, pattern, &block)
-      end
-
-      # Short circuit tokens
-      def sc_token(name, pattern=nil, &block)
-        @sc_lexemes << Lexeme.new(name, pattern, &block)
       end
 
       def macro(name, regex=nil)

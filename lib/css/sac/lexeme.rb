@@ -18,8 +18,8 @@ module CSS
         
         patterns.collect! do |pattern|
           source = pattern.source
-          source = "^#{source}" unless source[0] == ?^
-          Regexp.new(source, Regexp::IGNORECASE)
+          source = "\\A#{source}"
+          Regexp.new(source, Regexp::IGNORECASE + Regexp::MULTILINE)
         end
 
         @pattern = Regexp.union(*patterns)
