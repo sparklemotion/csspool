@@ -47,24 +47,24 @@ module CSS
         macro(:X, /(x|\\0{0,4}(58|78)(\r\n|[ \t\r\n\f])?|\\x)/ )
         macro(:Z, /(z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z)/ )
 
-        token(:S, /#{m(:s)}/)
-
         token :COMMENT do |patterns|
           patterns << /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
           patterns << /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
         end
 
-        token(:CDO, /<!--/)
-        token(:CDC, /-->/)
-        token(:INCLUDES, /~=/)
-        token(:DASHMATCH, /\|=/)
         token(:LBRACE, /#{m(:w)}\{/)
         token(:PLUS, /#{m(:w)}\+/)
         token(:GREATER, /#{m(:w)}>/)
         token(:COMMA, /#{m(:w)},/)
+
+        token(:S, /#{m(:s)}/)
+
+        token(:CDO, /<!--/)
+        token(:CDC, /-->/)
+        token(:INCLUDES, /~=/)
+        token(:DASHMATCH, /\|=/)
         token(:STRING, /#{m(:string)}/)
         token(:INVALID, /#{m(:invalid)}/)
-        token(:IDENT, /#{m(:ident)}/)
         token(:HASH, /##{m(:name)}/)
         token(:IMPORT_SYM, /@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/)
         token(:PAGE_SYM, /@#{m(:P)}#{m(:A)}#{m(:G)}#{m(:E)}/)
@@ -109,6 +109,7 @@ module CSS
         end
 
         token(:FUNCTION, /#{m(:ident)}\(/)
+        token(:IDENT, /#{m(:ident)}/)
 
         yield self if block_given?
       end
@@ -118,16 +119,17 @@ module CSS
         pos = 0
         
         until string.empty?
-          matches = @lexemes.collect do |lexeme|
-            match = lexeme.pattern.match(string) || next
-            Token.new(lexeme.name, match.to_s, pos)
-          end.compact.sort_by { |x| x.value.length }
-
-          if matches.empty?
-            matches << DelimiterToken.new(/^./.match(string).to_s, pos)
+          token = nil
+          @lexemes.each do |lexeme|
+            match = lexeme.pattern.match(string)
+            if match
+              token = Token.new(lexeme.name, match.to_s, pos)
+              break
+            end
           end
 
-          token = matches.last
+          token ||= DelimiterToken.new(/^./.match(string).to_s, pos)
+
           tokens << token
           string = string.slice(Range.new(token.value.length, -1))
           pos += token.value.length
