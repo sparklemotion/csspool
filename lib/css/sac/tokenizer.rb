@@ -59,6 +59,14 @@ module CSS
 
         token(:S, /#{m(:s)}/)
 
+        token :URI do |patterns|
+          patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
+          patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
+        end
+
+        token(:FUNCTION, /#{m(:ident)}\(/)
+        token(:IDENT, /#{m(:ident)}/)
+
         token(:CDO, /<!--/)
         token(:CDC, /-->/)
         token(:INCLUDES, /~=/)
@@ -103,13 +111,6 @@ module CSS
         token(:PERCENTAGE, /#{m(:num)}%/)
         token(:NUMBER, /#{m(:num)}/)
 
-        token :URI do |patterns|
-          patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
-          patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
-        end
-
-        token(:FUNCTION, /#{m(:ident)}\(/)
-        token(:IDENT, /#{m(:ident)}/)
 
         yield self if block_given?
       end
