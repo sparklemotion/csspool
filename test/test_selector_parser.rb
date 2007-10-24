@@ -13,6 +13,57 @@ class SelectorParserTest < Test::Unit::TestCase
     end
   end
 
+  def test_adjacent
+    @sac.parse('h1 + h2 { }')
+    selectors = @sac.document_handler.selectors
+    assert_equal(1, selectors.length)
+
+    sel = selectors.first
+    assert_equal(:SAC_DIRECT_ADJACENT_SELECTOR, sel.selector_type)
+
+    sibling = sel.sibling_selector
+    assert sibling
+    assert_equal('h2', sibling.local_name)
+
+    first = sel.selector
+    assert first
+    assert_equal('h1', first.local_name)
+  end
+
+  def test_descendant_non_direct
+    @sac.parse('h1  h2 { }')
+    selectors = @sac.document_handler.selectors
+    assert_equal(1, selectors.length)
+
+    sel = selectors.first
+    assert_equal(:SAC_DESCENDANT_SELECTOR, sel.selector_type)
+
+    ancestor = sel.ancestor_selector
+    assert ancestor
+    assert_equal('h1', ancestor.local_name)
+
+    me = sel.selector
+    assert me
+    assert_equal('h2', me.local_name)
+  end
+
+  def test_descendant_direct
+    @sac.parse('h1 > h2 { }')
+    selectors = @sac.document_handler.selectors
+    assert_equal(1, selectors.length)
+
+    sel = selectors.first
+    assert_equal(:SAC_CHILD_SELECTOR, sel.selector_type)
+
+    ancestor = sel.ancestor_selector
+    assert ancestor
+    assert_equal('h1', ancestor.local_name)
+
+    me = sel.selector
+    assert me
+    assert_equal('h2', me.local_name)
+  end
+
   @@single_selector_tests = {
     :id => {
       :css   => '#foo { }',

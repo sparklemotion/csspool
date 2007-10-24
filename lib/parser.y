@@ -78,9 +78,9 @@ rule
     |
     ;
   combinator
-    : PLUS s_0toN
-    | GREATER s_0toN
-    | S
+    : PLUS s_0toN { result = :SAC_DIRECT_ADJACENT_SELECTOR }
+    | GREATER s_0toN { result = :SAC_CHILD_SELECTOR }
+    | S { result = :SAC_DESCENDANT_SELECTOR }
     ;
   unary_operator
     : '-' | PLUS
@@ -121,7 +121,12 @@ rule
     ;
   simple_selector_1toN
     : simple_selector combinator simple_selector_1toN {
-        result = val.flatten
+        result =
+          if val[1] == :SAC_DIRECT_ADJACENT_SELECTOR
+            SiblingSelector.new(val.first, val[2])
+          else
+            DescendantSelector.new(val.first, val[2], val[1])
+          end
       }
     | simple_selector
     ;

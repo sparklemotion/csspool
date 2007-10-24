@@ -31,5 +31,25 @@ module CSS
         @selector_type = :SAC_CONDITIONAL_SELECTOR
       end
     end
+
+    class DescendantSelector < SimpleSelector
+      attr_accessor :ancestor_selector, :simple_selector
+      alias :selector :simple_selector
+
+      def initialize(ancestor, selector, type)
+        @ancestor_selector = ancestor
+        @simple_selector = selector
+        @selector_type = type
+      end
+    end
+
+    class SiblingSelector < SimpleSelector
+      attr_accessor :selector, :sibling_selector
+      def initialize(selector, sibling)
+        @selector = selector
+        @sibling_selector = sibling
+        @selector_type = :SAC_DIRECT_ADJACENT_SELECTOR
+      end
+    end
   end
 end
