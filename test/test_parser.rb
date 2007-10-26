@@ -12,6 +12,11 @@ class ParserTest < Test::Unit::TestCase
     @sac = CSS::SAC::Parser.new()
   end
 
+  def teardown
+    flexmock_verify
+    flexmock_close
+  end
+
   def test_page
     flexmock(@sac.document_handler).
       should_receive(:start_page).ordered.
@@ -90,6 +95,10 @@ class ParserTest < Test::Unit::TestCase
       should_receive(:comment).ordered.
       with("/* sup bro */").once
     @sac.parse('/* sup bro */')
+  end
+
+  def test_weird
+    @sac.parse('#topnav legend  { display: none; }')
   end
 
   def test_ignorable_at_rule

@@ -78,6 +78,11 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal(15, tokens.length)
   end
   
+  def test_two_strings
+    tokens = @tokenizer.tokenize('"one" "two"')
+    assert_equal(3, tokens.length)
+  end
+
   def test_at_font_face
     tokens = @tokenizer.tokenize('@font-face { color: black; }')
     assert_equal(11, tokens.length)

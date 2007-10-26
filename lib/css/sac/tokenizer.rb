@@ -115,25 +115,56 @@ module CSS
         yield self if block_given?
       end
       
-      def tokenize(string)
+      def tokenize(input_data)
         tokens = []
         pos = 0
-        
-        until string.empty?
-          token = nil
-          @lexemes.each do |lexeme|
-            match = lexeme.pattern.match(string)
-            if match
-              token = Token.new(lexeme.name, match.to_s, pos)
-              break
+
+        comments = input_data.scan(/\/\*[^*]*\*+\//m)
+        non_comments = input_data.split(/\/\*[^*]*\*+\//m)
+
+        # Handle a small edge case, if our CSS is *only* comments,
+        # the split, zip, scan trick won't work
+        if non_comments.length == 0
+          tokens = comments.map { |x| Token.new(:COMMENT, x, nil) }
+        else
+          non_comments.zip(comments).each do |non_comment, comment|
+            non_comment.split(/url\([^\)]*\)/m).zip(
+              non_comment.scan(/url\([^\)]*\)/m)
+            ).each do |non_url, url|
+              non_url.split(/"[^"]*"|'[^']*'/m).zip(
+                non_url.scan(/"[^"]*"|'[^']*'/m)
+              ).each do |non_string, quoted_string|
+                if non_string.length > 0 && non_string =~ /\A\s*\Z/m
+                  tokens << Token.new(:S, non_string, nil)
+                else
+                  non_string.split(/[ \t\r\n\f]*(?![{}+>]*)/m).zip(
+                    non_string.scan(/[ \t\r\n\f]*(?![{}+>]*)/m)
+                  ).each do |string, whitespace|
+                    until string.empty?
+                      token = nil
+                      @lexemes.each do |lexeme|
+                        match = lexeme.pattern.match(string)
+                        if match
+                          token = Token.new(lexeme.name, match.to_s, pos)
+                          break
+                        end
+                      end
+
+                      token ||= DelimiterToken.new(/^./.match(string).to_s, pos)
+
+                      tokens << token
+                      string = string.slice(Range.new(token.value.length, -1))
+                      pos += token.value.length
+                    end
+                    tokens << Token.new(:S, whitespace, nil) if whitespace
+                  end
+                end
+                tokens << Token.new(:STRING, quoted_string, nil) if quoted_string
+              end
+              tokens << Token.new(:URI, url, nil) if url
             end
+            tokens << Token.new(:COMMENT, comment, nil) if comment
           end
-
-          token ||= DelimiterToken.new(/^./.match(string).to_s, pos)
-
-          tokens << token
-          string = string.slice(Range.new(token.value.length, -1))
-          pos += token.value.length
         end
         
         tokens
