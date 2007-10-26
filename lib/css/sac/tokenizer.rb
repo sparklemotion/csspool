@@ -47,10 +47,10 @@ module CSS
         macro(:X, /(x|\\0{0,4}(58|78)(\r\n|[ \t\r\n\f])?|\\x)/ )
         macro(:Z, /(z|\\0{0,4}(5a|7a)(\r\n|[ \t\r\n\f])?|\\z)/ )
 
-        token :COMMENT do |patterns|
-          patterns << /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
-          patterns << /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
-        end
+        #token :COMMENT do |patterns|
+        #  patterns << /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
+        #  patterns << /#{m(:s)}+\/\*[^*]*\*+([^\/*][^*]*\*+)*\//
+        #end
 
         token(:LBRACE, /#{m(:w)}\{/)
         token(:PLUS, /#{m(:w)}\+/)
@@ -59,10 +59,10 @@ module CSS
 
         token(:S, /#{m(:s)}/)
 
-        token :URI do |patterns|
-          patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
-          patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
-        end
+        #token :URI do |patterns|
+        #  patterns << /url\(#{m(:w)}#{m(:string)}#{m(:w)}\)/
+        #  patterns << /url\(#{m(:w)}#{m(:url)}#{m(:w)}\)/
+        #end
 
         token(:FUNCTION, /#{m(:ident)}\(/)
         token(:IDENT, /#{m(:ident)}/)
@@ -71,7 +71,7 @@ module CSS
         token(:CDC, /-->/)
         token(:INCLUDES, /~=/)
         token(:DASHMATCH, /\|=/)
-        token(:STRING, /#{m(:string)}/)
+        #token(:STRING, /#{m(:string)}/)
         token(:INVALID, /#{m(:invalid)}/)
         token(:HASH, /##{m(:name)}/)
         token(:IMPORT_SYM, /@#{m(:I)}#{m(:M)}#{m(:P)}#{m(:O)}#{m(:R)}#{m(:T)}/)
