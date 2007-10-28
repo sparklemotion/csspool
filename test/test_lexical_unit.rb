@@ -1,9 +1,4 @@
-require 'test/unit'
-require 'rubygems'
-require 'test/unit'
-require 'flexmock/test_unit'
-require 'flexmock/argument_types'
-require 'css/sac'
+require File.dirname(__FILE__) + "/helper"
 
 class LexicalUnitTest < Test::Unit::TestCase
   def setup

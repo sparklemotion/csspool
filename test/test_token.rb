@@ -1,11 +1,7 @@
-require 'rubygems'
-require 'test/unit'
-
-require "css/sac/token"
+require File.dirname(__FILE__) + "/helper"
 
 class TokenTest < Test::Unit::TestCase
   include CSS
-  #include CSS::SAC # grrr annoying: SAC should be a module
 
   def test_tokens_have_a_name_value_and_position
     token = SAC::Token.new(:foo, "bar", 14)

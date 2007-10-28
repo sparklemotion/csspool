@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + "/helper"
+
 class ParseErrorTest < Test::Unit::TestCase
   def setup
     @sac = CSS::SAC::Parser.new()

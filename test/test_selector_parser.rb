@@ -1,6 +1,4 @@
-require 'rubygems'
-require 'test/unit'
-require 'css/sac/parser'
+require File.dirname(__FILE__) + "/helper"
 
 class SelectorParserTest < Test::Unit::TestCase
   def setup

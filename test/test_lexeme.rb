@@ -1,7 +1,4 @@
-require 'rubygems'
-require 'test/unit'
-
-require "css/sac/lexeme"
+require File.dirname(__FILE__) + "/helper"
 
 class LexemeTest < Test::Unit::TestCase
   include CSS

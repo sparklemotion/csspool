@@ -1,7 +1,4 @@
-require "rubygems"
-require "test/unit"
-
-require "css/sac/tokenizer"
+require File.dirname(__FILE__) + "/helper"
 
 class TokenizerTest < Test::Unit::TestCase
   include CSS::SAC
