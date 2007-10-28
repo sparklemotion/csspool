@@ -53,6 +53,7 @@ file GENERATED_PROPERTY_PARSER => "lib/property_parser.y.erb" do |t|
   sh "racc -o #{t.name} lib/property_parser.y"
 end
 
+task :parser => [GENERATED_PARSER, GENERATED_PROPERTY_PARSER]
+
 # make sure the parser's up-to-date when we test
-Rake::Task[:test].prerequisites << GENERATED_PARSER
-Rake::Task[:test].prerequisites << GENERATED_PROPERTY_PARSER
+Rake::Task[:test].prerequisites << :parser
