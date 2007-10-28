@@ -1,9 +1,6 @@
 require File.dirname(__FILE__) + "/helper"
 
 class ParserTest < Test::Unit::TestCase
-  include FlexMock::TestCase
-  include FlexMock::ArgumentTypes
-
   def setup
     @sac = CSS::SAC::Parser.new()
   end
