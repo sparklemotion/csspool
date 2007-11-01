@@ -177,4 +177,23 @@ class ParseErrorTest < Test::Unit::TestCase
     }
     h1 { color: blue }')
   end
+
+  def test_extra_semi
+    flexmock(@sac.document_handler).
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "red" &&
+        list.first.integer_value.nil?
+    }, false).once
+    flexmock(@sac.document_handler).
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "green" &&
+        list.first.integer_value.nil?
+    }, false).once
+    @sac.parse('p { color:red;  ; color:green }')
+    flexmock_verify
+  end
 end

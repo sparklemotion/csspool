@@ -39,7 +39,6 @@ rule
   import_0toN
     : import s_cdo_cdc_0toN import_0toN
     | ignorable_at s_cdo_cdc_0toN import_0toN
-    | ignorable_at error s_cdo_cdc_0toN import_0toN { puts "asdfasdfasdf" }
     |
     ;
   media
@@ -50,6 +49,7 @@ rule
   medium_rollup
     : medium_1toN LBRACE { self.document_handler.start_media(val.first) }
     | medium_1toN error LBRACE {
+        yyerrok
         self.document_handler.start_media(val.first)
         error = ParseException.new("Error near: \"#{val[0]}\"")
         self.error_handler.error(error)
@@ -113,14 +113,23 @@ rule
     |
     ;
   selector
-    : simple_selector_1toN {
+    : simple_selector_1toN { result = val.flatten }
+    ;
+  selector_1toN
+    : selector_list s_0toN LBRACE {
+        self.document_handler.start_selector([val.first].flatten.compact)
+      }
+    | selector error LBRACE {
+        yyerrok
+        self.document_handler.start_selector([val.first].flatten.compact)
+      }
+    | selector LBRACE {
         self.document_handler.start_selector([val.first].flatten.compact)
       }
     ;
-  selector_1toN
-    : selector COMMA s_0toN selector_1toN LBRACE
-    | selector error LBRACE
-    | selector LBRACE
+  selector_list
+    : selector COMMA s_0toN selector_list { result = [val[0], val[3]] }
+    | selector
     ;
   simple_selector
     : element_name hcap_0toN {
@@ -183,6 +192,7 @@ rule
         self.error_handler.error(error)
       }
     | declaration
+    | s_0toN ';' s_0toN declaration_0toN
     |
     ;
   prio
@@ -217,7 +227,7 @@ rule
     ;
   function
     : FUNCTION s_0toN expr ')' s_0toN { result = [val[0], val[2], val[3]] }
-    | FUNCTION s_0toN expr error ')' s_0toN { result = [val[0], val[2], val[3]] }
+    | FUNCTION s_0toN expr error ')' s_0toN { yyerrok; result = [val[0], val[2], val[3]] }
     ;
   hexcolor
     : HASH s_0toN
