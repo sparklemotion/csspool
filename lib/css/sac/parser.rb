@@ -60,10 +60,12 @@ module CSS
         pairs['['] = ']'
         pairs['('] = ')'
 
+        error_value.strip!
         if pairs[error_value]
           logger.warn("Eliminating pair for: #{error_value}") if logger
           loop {
             token = next_token
+            eliminate_pair_matches(token[1])
             logger.warn("Eliminated token: #{token.join(' ')}") if logger
             break if token[1] == pairs[error_value]
           }
@@ -71,11 +73,11 @@ module CSS
       end
 
       def on_error(error_token_id, error_value, value_stack)
-        eliminate_pair_matches(error_value)
         if logger
           logger.error(token_to_str(error_token_id))
           logger.error("error value: #{error_value}")
         end
+        eliminate_pair_matches(error_value)
       end
 
       def next_token

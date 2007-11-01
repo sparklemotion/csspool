@@ -23,14 +23,23 @@ rule
         self.document_handler.import_style(val[2], val[4] || [])
       }
     ;
+  optional_ignorable_at
+    : ignorable_at
+    |
+    ;
   ignorable_at
     : '@' IDENT s_0toN string_or_uri s_0toN medium_0toN ';' s_0toN {
+        self.document_handler.ignorable_at_rule(val[1])
+      }
+    | '@' IDENT s_0toN error S {
+        yyerrok
         self.document_handler.ignorable_at_rule(val[1])
       }
     ;
   import_0toN
     : import s_cdo_cdc_0toN import_0toN
     | ignorable_at s_cdo_cdc_0toN import_0toN
+    | ignorable_at error s_cdo_cdc_0toN import_0toN { puts "asdfasdfasdf" }
     |
     ;
   media
