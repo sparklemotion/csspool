@@ -174,7 +174,7 @@ rule
   declaration
     : property ':' s_0toN expr prio_0or1 {
         if value = self.property_parser.parse_tokens(
-          self.tokenizer.tokenize(val.flatten[0..-2].join(''))
+          self.tokenizer.tokenize(val.flatten[0..-2].join(' '))
         )
 
           value = [value].flatten
