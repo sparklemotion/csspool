@@ -34,12 +34,17 @@ rule
     |
     ;
   media
-    : MEDIA_SYM s_0toN medium_rollup LBRACE s_0toN ruleset_0toN '}' s_0toN {
+    : MEDIA_SYM s_0toN medium_rollup s_0toN ruleset_0toN '}' s_0toN {
         self.document_handler.end_media(val[2])
       }
     ;
   medium_rollup
-    : medium_1toN { self.document_handler.start_media(val.first) }
+    : medium_1toN LBRACE { self.document_handler.start_media(val.first) }
+    | medium_1toN error LBRACE {
+        self.document_handler.start_media(val.first)
+        error = ParseException.new("Error near: \"#{val[0]}\"")
+        self.error_handler.error(error)
+      }
     ;
   medium
     : IDENT s_0toN
@@ -89,7 +94,7 @@ rule
     : IDENT s_0toN
     ;
   ruleset
-    : selector_1toN LBRACE s_0toN declaration_1toN '}' s_0toN {
+    : selector_1toN s_0toN declaration_1toN '}' s_0toN {
         self.document_handler.end_selector([val.first].flatten.compact)
       }
     ;
@@ -104,8 +109,9 @@ rule
       }
     ;
   selector_1toN
-    : selector COMMA s_0toN selector_1toN
-    | selector
+    : selector COMMA s_0toN selector_1toN LBRACE
+    | selector error LBRACE
+    | selector LBRACE
     ;
   simple_selector
     : element_name hcap_0toN {

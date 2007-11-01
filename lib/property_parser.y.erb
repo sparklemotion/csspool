@@ -96,12 +96,15 @@ rule
     ;
   angle
     : ANGLE { result = CSS::SAC::Number.new(val.first) }
+    | zero
     ;
   percentage
     : PERCENTAGE { result = CSS::SAC::Number.new(val.first) }
+    | zero
     ;
   time
     : TIME { result = CSS::SAC::Number.new(val.first) }
+    | zero
     ;
   number
     : NUMBER { result = CSS::SAC::Number.new(val.first) }
@@ -111,6 +114,7 @@ rule
     ;
   frequency
     : FREQ { result = CSS::SAC::Number.new(val.first) }
+    | zero
     ;
   string
     : STRING { result = LexicalString.new(val.first) }
@@ -120,6 +124,7 @@ rule
     ;
   length
     : length_values { result = CSS::SAC::Number.new(val.first) }
+    | zero
     ;
   auto
     : 'auto' { result = LexicalIdent.new(val.first) }
@@ -146,6 +151,9 @@ rule
     : LENGTH
     | EMS
     | EXS
+    ;
+  zero
+    : '0' { result = CSS::SAC::Number.new('0') }
     ;
   color
     : COLOR

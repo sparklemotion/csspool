@@ -8,19 +8,21 @@ require "css/sac/property_parser"
 require "css/sac/condition"
 require "css/sac/attribute_condition"
 require "css/sac/selectors"
+require 'logger'
 
 module CSS
   module SAC
     class Parser < CSS::SAC::GeneratedParser
       TOKENIZER = Tokenizer.new
       
-      attr_accessor :document_handler, :error_handler
+      attr_accessor :document_handler, :error_handler, :logger
 
       def initialize
         @error_handler = ErrorHandler.new
         @document_handler = DocumentHandler.new()
         @property_parser = PropertyParser.new()
         @tokenizer = TOKENIZER
+        @logger = nil
       end
 
       def parse_style_sheet(string)
@@ -48,11 +50,10 @@ module CSS
       private # Bro.
 
       def on_error(error_token_id, error_value, value_stack)
-        puts '#' * 50
-        puts token_to_str(error_token_id)
-        p error_value
-        p value_stack
-        puts '#' * 50
+        if logger
+          logger.error(token_to_str(error_token_id))
+          logger.error("error value: #{error_value}")
+        end
       end
 
       def next_token
