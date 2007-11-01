@@ -158,4 +158,23 @@ class ParseErrorTest < Test::Unit::TestCase
     @sac.parse('p { color:red;   color{;color:maroon}; color:green }')
     flexmock_verify
   end
+
+  def test_invalid_at_keyword
+    flexmock(@sac.document_handler).
+      should_receive(:property).ordered.with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "blue" &&
+        list.first.integer_value.nil?
+    }, false).once
+    @sac.parse(
+    '@three-dee {
+      @background-lighting {
+        azimuth: 30deg;
+        elevation: 190deg;
+      }
+      h1 { color: red }
+    }
+    h1 { color: blue }')
+  end
 end
