@@ -21,12 +21,12 @@ class ParseErrorTest < Test::Unit::TestCase
       should_receive(:property).ordered.with('color', on { |list|
       list.length == 1 && list.first.dimension_unit_text.nil? &&
         list.first.lexical_unit_type == :SAC_IDENT &&
-        list.first.string_value == "red" &&
+        list.first.string_value == "black" &&
         list.first.integer_value.nil?
     }, false).once
     flexmock(@sac.document_handler).
       should_receive(:end_document).ordered.once
-    @sac.parse('h1 { color: red; rotation: 70minutes } h2 { color: red }')
+    @sac.parse('h1 { color: red; rotation: 70minutes } h2 { color: black }')
     flexmock_verify
   end
 

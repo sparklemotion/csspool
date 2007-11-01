@@ -58,7 +58,7 @@ rule
     | medium { result = [val.first] }
     ;
   page
-    : page_start s_0toN LBRACE s_0toN declaration_1toN '}' s_0toN {
+    : page_start s_0toN LBRACE s_0toN declaration_0toN '}' s_0toN {
         page_stuff = val.first
         self.document_handler.end_page(page_stuff[0], page_stuff[1])
       }
@@ -94,7 +94,7 @@ rule
     : IDENT s_0toN
     ;
   ruleset
-    : selector_1toN s_0toN declaration_1toN '}' s_0toN {
+    : selector_1toN s_0toN declaration_0toN '}' s_0toN {
         self.document_handler.end_selector([val.first].flatten.compact)
       }
     ;
@@ -166,14 +166,15 @@ rule
         end
       }
     | property ':' s_0toN error s_0toN prio_0or1 {
+        yyerrok
         error = ParseException.new("Unkown property: \"#{val[0]}: #{val[3]}\"")
         self.error_handler.error(error)
       }
-    |
     ;
-  declaration_1toN
-    : declaration ';' s_0toN declaration_1toN
+  declaration_0toN
+    : declaration ';' s_0toN declaration_0toN
     | declaration
+    |
     ;
   prio
     : IMPORTANT_SYM s_0toN
