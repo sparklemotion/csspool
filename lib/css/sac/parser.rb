@@ -49,7 +49,29 @@ module CSS
 
       private # Bro.
 
+      # We have to eliminate matching pairs.
+      # http://www.w3.org/TR/CSS21/syndata.html#parsing-errors
+      # See the malformed declarations section
+      def eliminate_pair_matches(error_value)
+        pairs = {}
+        pairs['"'] = '"'
+        pairs["'"] = "'"
+        pairs['{'] = '}'
+        pairs['['] = ']'
+        pairs['('] = ')'
+
+        if pairs[error_value]
+          logger.warn("Eliminating pair for: #{error_value}") if logger
+          loop {
+            token = next_token
+            logger.warn("Eliminated token: #{token.join(' ')}") if logger
+            break if token[1] == pairs[error_value]
+          }
+        end
+      end
+
       def on_error(error_token_id, error_value, value_stack)
+        eliminate_pair_matches(error_value)
         if logger
           logger.error(token_to_str(error_token_id))
           logger.error("error value: #{error_value}")

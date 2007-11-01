@@ -2,7 +2,7 @@ class CSS::SAC::GeneratedParser
 
 token FUNCTION INCLUDES DASHMATCH LBRACE HASH PLUS GREATER S STRING IDENT
 token COMMA URI CDO CDC NUMBER PERCENTAGE LENGTH EMS EXS ANGLE TIME FREQ
-token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM CHARSET_SYM
+token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM CHARSET_SYM DIMENSION
 
 rule
   stylesheet
@@ -165,14 +165,14 @@ rule
           result = value
         end
       }
-    | property ':' s_0toN error s_0toN prio_0or1 {
-        yyerrok
-        error = ParseException.new("Unkown property: \"#{val[0]}: #{val[3]}\"")
-        self.error_handler.error(error)
-      }
     ;
   declaration_0toN
     : declaration ';' s_0toN declaration_0toN
+    | declaration error ';' s_0toN declaration_0toN {
+        yyerrok
+        error = ParseException.new("Unkown property: \"#{val[1]}\"")
+        self.error_handler.error(error)
+      }
     | declaration
     |
     ;
@@ -208,6 +208,7 @@ rule
     ;
   function
     : FUNCTION s_0toN expr ')' s_0toN { result = [val[0], val[2], val[3]] }
+    | FUNCTION s_0toN expr error ')' s_0toN { result = [val[0], val[2], val[3]] }
     ;
   hexcolor
     : HASH s_0toN
