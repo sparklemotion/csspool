@@ -13,6 +13,9 @@ require 'logger'
 module CSS
   module SAC
     class Parser < CSS::SAC::GeneratedParser
+      # The version of CSSPool you're using
+      VERSION = '0.1.0'
+
       TOKENIZER = Tokenizer.new
       
       attr_accessor :document_handler, :error_handler, :logger

@@ -7,7 +7,7 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "lib")
 GENERATED_PARSER = "lib/css/sac/generated_parser.rb"
 GENERATED_PROPERTY_PARSER = "lib/css/sac/generated_property_parser.rb"
 
-Hoe.new('csspool', '0.0.1') do |p|
+Hoe.new('csspool', '0.1.0') do |p|
   p.rubyforge_name  = 'csspool'
   p.author          = 'Aaron Patterson'
   p.email           = 'aaronp@rubyforge.org'

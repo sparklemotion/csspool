@@ -5,7 +5,8 @@
 == Description
 
 CSSpool (pronounced "cesspool") is a SAC parser for parsing CSS.  The parser
-calls methods on a document handler depending on what it has found.
+calls methods on a document handler depending on what it has found. CSSPool
+currently only supports CSS 2.1.
 
 == Dependencies
 
@@ -16,7 +17,7 @@ Building CSSpool requires:
 
   - rubygems, hoe, flexmock
 
-== Examples
+== Example
 
 This example prints out all properties from a particular CSS file.
 
