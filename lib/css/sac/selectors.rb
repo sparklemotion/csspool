@@ -8,6 +8,13 @@ module CSS
       def initialize
         @selector_type = :SAC_ANY_NODE_SELECTOR
       end
+
+      def to_css
+        case @selector_type
+        when :SAC_ANY_NODE_SELECTOR
+          '*'
+        end
+      end
     end
 
     class ElementSelector < SimpleSelector
@@ -18,6 +25,10 @@ module CSS
         super()
         @selector_type = :SAC_ELEMENT_NODE_SELECTOR
         @local_name = name
+      end
+
+      def to_css
+        local_name
       end
     end
 
@@ -30,6 +41,12 @@ module CSS
         @simple_selector   = selector
         @selector_type = :SAC_CONDITIONAL_SELECTOR
       end
+
+      def to_css
+        [selector, condition].map { |x|
+          x ? x.to_css : ''
+        }.join('')
+      end
     end
 
     class DescendantSelector < SimpleSelector
@@ -41,6 +58,17 @@ module CSS
         @simple_selector = selector
         @selector_type = type
       end
+
+      def to_css
+        descent_token =
+          case @selector_type
+          when :SAC_CHILD_SELECTOR
+            ' > '
+          when :SAC_DESCENDANT_SELECTOR
+            ' '
+          end
+        ancestor_selector.to_css + descent_token + selector.to_css
+      end
     end
 
     class SiblingSelector < SimpleSelector
@@ -49,6 +77,10 @@ module CSS
         @selector = selector
         @sibling_selector = sibling
         @selector_type = :SAC_DIRECT_ADJACENT_SELECTOR
+      end
+
+      def to_css
+        selector.to_css + ' + ' + sibling_selector.to_css
       end
     end
   end

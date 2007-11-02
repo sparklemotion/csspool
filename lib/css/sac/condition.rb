@@ -12,6 +12,10 @@ module CSS
         @second_condition = second
         @condition_type = type
       end
+
+      def to_css
+        "#{first_condition.to_css}#{second_condition.to_css}"
+      end
     end
   end
 end

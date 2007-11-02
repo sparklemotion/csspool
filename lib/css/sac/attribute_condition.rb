@@ -58,6 +58,21 @@ module CSS
         @value      = nil
         yield self if block_given?
       end
+
+      def to_css
+        case condition_type
+        when :SAC_ONE_OF_ATTRIBUTE_CONDITION
+          "[#{local_name}~=#{value}]"
+        when :SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION
+          "[#{local_name}|=#{value}]"
+        when :SAC_ATTRIBUTE_CONDITION
+          "[#{local_name}=#{value}]"
+        when :SAC_CLASS_CONDITION
+          ".#{value}"
+        when :SAC_ID_CONDITION
+          "#{value}"
+        end
+      end
     end
   end
 end
