@@ -26,6 +26,7 @@ test/test_lexical_unit.rb
 test/test_parse_error.rb
 test/test_parser.rb
 test/test_property_parser.rb
+test/test_selector_as_string.rb
 test/test_selector_parser.rb
 test/test_token.rb
 test/test_tokenizer.rb
