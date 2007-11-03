@@ -10,10 +10,11 @@ module CSS
       end
 
       def to_css
-        case @selector_type
-        when :SAC_ANY_NODE_SELECTOR
-          '*'
-        end
+        '*'
+      end
+      
+      def to_xpath
+        "//*"
       end
     end
 
@@ -29,6 +30,12 @@ module CSS
 
       def to_css
         local_name
+      end
+      
+      def to_xpath(prefix=true)
+        atoms = [local_name]
+        atoms.unshift("//") if prefix
+        atoms.join
       end
     end
 
@@ -47,6 +54,15 @@ module CSS
           x ? x.to_css : ''
         }.join('')
       end
+      
+      def to_xpath(prefix=true)
+        atoms = []
+        atoms << "//" if prefix
+        atoms << (selector ? selector.to_xpath(false) : "*")
+        atoms << condition.to_xpath
+        
+        atoms.join("")
+      end
     end
 
     class DescendantSelector < SimpleSelector
@@ -60,14 +76,25 @@ module CSS
       end
 
       def to_css
-        descent_token =
+        separator =
           case @selector_type
           when :SAC_CHILD_SELECTOR
             ' > '
           when :SAC_DESCENDANT_SELECTOR
             ' '
           end
-        ancestor_selector.to_css + descent_token + selector.to_css
+        ancestor_selector.to_css + separator + selector.to_css
+      end
+      
+      def to_xpath(prefix=true)
+        separator =
+          case @selector_type
+          when :SAC_CHILD_SELECTOR
+            "/"
+          when :SAC_DESCENDANT_SELECTOR
+            "//"
+          end
+        ancestor_selector.to_xpath(prefix) + separator + selector.to_xpath(false)
       end
     end
 
@@ -81,6 +108,10 @@ module CSS
 
       def to_css
         selector.to_css + ' + ' + sibling_selector.to_css
+      end
+      
+      def to_xpath(prefix=true)
+        selector.to_xpath(prefix) + "/following-sibling::" + sibling_selector.to_xpath(false)
       end
     end
   end

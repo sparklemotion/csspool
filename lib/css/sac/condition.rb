@@ -16,6 +16,10 @@ module CSS
       def to_css
         "#{first_condition.to_css}#{second_condition.to_css}"
       end
+      
+      def to_xpath
+        "#{first_condition.to_xpath}#{second_condition.to_xpath}"        
+      end
     end
   end
 end

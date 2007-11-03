@@ -23,8 +23,9 @@ module CSS
         def class_condition(class_name)
           self.new do |condition|
             condition.condition_type = :SAC_CLASS_CONDITION
-            condition.specified = true
-            condition.value     = class_name
+            condition.specified  = true
+            condition.local_name = "class"
+            condition.value      = class_name
           end
         end
 
@@ -71,6 +72,17 @@ module CSS
           ".#{value}"
         when :SAC_ID_CONDITION
           "#{value}"
+        end
+      end
+      
+      def to_xpath
+        case condition_type
+        when :SAC_ATTRIBUTE_CONDITION
+          "[@#{local_name}#{value && "='#{value}'"}]"
+        when :SAC_CLASS_CONDITION, :SAC_BEGIN_HYPHEN_ATTRIBUTE_CONDITION, :SAC_ONE_OF_ATTRIBUTE_CONDITION
+          "[contains(@#{local_name}, '#{value}')]"
+        when :SAC_ID_CONDITION
+          "[@id='#{value[1..value.size]}']"
         end
       end
     end

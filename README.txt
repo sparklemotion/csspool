@@ -32,8 +32,8 @@ This example prints out all properties from a particular CSS file.
     end
   end
   
-  token = CSS::SAC::Parser.new(DH.new)
-  token.parse(File.read(ARGV[0]))
+  parser = CSS::SAC::Parser.new(DH.new)
+  parser.parse(File.read(ARGV[0]))
 
 See CSS::SAC::DocumentHandler for callbacks to implement.
 
@@ -42,7 +42,7 @@ See SAC[http://www.w3.org/Style/CSS/SAC/] for more information on SAC.
 == Authors
 
 * Aaron Patterson[http://tenderlovemaking.com/] <aaronp@rubyforge.com>
-* John Barnette
+* John Barnette[http://geeksomnia.com/] <jbarnette@rubyforge.com>
 
 == LICENSE
 
