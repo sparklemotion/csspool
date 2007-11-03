@@ -23,6 +23,10 @@ Building CSSpool requires:
 This example prints out all properties from a particular CSS file.
 
   class DH < CSS::SAC::DocumentHandler
+    def start_selector(selectors)
+      puts selectors.map { |x| x.to_css }.join(', ')
+    end
+
     def property(name, value, important)
       puts "#{name} #{value.join(', ')} #{important}"
     end
