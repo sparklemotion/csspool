@@ -1,5 +1,8 @@
 require File.dirname(__FILE__) + "/helper"
 
+# Thanks, Joe!
+# http://www.joehewitt.com/blog/files/getElementsBySelector.js
+
 class XPathTest < Test::Unit::TestCase
   def setup
     @parser = CSS::SAC::Parser.new()
