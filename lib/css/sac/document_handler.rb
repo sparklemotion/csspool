@@ -1,6 +1,6 @@
 module CSS
   module SAC
-    class CSS::SAC::DocumentHandler
+    class DocumentHandler
       def initialize
       end
 
