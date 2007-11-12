@@ -20,6 +20,10 @@ module CSS
       def to_xpath
         "#{first_condition.to_xpath}#{second_condition.to_xpath}"        
       end
+
+      def specificity
+        first_condition.specificity + second_condition.specificity
+      end
     end
   end
 end

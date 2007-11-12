@@ -16,6 +16,10 @@ module CSS
       def to_xpath
         "//*"
       end
+
+      def specificity
+        0
+      end
     end
 
     class ElementSelector < SimpleSelector
@@ -36,6 +40,10 @@ module CSS
         atoms = [local_name]
         atoms.unshift("//") if prefix
         atoms.join
+      end
+
+      def specificity
+        1
       end
     end
 
@@ -62,6 +70,11 @@ module CSS
         atoms << condition.to_xpath
         
         atoms.join("")
+      end
+
+      def specificity
+        (selector ? selector.specificity : 0) +
+          (condition ? condition.specificity : 0)
       end
     end
 
@@ -96,6 +109,10 @@ module CSS
           end
         ancestor_selector.to_xpath(prefix) + separator + selector.to_xpath(false)
       end
+
+      def specificity
+        ancestor_selector.specificity + selector.specificity
+      end
     end
 
     class SiblingSelector < SimpleSelector
@@ -112,6 +129,10 @@ module CSS
       
       def to_xpath(prefix=true)
         selector.to_xpath(prefix) + "/following-sibling::" + sibling_selector.to_xpath(false)
+      end
+
+      def specificity
+        selector.specificity + sibling_selector.specificity
       end
     end
   end

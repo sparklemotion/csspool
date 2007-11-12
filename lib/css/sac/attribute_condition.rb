@@ -87,6 +87,17 @@ module CSS
           "[@id='#{value[1..value.size]}']"
         end
       end
+
+      def specificity
+        case condition_type
+        when :SAC_ID_CONDITION
+          100
+        when :SAC_PSEUDO_CLASS_CONDITION
+          0
+        else
+          10
+        end
+      end
     end
   end
 end
