@@ -163,8 +163,7 @@ rule
       }
     ;
   pseudo
-    : ':' FUNCTION s_0toN IDENT s_0toN ')'
-    | ':' FUNCTION s_0toN s_0toN ')'
+    : ':' function { result = AttributeCondition.pseudo_class_condition(val[1])}
     | ':' IDENT { result = AttributeCondition.pseudo_class_condition(val[1]) }
     ;
   declaration

@@ -72,6 +72,8 @@ module CSS
           ".#{value}"
         when :SAC_ID_CONDITION
           "#{value}"
+        when :SAC_PSEUDO_CLASS_CONDITION
+          ":#{value}"
         end
       end
       

@@ -188,4 +188,54 @@ class ParserTest < Test::Unit::TestCase
     @sac.parse('h1 { color: black !important; }')
     flexmock_verify
   end
+
+  def test_pseudo_function
+    flexmock(@sac.document_handler).
+      should_receive(:start_selector).ordered.once
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, true).ordered.once
+    flexmock(@sac.document_handler).
+      should_receive(:end_selector).ordered.once
+    @sac.parse('h1:nth(1) { color: black !important; }')
+    flexmock_verify
+  end
+
+  def test_pseudo_class
+    flexmock(@sac.document_handler).
+      should_receive(:start_selector).ordered.once
+    flexmock(@sac.document_handler).
+      should_receive(:property).with('color', on { |list|
+      list.length == 1 && list.first.dimension_unit_text.nil? &&
+        list.first.lexical_unit_type == :SAC_IDENT &&
+        list.first.string_value == "black" &&
+        list.first.integer_value.nil?
+    }, true).ordered.once
+    flexmock(@sac.document_handler).
+      should_receive(:end_selector).ordered.once
+    @sac.parse('a:hover { color: black !important; }')
+    flexmock_verify
+  end
+
+  def test_pseudo_class_to_css
+    class << @sac.document_handler
+      attr_accessor :selectors
+      alias :start_selector :selectors=
+    end
+    @sac.parse('a:hover { color: black !important; }')
+    assert_equal 'a:hover', @sac.document_handler.selectors.first.to_css
+  end
+
+  def test_pseudo_function_to_css
+    class << @sac.document_handler
+      attr_accessor :selectors
+      alias :start_selector :selectors=
+    end
+    @sac.parse('a:nth(3) { color: black !important; }')
+    assert_equal 'a:nth(3)', @sac.document_handler.selectors.first.to_css
+  end
 end

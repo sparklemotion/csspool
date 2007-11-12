@@ -1,3 +1,7 @@
+== 0.1.1
+
+* Fixed a bug where functions as pseudo classes didn't parse.
+
 == 0.1.0
 
 * Birthday!
