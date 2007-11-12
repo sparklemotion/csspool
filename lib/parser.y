@@ -163,7 +163,9 @@ rule
       }
     ;
   pseudo
-    : ':' function { result = AttributeCondition.pseudo_class_condition(val[1])}
+    : ':' function {
+        result = AttributeCondition.pseudo_class_condition(val[1])
+      }
     | ':' IDENT { result = AttributeCondition.pseudo_class_condition(val[1]) }
     ;
   declaration
@@ -198,7 +200,7 @@ rule
     |
     ;
   expr
-    : term operator expr { result = val }
+    : term operator expr { result = [val[0], val.last] }
     | term
     ;
   term
@@ -221,7 +223,9 @@ rule
     | FREQ s_0toN
     ;
   function
-    : FUNCTION s_0toN expr ')' s_0toN { result = [val[0], val[2], val[3]] }
+    : FUNCTION s_0toN expr ')' s_0toN {
+        result = Function.new(val[0], val[2].flatten)
+      }
     | FUNCTION s_0toN expr error ')' s_0toN { yyerrok; result = [val[0], val[2], val[3]] }
     ;
   hexcolor
