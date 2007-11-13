@@ -71,7 +71,7 @@ class SelectorParserTest < Test::Unit::TestCase
   @@single_selector_tests = {
     :id => {
       :css   => '#foo { }',
-      :value => '#foo',
+      :value => 'foo',
       :type  => :SAC_ID_CONDITION,
     },
     :class => {
@@ -94,7 +94,7 @@ class SelectorParserTest < Test::Unit::TestCase
   @@multiple_selector_tests = {
     :ids => {
       :css    => '#foo#bar#baz { }',
-      :values => %w{ #foo #bar #baz },
+      :values => %w{ foo bar baz },
       :types  => [:SAC_ID_CONDITION] * 3,
     },
     :classes => {

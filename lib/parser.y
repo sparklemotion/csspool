@@ -154,7 +154,7 @@ rule
     | simple_selector
     ;
   class
-    : '.' IDENT { result = AttributeCondition.class_condition(val[1]) }
+    : '.' IDENT { result = ClassCondition.new(val[1]) }
     ;
   element_name
     : IDENT { result = ElementSelector.new(val.first) }
@@ -162,14 +162,14 @@ rule
     ;
   attrib
     : '[' s_0toN IDENT s_0toN attrib_val_0or1 ']' {
-        result = AttributeCondition.attribute_condition(val[2], val[4])
+        result = AttributeCondition.build(val[2], val[4])
       }
     ;
   pseudo
     : ':' function {
-        result = AttributeCondition.pseudo_class_condition(val[1])
+        result = PseudoClassCondition.new(val[1])
       }
-    | ':' IDENT { result = AttributeCondition.pseudo_class_condition(val[1]) }
+    | ':' IDENT { result = PseudoClassCondition.new(val[1]) }
     ;
   declaration
     : property ':' s_0toN expr prio_0or1 {
@@ -257,7 +257,7 @@ rule
     | pseudo
     ;
   attribute_id
-    : HASH { result = AttributeCondition.attribute_id(val.first) }
+    : HASH { result = IDCondition.new(val.first) }
     ;
   attrib_val_0or1
     : eql_incl_dash s_0toN IDENT s_0toN { result = [val.first, val[2]] }
@@ -289,5 +289,8 @@ rule
 end
 
 ---- header
+  require "css/sac/conditions"
   require "css/sac/selectors"
+  
+  include CSS::SAC::Conditions
   include CSS::SAC::Selectors
