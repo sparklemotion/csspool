@@ -142,10 +142,13 @@ rule
   simple_selector_1toN
     : simple_selector combinator simple_selector_1toN {
         result =
-          if val[1] == :SAC_DIRECT_ADJACENT_SELECTOR
+          case val[1]
+          when :SAC_DIRECT_ADJACENT_SELECTOR
             SiblingSelector.new(val.first, val[2])
-          else
-            DescendantSelector.new(val.first, val[2], val[1])
+          when :SAC_DESCENDANT_SELECTOR
+            DescendantSelector.new(val.first, val[2])
+          when :SAC_CHILD_SELECTOR
+            ChildSelector.new(val.first, val[2])
           end
       }
     | simple_selector
@@ -284,3 +287,7 @@ rule
     |
     ;
 end
+
+---- header
+  require "css/sac/selectors"
+  include CSS::SAC::Selectors
