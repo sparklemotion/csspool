@@ -1,6 +1,7 @@
 == 0.1.1
 
 * Added specificity to selectors.
+* Added == to selector ASTs.
 * Fixed a bug where functions as pseudo classes didn't parse.
 
 == 0.1.0

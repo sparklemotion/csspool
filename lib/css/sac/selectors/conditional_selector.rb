@@ -33,6 +33,10 @@ module CSS
           (selector ? selector.specificity : 0) +
             (condition ? condition.specificity : 0)
         end
+
+        def ==(other)
+          super && condition == other.condition && selector == other.selector
+        end
       end
     end
   end

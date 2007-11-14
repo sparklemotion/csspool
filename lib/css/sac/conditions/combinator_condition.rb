@@ -26,6 +26,10 @@ module CSS
         def specificity
           first.specificity + second.specificity
         end
+
+        def ==(other)
+          super && first == other.first && second == other.second
+        end
       end
     end
   end

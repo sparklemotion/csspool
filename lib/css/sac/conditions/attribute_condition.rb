@@ -41,6 +41,11 @@ module CSS
         def specificity
           10
         end
+
+        def ==(other)
+          super && local_name == other.local_name && value == other.value &&
+            specified == other.specified
+        end
       end
     end
   end

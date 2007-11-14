@@ -7,6 +7,10 @@ module CSS
         def initialize(selector_type)
           @selector_type = selector_type
         end
+
+        def ==(other)
+          self.class === other && selector_type == other.selector_type
+        end
       end
     end
   end

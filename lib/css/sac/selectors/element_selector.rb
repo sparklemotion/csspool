@@ -25,6 +25,10 @@ module CSS
         def specificity
           1
         end
+
+        def ==(other)
+          super && name == other.name
+        end
       end
     end
   end

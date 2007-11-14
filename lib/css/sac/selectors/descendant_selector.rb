@@ -26,6 +26,10 @@ module CSS
         def specificity
           ancestor.specificity + selector.specificity
         end
+
+        def ==(other)
+          super && selector == other.selector && ancestor == other.ancestor
+        end
       end
     end
   end

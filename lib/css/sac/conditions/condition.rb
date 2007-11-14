@@ -7,6 +7,10 @@ module CSS
         def initialize(condition_type)
           @condition_type = condition_type
         end
+
+        def ==(other)
+          self.class === other && condition_type == other.condition_type
+        end
       end
     end
   end
