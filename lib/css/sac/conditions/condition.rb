@@ -11,6 +11,14 @@ module CSS
         def ==(other)
           self.class === other && condition_type == other.condition_type
         end
+
+        def to_css
+          nil
+        end
+
+        def inspect
+          "#<#{self.class} #{to_css}>"
+        end
       end
     end
   end

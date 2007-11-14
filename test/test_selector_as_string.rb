@@ -11,11 +11,24 @@ class SelectorAsStringTest < Test::Unit::TestCase
     end
   end
 
+  def test_equal2
+    @sac.parse('h1 > h2 { }')
+    selectors = @sac.document_handler.selectors
+    @sac.document_handler.selectors = []
+
+    @sac.parse('h1 > h2 { }')
+    selectors2 = @sac.document_handler.selectors
+
+    assert_equal selectors, selectors2
+  end
+
   def test_any_node_selector
     @sac.parse('* { }')
     selectors = @sac.document_handler.selectors
     assert_equal(1, selectors.length)
     assert_equal('*', selectors.first.to_css)
+    s = selectors.first
+    assert_equal("#<CSS::SAC::Selectors::SimpleSelector *>", s.inspect)
   end
 
   def test_element_node_selector

@@ -19,6 +19,10 @@ module CSS
         def specificity
           0
         end
+
+        def inspect
+          "#<#{self.class} #{to_css}>"
+        end
       end
     end
   end
