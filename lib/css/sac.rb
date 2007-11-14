@@ -1,5 +1,4 @@
 require "css/sac/parser"
-require "css/stylesheet"
 
 module CSS
   module SAC
