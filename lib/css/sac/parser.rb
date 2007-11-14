@@ -21,7 +21,7 @@ module CSS
 
       def initialize(document_handler = nil)
         @error_handler = ErrorHandler.new
-        @document_handler = document_handler || CSS::StyleSheet.new()
+        @document_handler = document_handler || DocumentHandler.new()
         @property_parser = PropertyParser.new()
         @tokenizer = TOKENIZER
         @logger = nil
