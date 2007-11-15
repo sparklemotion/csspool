@@ -32,5 +32,21 @@ class DescendantSelectorTest < SelectorTestCase
     assert(! (sel =~ NoParentNode.new('div')))
     assert(! (sel =~ Node.new('div', nil, nil)))
   end
+
+  def test_many_descendants
+    @sac = CSS::SAC::Parser.new()
+    class << @sac.document_handler
+      attr_accessor :selectors
+      alias :start_selector :selectors=
+    end
+
+    @sac.parse('div h1 h2 { }')
+    selectors = @sac.document_handler.selectors
+    assert_equal(1, selectors.length)
+
+    sel = selectors.first
+    node = parent_child_tree('body', 'div', 'p', 'h1', 'p', 'h2')
+    assert sel =~ node
+  end
 end
 
