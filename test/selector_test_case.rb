@@ -1,6 +1,6 @@
 class SelectorTestCase < Test::Unit::TestCase
   include CSS::SAC::Selectors
-  Node = Struct.new(:name, :parent, :child, :next_sibling)
+  Node = Struct.new(:name, :parent, :child, :next_sibling, :attributes)
   NoParentNode = Struct.new(:name)
 
   def parent_child_tree(*args)

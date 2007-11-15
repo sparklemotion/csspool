@@ -17,6 +17,10 @@ module CSS
         def to_css
           nil
         end
+
+        def =~(node)
+          MatchesVisitor.new(node).accept(self)
+        end
       end
     end
   end

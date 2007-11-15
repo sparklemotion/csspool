@@ -12,4 +12,18 @@ class ConditionalSelectorTest < SelectorTestCase
     fourth = ConditionalSelector.new(2,1)
     assert_not_equal first, fourth
   end
+
+  def test_equals_tilde
+    attribute = AttributeCondition.new('class', 'foo', true)
+    div = ElementSelector.new('div')
+    sel = ConditionalSelector.new(div, attribute)
+
+    node = Node.new('div')
+    node.attributes = { 'class' => 'foo' }
+
+    assert sel =~ node
+
+    node.attributes = { 'class' => 'bar' }
+    assert(!(sel =~ node))
+  end
 end

@@ -15,4 +15,16 @@ class AttributeConditionTest < ConditionTestCase
     fifth = AttributeCondition.new(2,1,1)
     assert_not_equal first, fifth
   end
+
+  def test_equals_tilde
+    attribute = AttributeCondition.new('class', 'foo', true)
+    node = Node.new('p')
+    node.attributes = { 'class' => 'foo' }
+
+    assert attribute =~ node
+
+    node.attributes = { 'class' => 'bar' }
+    assert(!(attribute =~ node))
+    assert(!(attribute =~ 1))
+  end
 end

@@ -3,11 +3,15 @@ module CSS
     module Visitable # :nodoc:
       # Based off the visitor pattern from RubyGarden
       def accept(visitor, &block)
-        self.class.ancestors.find_all { |klass|
-          visitor.methods.include?("visit_#{klass.name.split(/::/)[-1]}")
-        }.reverse.all? { |klass|
-          visitor.send(:"visit_#{klass.name.split(/::/)[-1]}", self, &block)
+        klass = self.class.ancestors.find { |klass|
+          visitor.respond_to?("visit_#{klass.name.split(/::/)[-1]}")
         }
+
+        if klass
+          visitor.send(:"visit_#{klass.name.split(/::/)[-1]}", self, &block)
+        else
+          raise "No visitor for '#{self.class}'"
+        end
       end
     end
 
@@ -27,10 +31,12 @@ module CSS
       end
 
       def visit_ElementSelector(o)
+        return false unless visit_SimpleSelector(o) # *sigh*
         o.name == @node.name
       end
 
       def visit_ChildSelector(o)
+        return false unless visit_SimpleSelector(o) # *sigh*
         return false unless @node.respond_to?(:parent)
         return false if @node.parent.nil?
         return false unless o.selector.accept(self)
@@ -39,6 +45,7 @@ module CSS
       end
 
       def visit_DescendantSelector(o)
+        return false unless visit_SimpleSelector(o) # *sigh*
         return false unless @node.respond_to?(:parent)
         return false if @node.parent.nil?
         return false unless o.selector.accept(self)
@@ -49,15 +56,48 @@ module CSS
           return false unless @node.respond_to?(:parent)
           @node = @node.parent
         }
-        false
       end
 
       def visit_SiblingSelector(o)
+        return false unless visit_SimpleSelector(o) # *sigh*
         return false unless @node.respond_to?(:next_sibling)
         return false if @node.next_sibling.nil?
         return false unless o.selector.accept(self)
         @node = @node.next_sibling
         o.sibling.accept(self)
+      end
+
+      def visit_ConditionalSelector(o)
+        return false unless visit_SimpleSelector(o) # *sigh*
+        o.selector.accept(self) && o.condition.accept(self)
+      end
+
+      def visit_AttributeCondition(o)
+        return false unless @node.respond_to?(:attributes)
+        return false unless @node.attributes[o.local_name]
+        @node.attributes[o.local_name] == o.value
+      end
+
+      def visit_BeginHyphenCondition(o)
+        return false unless @node.respond_to?(:attributes)
+        return false unless @node.attributes[o.local_name]
+        @node.attributes[o.local_name] =~ /^#{o.value}/
+      end
+
+      def visit_CombinatorCondition(o)
+        o.first.accept(self) && o.second.accept(self)
+      end
+
+      def visit_OneOfCondition(o)
+        return false unless @node.respond_to?(:attributes)
+        return false unless @node.attributes[o.local_name]
+        @node.attributes[o.local_name].split.any? { |attribute|
+          attribute == o.value
+        }
+      end
+
+      def visit_PseudoClassCondition(o)
+        false # Fuck pseudo classes.  --Aaron
       end
     end
   end

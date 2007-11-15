@@ -2,6 +2,9 @@
 
 * Added specificity to selectors.
 * Added == to selector ASTs.
+* Added =~ to selector ASTs.  The object passed in to =~ must quack like an
+  hpricot node.  It must implement the following methods: name, parent, child,
+  next_sibling, attributes.
 * Fixed a bug where functions as pseudo classes didn't parse.
 
 == 0.1.0

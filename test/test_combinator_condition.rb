@@ -9,4 +9,21 @@ class CombinatorConditionTest < ConditionTestCase
     third = CombinatorCondition.new(1,2)
     assert_not_equal first, third
   end
+
+  def test_equals_tilde
+    first = ClassCondition.new('foo')
+    second = AttributeCondition.new('name', 'aaron', true)
+    combinator_condition = CombinatorCondition.new(first, second)
+
+    node = Node.new('p')
+    node.attributes = { 'class' => 'foo', 'name' => 'aaron' }
+
+    assert combinator_condition =~ node
+
+    node.attributes = { 'class' => 'bar', 'name' => 'aaron' }
+    assert(!(combinator_condition =~ node))
+
+    node.attributes = { 'class' => 'foo', 'name' => 'bar' }
+    assert(!(combinator_condition =~ node))
+  end
 end
