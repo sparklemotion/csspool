@@ -30,21 +30,6 @@ module CSS
         def ==(other)
           super && selector == other.selector && ancestor == other.ancestor
         end
-
-        def =~(node)
-          return false unless super
-          return false unless node.respond_to?(:parent)
-          return false if node.parent.nil?
-          return false unless selector =~ node
-
-          parent = node.parent
-          loop {
-            return true if ancestor =~ parent
-            return false unless node.respond_to?(:parent)
-            parent = parent.parent
-          }
-          false
-        end
       end
     end
   end

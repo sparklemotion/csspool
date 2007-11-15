@@ -45,7 +45,18 @@ module CSS
       o.parent.accept(self)
     end
 
-    def visit_DescendantSelector(selector)
+    def visit_DescendantSelector(o)
+      return false unless @node.respond_to?(:parent)
+      return false if @node.parent.nil?
+      return false unless o.selector.accept(self)
+
+      @node = @node.parent
+      loop {
+        return true if o.ancestor.accept(self)
+        return false unless @node.respond_to?(:parent)
+        @node = @node.parent
+      }
+      false
     end
   end
 end
