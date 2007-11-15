@@ -1,3 +1,4 @@
+.DS_Store
 CHANGELOG.txt
 Manifest.txt
 README.txt
@@ -14,6 +15,7 @@ lib/css/sac/conditions/one_of_condition.rb
 lib/css/sac/conditions/pseudo_class_condition.rb
 lib/css/sac/document_handler.rb
 lib/css/sac/error_handler.rb
+lib/css/sac/generated_property_parser.rb
 lib/css/sac/lexeme.rb
 lib/css/sac/lexical_unit.rb
 lib/css/sac/parse_exception.rb
@@ -31,6 +33,7 @@ lib/css/sac/token.rb
 lib/css/sac/tokenizer.rb
 lib/css/sac/visitable.rb
 lib/parser.y
+lib/property_parser.y
 lib/property_parser.y.erb
 test/condition_test_case.rb
 test/helper.rb
