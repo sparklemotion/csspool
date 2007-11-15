@@ -29,6 +29,13 @@ module CSS
         def ==(other)
           super && selector == other.selector && sibling == other.sibling
         end
+
+        def =~(node)
+          return false unless super
+          return false unless node.respond_to?(:next_sibling)
+          return false if node.next_sibling.nil?
+          (selector =~ node) && (sibling =~ node.next_sibling)
+        end
       end
     end
   end

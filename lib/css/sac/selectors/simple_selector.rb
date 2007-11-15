@@ -4,6 +4,8 @@ module CSS
   module SAC
     module Selectors
       class SimpleSelector < Selector
+        include CSS::Visitable
+
         def initialize(selector_type=:SAC_ANY_NODE_SELECTOR)
           super(selector_type)
         end
@@ -20,8 +22,8 @@ module CSS
           0
         end
 
-        def inspect
-          "#<#{self.class} #{to_css}>"
+        def =~(node)
+          MatchesVisitor.new(node).accept(self)
         end
       end
     end

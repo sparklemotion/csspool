@@ -9,5 +9,14 @@ class ElementSelectorTest < SelectorTestCase
     third = ElementSelector.new(2)
     assert_not_equal first, third
   end
+
+  def test_equals_tilde
+    div = ElementSelector.new('div')
+    node = Node.new
+    node.name = 'div'
+
+    assert div =~ node
+    assert(!(div =~ nil))
+  end
 end
 

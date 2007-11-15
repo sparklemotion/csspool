@@ -12,5 +12,25 @@ class DescendantSelectorTest < SelectorTestCase
     fourth = DescendantSelector.new(2,1)
     assert_not_equal first, fourth
   end
+
+  def test_equals_tilde
+    parent = ElementSelector.new('div')
+    child = ElementSelector.new('p')
+    sel = DescendantSelector.new(parent, child)
+
+    node = parent_child_tree('div', 'p')
+    assert sel =~ node
+
+    node2 = parent_child_tree('body', 'div', 'p')
+    assert sel =~ node2
+
+    node3 = parent_child_tree('body', 'div', 'table', 'tr', 'td', 'p')
+    assert sel =~ node3
+
+    failing = parent_child_tree('p', 'div')
+    assert(! (sel =~ failing))
+    assert(! (sel =~ NoParentNode.new('div')))
+    assert(! (sel =~ Node.new('div', nil, nil)))
+  end
 end
 
