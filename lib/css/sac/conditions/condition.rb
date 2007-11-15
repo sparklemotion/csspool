@@ -2,6 +2,8 @@ module CSS
   module SAC
     module Conditions
       class Condition
+        include CSS::SAC::Visitable
+
         attr_accessor :condition_type
         
         def initialize(condition_type)
@@ -14,10 +16,6 @@ module CSS
 
         def to_css
           nil
-        end
-
-        def inspect
-          "#<#{self.class} #{to_css}>"
         end
       end
     end

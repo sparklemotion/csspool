@@ -4,7 +4,7 @@ module CSS
   module SAC
     module Selectors
       class SimpleSelector < Selector
-        include CSS::Visitable
+        include CSS::SAC::Visitable
 
         def initialize(selector_type=:SAC_ANY_NODE_SELECTOR)
           super(selector_type)

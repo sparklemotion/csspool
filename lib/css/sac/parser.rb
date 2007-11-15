@@ -1,4 +1,4 @@
-require "css/visitable"
+require "css/sac/visitable"
 require "css/sac/document_handler"
 require "css/sac/error_handler"
 require "css/sac/generated_parser"
