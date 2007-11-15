@@ -58,5 +58,13 @@ module CSS
       }
       false
     end
+
+    def visit_SiblingSelector(o)
+      return false unless @node.respond_to?(:next_sibling)
+      return false if @node.next_sibling.nil?
+      return false unless o.selector.accept(self)
+      @node = @node.next_sibling
+      o.sibling.accept(self)
+    end
   end
 end
