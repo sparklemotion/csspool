@@ -2,6 +2,8 @@ module CSS
   module SAC
     module Selectors
       class Selector
+        include CSS::SAC::Visitable
+
         attr_reader :selector_type
         
         def initialize(selector_type)
@@ -10,6 +12,10 @@ module CSS
 
         def ==(other)
           self.class === other && selector_type == other.selector_type
+        end
+        
+        def =~(node)
+          MatchesVisitor.new(node).accept(self)
         end
       end
     end
