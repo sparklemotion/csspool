@@ -14,7 +14,7 @@ Hoe.new('csspool', '0.1.1') do |p|
   p.summary         = "Parses CSS"
   p.description     = p.paragraphs_of('README.txt', 3).join("\n\n")
   p.url             = p.paragraphs_of('README.txt', 1).first.strip
-  p.changes         = p.paragraphs_of('CHANGELOG.txt', 0..2).join("\n\n")
+  p.changes         = p.paragraphs_of('CHANGELOG.txt', 0..1).join("\n\n")
   p.clean_globs     = [GENERATED_PARSER]
 end
 

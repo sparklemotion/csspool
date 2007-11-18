@@ -41,8 +41,8 @@ See SAC[http://www.w3.org/Style/CSS/SAC/] for more information on SAC.
 
 == Authors
 
-* {Aaron Patterson}[http://tenderlovemaking.com] <aaronp@rubyforge.com>
-* {John Barnette}[http://geeksomnia.com] <jbarnette@rubyforge.com>
+* {Aaron Patterson}[http://tenderlovemaking.com] <aaronp@rubyforge.org>
+* {John Barnette}[http://geeksomnia.com] <jbarnette@rubyforge.org>
 
 == LICENSE
 
