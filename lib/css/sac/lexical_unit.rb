@@ -9,6 +9,10 @@ module CSS
                     :parameters,
                     :function_name
 
+      def ==(other)
+        self.class === other && self.lexical_unit_type == other.lexical_unit_type
+      end
+
       alias :to_s :string_value
     end
 
@@ -25,21 +29,31 @@ module CSS
         self.parameters = params
         self.lexical_unit_type = FUNCTIONS[self.function_name] || :SAC_FUNCTION
       end
+
+      def ==(other)
+        super && %w{ function_name parameters }.all? { |x|
+          self.send(x.to_sym) == other.send(x.to_sym)
+        }
+      end
     end
 
     class Color < LexicalUnit
       def initialize(value)
         self.string_value = value
         self.lexical_unit_type = :SAC_RGBCOLOR
-        if value =~ /^#(\d{1,2})(\d{1,2})(\d{1,2})$/
-          self.parameters = [
-            Number.new($1.hex, '', :SAC_INTEGER),
-            Number.new($2.hex, '', :SAC_INTEGER),
-            Number.new($3.hex, '', :SAC_INTEGER)
-          ]
+        if value =~ /^#([A-F\d]{1,2})([A-F\d]{1,2})([A-F\d]{1,2})$/
+          self.parameters = [$1, $2, $3].map { |x|
+            x.length == 1 ? (x * 2).hex : x.hex
+          }.map { |x|
+            Number.new(x, '', :SAC_INTEGER)
+          }
         else
           self.parameters = [LexicalIdent.new(value)]
         end
+      end
+
+      def ==(other)
+        super && self.parameters == other.parameters
       end
     end
 
@@ -48,6 +62,10 @@ module CSS
         self.string_value = value
         self.lexical_unit_type = :SAC_STRING_VALUE
       end
+
+      def ==(other)
+        super && self.string_value == other.string_value
+      end
     end
 
     class LexicalIdent < LexicalUnit
@@ -55,12 +73,20 @@ module CSS
         self.string_value = value
         self.lexical_unit_type = :SAC_IDENT
       end
+
+      def ==(other)
+        super && self.string_value == other.string_value
+      end
     end
 
     class LexicalURI < LexicalUnit
       def initialize(value)
         self.string_value = value.gsub(/^url\(/, '').gsub(/\)$/, '')
         self.lexical_unit_type = :SAC_URI
+      end
+
+      def ==(other)
+        super && self.string_value == other.string_value
       end
     end
 
@@ -105,6 +131,12 @@ module CSS
         self.dimension_unit_text = unit.downcase
         self.lexical_unit_type = UNITS[self.dimension_unit_text] ||
           (value =~ /\./ ? :SAC_NUMBER : :SAC_INTEGER)
+      end
+
+      def ==(other)
+        super && %w{ float_value integer_value dimension_unit_text }.all? { |x|
+          self.send(x.to_sym) == other.send(x.to_sym)
+        }
       end
     end
   end

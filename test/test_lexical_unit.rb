@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + "/helper"
 
 class LexicalUnitTest < Test::Unit::TestCase
+  include CSS::SAC
+
   def setup
     @sac = CSS::SAC::Parser.new()
   end
@@ -13,6 +15,14 @@ class LexicalUnitTest < Test::Unit::TestCase
     flexmock_verify
   end
 
+  def test_equals2
+    first = LexicalUnit.new
+    second = LexicalUnit.new
+    assert_equal(first, second)
+    second.lexical_unit_type = 'asdfadsf'
+    assert_not_equal(first, second)
+  end
+
   def test_color
     flexmock(@sac.document_handler).
       should_receive(:property).with('background-color', on { |list|
@@ -20,7 +30,7 @@ class LexicalUnitTest < Test::Unit::TestCase
         list.first.lexical_unit_type == :SAC_RGBCOLOR &&
         list.first.string_value == "#345" &&
         list.first.parameters.length == 3 &&
-        list.first.parameters.map { |x| x.integer_value } == [3,4,5] &&
+        list.first.parameters.map { |x| x.integer_value } == [51,68,85] &&
         list.first.integer_value.nil?
     }, false).once
 
