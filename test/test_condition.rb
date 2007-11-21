@@ -10,4 +10,13 @@ class ConditionTest < ConditionTestCase
     assert_not_equal first, third
     assert_not_equal first, 1
   end
+
+  def test_eql?
+    first = Condition.new(1)
+    second = Condition.new(1)
+    assert first.eql?(second)
+
+    third = Condition.new(2)
+    assert !first.eql?(third)
+  end
 end

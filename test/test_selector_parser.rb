@@ -17,6 +17,14 @@ class SelectorParserTest < Test::Unit::TestCase
     assert_equal(2, selectors.length)
   end
 
+  def test_eql?
+    @sac.parse('h1, h1 { }')
+    selectors = @sac.document_handler.selectors
+    assert_equal(2, selectors.length)
+    assert_equal selectors[0], selectors[1]
+    assert selectors[0].eql?(selectors[1])
+  end
+
   def test_adjacent
     @sac.parse('h1 + h2 { }')
     selectors = @sac.document_handler.selectors

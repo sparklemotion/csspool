@@ -1,3 +1,7 @@
+== 0.2.0
+
+* Added .eql? to AST
+
 == 0.1.1
 
 * Added specificity to selectors.

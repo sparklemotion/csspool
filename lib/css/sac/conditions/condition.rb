@@ -14,6 +14,10 @@ module CSS
           self.class === other && condition_type == other.condition_type
         end
 
+        def eql?(other)
+          self == other
+        end
+
         def to_css
           nil
         end
