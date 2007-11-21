@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/helper"
 
-class LexicalUnitTest < Test::Unit::TestCase
+class LexicalNumberTest < Test::Unit::TestCase
   def test_equals2
     first = CSS::SAC::Number.new('10', 'px')
     second = CSS::SAC::Number.new('10', 'px')
