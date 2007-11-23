@@ -13,6 +13,10 @@ module CSS
         self.class === other && self.lexical_unit_type == other.lexical_unit_type
       end
 
+      def eql?(other)
+        self == other
+      end
+
       alias :to_s :string_value
     end
 
@@ -35,6 +39,10 @@ module CSS
           self.send(x.to_sym) == other.send(x.to_sym)
         }
       end
+
+      def hash
+        ([self.function_name] + parameters).hash
+      end
     end
 
     class Color < LexicalUnit
@@ -55,6 +63,10 @@ module CSS
       def ==(other)
         super && self.parameters == other.parameters
       end
+
+      def hash
+        self.parameters.hash
+      end
     end
 
     class LexicalString < LexicalUnit
@@ -65,6 +77,10 @@ module CSS
 
       def ==(other)
         super && self.string_value == other.string_value
+      end
+
+      def hash
+        self.string_value.hash
       end
     end
 
@@ -77,6 +93,10 @@ module CSS
       def ==(other)
         super && self.string_value == other.string_value
       end
+
+      def hash
+        self.string_value.hash
+      end
     end
 
     class LexicalURI < LexicalUnit
@@ -87,6 +107,10 @@ module CSS
 
       def ==(other)
         super && self.string_value == other.string_value
+      end
+
+      def hash
+        self.string_value.hash
       end
     end
 
@@ -140,6 +164,16 @@ module CSS
         %w{ float_value integer_value dimension_unit_text }.all? { |x|
           self.send(x.to_sym) == other.send(x.to_sym)
         }
+      end
+
+      def hash
+        if self.float_value == 0
+          self.float_value.hash
+        else
+          %w{ float_value integer_value dimension_unit_text }.map { |x|
+            self.send(x.to_sym)
+          }.hash
+        end
       end
     end
   end
