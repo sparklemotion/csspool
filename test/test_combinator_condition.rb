@@ -10,6 +10,15 @@ class CombinatorConditionTest < ConditionTestCase
     assert_not_equal first, third
   end
 
+  def test_hash
+    first = CombinatorCondition.new(1,1)
+    second = CombinatorCondition.new(1,1)
+    assert_equal first.hash, second.hash
+
+    third = CombinatorCondition.new(1,2)
+    assert_not_equal first.hash, third.hash
+  end
+
   def test_equals_tilde
     first = ClassCondition.new('foo')
     second = AttributeCondition.new('name', 'aaron', true)

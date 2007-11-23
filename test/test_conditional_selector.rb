@@ -1,6 +1,18 @@
 require File.dirname(__FILE__) + "/helper"
 
 class ConditionalSelectorTest < SelectorTestCase
+  def test_hash
+    first = ConditionalSelector.new(1,1)
+    second = ConditionalSelector.new(1,1)
+    assert_equal first.hash, second.hash
+
+    third = ConditionalSelector.new(1,2)
+    assert_not_equal first.hash, third.hash
+
+    fourth = ConditionalSelector.new(2,1)
+    assert_not_equal first.hash, fourth.hash
+  end
+
   def test_equals2
     first = ConditionalSelector.new(1,1)
     second = ConditionalSelector.new(1,1)

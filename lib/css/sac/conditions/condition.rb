@@ -14,6 +14,10 @@ module CSS
           self.class === other && condition_type == other.condition_type
         end
 
+        def hash
+          condition_type.hash
+        end
+
         def eql?(other)
           self == other
         end

@@ -1,6 +1,18 @@
 require File.dirname(__FILE__) + "/helper"
 
 class DescendantSelectorTest < SelectorTestCase
+  def test_hash
+    first = DescendantSelector.new(1,1)
+    second = DescendantSelector.new(1,1)
+    assert_equal first.hash, second.hash
+
+    third = DescendantSelector.new(1,2)
+    assert_not_equal first.hash, third.hash
+
+    fourth = DescendantSelector.new(2,1)
+    assert_not_equal first.hash, fourth.hash
+  end
+
   def test_equals2
     first = DescendantSelector.new(1,1)
     second = DescendantSelector.new(1,1)

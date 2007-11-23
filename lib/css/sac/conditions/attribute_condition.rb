@@ -46,6 +46,10 @@ module CSS
           super && local_name == other.local_name && value == other.value &&
             specified == other.specified
         end
+
+        def hash
+          [local_name, value, specified].hash
+        end
       end
     end
   end

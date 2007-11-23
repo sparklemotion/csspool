@@ -19,4 +19,13 @@ class ConditionTest < ConditionTestCase
     third = Condition.new(2)
     assert !first.eql?(third)
   end
+
+  def test_hash
+    first = Condition.new(1)
+    second = Condition.new(1)
+    assert_equal first.hash, second.hash
+
+    third = Condition.new(2)
+    assert_not_equal first.hash, third.hash
+  end
 end

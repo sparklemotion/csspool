@@ -37,6 +37,10 @@ module CSS
         def ==(other)
           super && condition == other.condition && selector == other.selector
         end
+
+        def hash
+          [condition, selector].hash
+        end
       end
     end
   end

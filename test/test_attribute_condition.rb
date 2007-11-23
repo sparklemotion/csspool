@@ -1,6 +1,15 @@
 require File.dirname(__FILE__) + "/helper"
 
 class AttributeConditionTest < ConditionTestCase
+  def test_hash
+    first = AttributeCondition.new(1, 1, 1)
+    second = AttributeCondition.new(1, 1, 1)
+    assert_equal first.hash, second.hash
+
+    third = AttributeCondition.new(2, 1, 1)
+    assert_not_equal first.hash, third.hash
+  end
+
   def test_equals2
     first = AttributeCondition.new(1, 1, 1)
     second = AttributeCondition.new(1, 1, 1)

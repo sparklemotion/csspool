@@ -1,6 +1,18 @@
 require File.dirname(__FILE__) + "/helper"
 
 class ChildSelectorTest < SelectorTestCase
+  def test_hash
+    first = ChildSelector.new(1,1)
+    second = ChildSelector.new(1,1)
+    assert_equal first.hash, second.hash
+
+    third = ChildSelector.new(1,2)
+    assert_not_equal first.hash, third.hash
+
+    fourth = ChildSelector.new(2,1)
+    assert_not_equal first.hash, fourth.hash
+  end
+
   def test_equals2
     first = ChildSelector.new(1,1)
     second = ChildSelector.new(1,1)

@@ -29,6 +29,10 @@ module CSS
         def ==(other)
           super && name == other.name
         end
+
+        def hash
+          name.hash
+        end
       end
     end
   end

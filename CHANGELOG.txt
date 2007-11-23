@@ -1,6 +1,7 @@
 == 0.2.0
 
-* Added .eql? to AST
+* Added .eql? to selector AST
+* Added .hash to selector AST 
 * Added .eql? to LexicalUnits 
 * Added .hash to LexicalUnits 
 

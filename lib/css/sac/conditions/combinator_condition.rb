@@ -30,6 +30,10 @@ module CSS
         def ==(other)
           super && first == other.first && second == other.second
         end
+
+        def hash
+          [first, second].hash
+        end
       end
     end
   end

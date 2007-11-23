@@ -30,6 +30,10 @@ module CSS
         def ==(other)
           super && selector == other.selector && ancestor == other.ancestor
         end
+        
+        def hash
+          [selector, ancestor].hash
+        end
       end
     end
   end
