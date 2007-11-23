@@ -134,7 +134,10 @@ module CSS
       end
 
       def ==(other)
-        super && %w{ float_value integer_value dimension_unit_text }.all? { |x|
+        return true if self.float_value == 0 && other.float_value == 0
+        return false unless super
+        
+        %w{ float_value integer_value dimension_unit_text }.all? { |x|
           self.send(x.to_sym) == other.send(x.to_sym)
         }
       end
