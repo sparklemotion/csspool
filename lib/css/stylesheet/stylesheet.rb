@@ -1,40 +1,49 @@
 module CSS
   class StyleSheet < CSS::SAC::DocumentHandler
-    attr_reader :selectors
+    attr_reader :rules
 
     def initialize
-      @selectors = []
-      @current_selectors = []
+      @rules = []
+      @current_rules = []
     end
 
     def start_selector(selectors)
-      selectors.each { |ast|
-        @current_selectors << Selector.new(ast)
+      selectors.each { |selector|
+        @current_rules << Rule.new(selector)
       }
     end
 
     def end_selector(selectors)
-      @selectors += @current_selectors
-      @current_selectors = []
+      @rules += @current_rules
+      @current_rules = []
     end
 
     def property(name, value, important)
-      @current_selectors.each { |selector|
+      @current_rules.each { |selector|
         selector.properties << [name, value, important]
       }
     end
 
     def reduce!
-      unique_selectors = {}
-      @selectors.each do |sel|
-        (unique_selectors[sel] ||= sel).properties += sel.properties
+      unique_rules = {}
+      @rules.each do |rule|
+        (unique_rules[rule.selector] ||= rule).properties += rule.properties
       end
-      @selectors = unique_selectors.keys
+      @rules = unique_rules.values
       self
     end
 
+    def rules_by_property
+      rules_by_property = Hash.new { |h,k| h[k] = [] }
+      @rules.each { |sel|
+        props = sel.properties.to_a.sort_by { |x| x.hash } # HACK?
+        rules_by_property[props] << sel
+      }
+      rules_by_property
+    end
+
     def to_css
-      @selectors.each do |sel|
+      @rules.each do |sel|
       end
     end
   end
