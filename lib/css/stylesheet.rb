@@ -1,3 +1,3 @@
 require "css/stylesheet/stylesheet"
-require "css/stylesheet/selector"
+require "css/stylesheet/rule"
 
