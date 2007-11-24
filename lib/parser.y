@@ -203,7 +203,7 @@ rule
     |
     ;
   expr
-    : term operator expr { result = [val[0], val.last] }
+    : term operator expr { result = val }
     | term
     ;
   term
@@ -227,7 +227,7 @@ rule
     ;
   function
     : FUNCTION s_0toN expr ')' s_0toN {
-        result = Function.new(val[0], val[2].flatten)
+        result = Function.new(val[0], val[2].flatten.select { |x| x !~ /,/ })
       }
     | FUNCTION s_0toN expr error ')' s_0toN { yyerrok; result = [val[0], val[2], val[3]] }
     ;
