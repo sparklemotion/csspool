@@ -20,9 +20,9 @@ module CSS
       
       attr_accessor :document_handler, :error_handler, :logger
 
-      def initialize(document_handler = nil)
+      def initialize(document_handler = StyleSheet.new)
         @error_handler = ErrorHandler.new
-        @document_handler = document_handler || DocumentHandler.new()
+        @document_handler = document_handler
         @property_parser = PropertyParser.new()
         @tokenizer = TOKENIZER
         @logger = nil

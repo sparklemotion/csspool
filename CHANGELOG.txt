@@ -4,6 +4,7 @@
 * Added .hash to selector AST 
 * Added .eql? to LexicalUnits 
 * Added .hash to LexicalUnits 
+* StyleSheet is now the default document handler
 
 == 0.1.1
 
