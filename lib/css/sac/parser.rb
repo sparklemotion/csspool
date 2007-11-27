@@ -14,7 +14,7 @@ module CSS
   module SAC
     class Parser < CSS::SAC::GeneratedParser
       # The version of CSSPool you're using
-      VERSION = '0.1.1'
+      VERSION = '0.2.0'
 
       TOKENIZER = Tokenizer.new
       
