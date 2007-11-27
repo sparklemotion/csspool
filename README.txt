@@ -18,7 +18,16 @@ Building CSSpool requires:
 
   - rubygems, hoe, flexmock
 
-== Example
+== Examples
+
+=== Tidy a stylesheet
+
+  parser = CSS::SAC::Parser.new
+  doc = parser.parse(File.read(ARGV[0]))
+  doc.reduce! # Merge duplicate selectors
+  puts doc.to_css
+
+=== Find custom attributes
 
 This example prints out all properties from a particular CSS file.
 
