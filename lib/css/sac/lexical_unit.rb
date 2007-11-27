@@ -112,6 +112,10 @@ module CSS
       def hash
         self.string_value.hash
       end
+
+      def to_s
+        "url(#{string_value})"
+      end
     end
 
     class Number < LexicalUnit

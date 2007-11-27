@@ -40,4 +40,29 @@ END
     assert_equal(1, doc.rules_by_property.keys.length)
     assert_equal(2, doc.rules_by_property.values.first.length)
   end
+
+  def test_to_css
+    doc = @sac.parse(<<END
+  h1 {
+    background-color: red;
+    padding: 100px;
+    border-color: green;
+  }
+  div {
+    border-color: green;
+    background-color: red;
+    padding: 100px;
+  }
+  .marquee { background: url(images/sfx1_bg.gif) bottom repeat-x; padding: 0; margin: 0;}
+END
+    )
+    css = doc.to_css
+    assert_match('h1, div {', css)
+    [ 'border-color: green;',
+      'background-color: red;',
+      'url(images/sfx1_bg.gif',
+      'padding: 100px;'].each do |attribute|
+      assert_match(attribute, css)
+    end
+  end
 end

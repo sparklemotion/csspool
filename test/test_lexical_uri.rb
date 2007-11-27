@@ -3,6 +3,11 @@ require File.dirname(__FILE__) + "/helper"
 class LexicalURITest < Test::Unit::TestCase
   include CSS::SAC
 
+  def test_to_s
+    first = LexicalURI.new('url(http://tenderlovemaking.com/)')
+    assert_equal('url(http://tenderlovemaking.com/)', first.to_s)
+  end
+
   def test_hash
     first = LexicalURI.new('url(http://tenderlovemaking.com/)')
     second = LexicalURI.new('url(http://tenderlovemaking.com/)')

@@ -24,6 +24,7 @@ module CSS
       }
     end
 
+    # Remove duplicate rules
     def reduce!
       unique_rules = {}
       @rules.each do |rule|
@@ -33,6 +34,7 @@ module CSS
       self
     end
 
+    # Get a hash of rules by property
     def rules_by_property
       rules_by_property = Hash.new { |h,k| h[k] = [] }
       @rules.each { |sel|
@@ -43,8 +45,13 @@ module CSS
     end
 
     def to_css
-      @rules.each do |sel|
-      end
+      rules_by_property.map do |properties, rules|
+        rules.map { |rule| rule.selector.to_css }.join(', ') + " {\n" +
+          properties.map { |key,value,important|
+            values = [value].flatten.join(' ')
+            "#{key}: #{values}#{important ? ' !important' : ''};"
+          }.join("\n") + "\n}"
+      end.join("\n")
     end
   end
 end
