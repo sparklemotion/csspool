@@ -52,9 +52,9 @@ module CSS
             # be commas
             join_val = ('font-family' == key) ? ', ' : ' '
             values = [value].flatten.join(join_val)
-            "#{key}: #{values}#{important ? ' !important' : ''};"
+            "#{key}:#{values}#{important ? ' !important' : ''};"
           }.join("\n") + "\n}"
-      end.join("\n")
+      end.sort.join("\n")
     end
   end
 end

@@ -59,11 +59,11 @@ END
     )
     css = doc.to_css
     assert_match('h1, div {', css)
-    [ 'border-color: green;',
-      'background-color: red;',
+    [ 'border-color:green;',
+      'background-color:red;',
       'url(images/sfx1_bg.gif',
       'Arial, Verdana, Geneva, sans-serif;',
-      'padding: 100px;'].each do |attribute|
+      'padding:100px;'].each do |attribute|
       assert_match(attribute, css)
     end
   end

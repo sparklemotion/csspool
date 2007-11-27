@@ -73,9 +73,9 @@ module CSS
           super
         else
           hex = self.parameters.map { |x|
-            sprintf("%02X", x.integer_value).split('')
+            sprintf("%02X", x.integer_value).split('').uniq
           }.flatten
-          hex.uniq.length > 1 ? super : "##{hex[0..2]}"
+          hex.length != 3 ? super : "##{hex.join()}"
         end
       end
     end

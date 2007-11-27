@@ -12,6 +12,9 @@ class LexicalColorTest < Test::Unit::TestCase
 
     third = Color.new('red')
     assert_equal('red', third.to_s)
+
+    fourth = Color.new('#0066FF')
+    assert_equal('#06F', fourth.to_s)
   end
 
   def test_hash
