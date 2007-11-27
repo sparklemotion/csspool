@@ -53,7 +53,8 @@ END
     background-color: red;
     padding: 100px;
   }
-  .marquee { background: url(images/sfx1_bg.gif) bottom repeat-x; padding: 0; margin: 0;}
+  .marquee { background: url(images/sfx1_bg.gif) bottom repeat-x;}
+  SELECT {font-family: Arial, Verdana, Geneva, sans-serif; font-size: small; }
 END
     )
     css = doc.to_css
@@ -61,6 +62,7 @@ END
     [ 'border-color: green;',
       'background-color: red;',
       'url(images/sfx1_bg.gif',
+      'Arial, Verdana, Geneva, sans-serif;',
       'padding: 100px;'].each do |attribute|
       assert_match(attribute, css)
     end

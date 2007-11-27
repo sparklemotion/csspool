@@ -3,6 +3,17 @@ require File.dirname(__FILE__) + "/helper"
 class LexicalColorTest < Test::Unit::TestCase
   include CSS::SAC
 
+  def test_to_s
+    first = Color.new('#FFFFFF')
+    assert_equal('#FFF', first.to_s)
+
+    second = Color.new('#FEFEFE')
+    assert_equal('#FEFEFE', second.to_s)
+
+    third = Color.new('red')
+    assert_equal('red', third.to_s)
+  end
+
   def test_hash
     first = Color.new('#FFFFFF')
     second = Color.new('#FFFFFF')

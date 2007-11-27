@@ -1,6 +1,14 @@
 require File.dirname(__FILE__) + "/helper"
 
 class LexicalNumberTest < Test::Unit::TestCase
+  def test_to_s
+    first = CSS::SAC::Number.new('10', 'px')
+    assert_equal('10px', first.to_s)
+
+    second = CSS::SAC::Number.new('0', 'em')
+    assert_equal('0', second.to_s)
+  end
+
   def test_hash
     first = CSS::SAC::Number.new('10', 'px')
     second = CSS::SAC::Number.new('10', 'px')

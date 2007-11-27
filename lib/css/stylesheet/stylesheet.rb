@@ -48,7 +48,10 @@ module CSS
       rules_by_property.map do |properties, rules|
         rules.map { |rule| rule.selector.to_css }.join(', ') + " {\n" +
           properties.map { |key,value,important|
-            values = [value].flatten.join(' ')
+            # Super annoying.  If the property is font-family, its supposed to
+            # be commas
+            join_val = ('font-family' == key) ? ', ' : ' '
+            values = [value].flatten.join(join_val)
             "#{key}: #{values}#{important ? ' !important' : ''};"
           }.join("\n") + "\n}"
       end.join("\n")

@@ -3,6 +3,11 @@ require File.dirname(__FILE__) + "/helper"
 class LexicalFunctionTest < Test::Unit::TestCase
   include CSS::SAC
 
+  def test_to_s
+    first = Function.new('counter(', %w{ 1 2 3 4 })
+    assert_equal('counter(1, 2, 3, 4)', first.to_s)
+  end
+
   def test_equals2
     first = Function.new('counter(', %w{ 1 2 3 4 })
     second = Function.new('counter(', %w{ 1 2 3 4 })

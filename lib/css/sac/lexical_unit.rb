@@ -67,6 +67,17 @@ module CSS
       def hash
         self.parameters.hash
       end
+
+      def to_s
+        if self.parameters.length < 3
+          super
+        else
+          hex = self.parameters.map { |x|
+            sprintf("%02X", x.integer_value).split('')
+          }.flatten
+          hex.uniq.length > 1 ? super : "##{hex[0..2]}"
+        end
+      end
     end
 
     class LexicalString < LexicalUnit
@@ -177,6 +188,14 @@ module CSS
           %w{ float_value integer_value dimension_unit_text }.map { |x|
             self.send(x.to_sym)
           }.hash
+        end
+      end
+
+      def to_s
+        if self.float_value == 0
+          "0"
+        else
+          super
         end
       end
     end
