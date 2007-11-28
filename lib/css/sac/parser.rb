@@ -20,7 +20,7 @@ module CSS
       
       attr_accessor :document_handler, :error_handler, :logger
 
-      def initialize(document_handler = StyleSheet.new)
+      def initialize(document_handler = StyleSheet.new(self))
         @error_handler = ErrorHandler.new
         @document_handler = document_handler
         @property_parser = PropertyParser.new()
@@ -40,7 +40,18 @@ module CSS
       end
 
       alias :parse :parse_style_sheet
-      alias :parse_rule :parse_style_sheet
+
+      def parse_rule(rule)
+        returner = Class.new(DocumentHandler) {
+          attr_accessor :selector
+          alias :start_selector :selector=
+        }.new
+        old_document_handler = self.document_handler
+        self.document_handler = returner
+        self.parse("#{rule} { }")
+        self.document_handler = old_document_handler
+        returner.selector
+      end
 
       # Returns the parser version.  We return CSS2, but its actually
       # CSS2.1.  No font-face tags.  Sorry.

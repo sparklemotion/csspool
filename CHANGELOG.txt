@@ -1,5 +1,11 @@
 == 0.2.0
 
+* Added CSS::SAC::Parser#parse_rule to parse a single rule.
+* Added CSS::StyleSheet#find_rule for finding a particular rule.
+* Added CSS::StyleSheet#rules_matching for finding all rules matching a node.
+* Added CSS::StyleSheet#create_rule for creating a new rule.
+* Added CSS::StyleSheet#find_all_rules_matching for finding all rules that match
+  any node in the passed in document.
 * Added .eql? to selector AST
 * Added .hash to selector AST 
 * Added .eql? to LexicalUnits 

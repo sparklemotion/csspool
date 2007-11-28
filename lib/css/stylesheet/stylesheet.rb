@@ -2,7 +2,8 @@ module CSS
   class StyleSheet < CSS::SAC::DocumentHandler
     attr_reader :rules
 
-    def initialize
+    def initialize(sac)
+      @sac   = sac
       @rules = []
       @current_rules = []
     end
@@ -16,22 +17,43 @@ module CSS
     def end_selector(selectors)
       @rules += @current_rules
       @current_rules = []
+      reduce!
+    end
+
+    def find_rule(rule)
+      rule = self.create_rule(rule) if rule.is_a?(String)
+      rules.find { |x| x.selector == rule.selector }
+    end
+    alias :[] :find_rule
+
+    # Find all rules used in +hpricot_document+
+    def find_all_rules_matching(hpricot_document)
+      used_rules = []
+      hpricot_document.search('//').each do |node|
+        if matching = (rules_matching(node))
+          used_rules += matching
+        end
+      end
+      used_rules.uniq
+    end
+
+    # Find all rules that match +node+.  +node+ must quack like an Hpricot
+    # node.
+    def rules_matching(node)
+      rules.find_all { |rule|
+        rule.selector =~ node
+      }
+    end
+    alias :=~ :rules_matching
+
+    def create_rule(rule)
+      Rule.new(@sac.parse_rule(rule).first)
     end
 
     def property(name, value, important)
       @current_rules.each { |selector|
         selector.properties << [name, value, important]
       }
-    end
-
-    # Remove duplicate rules
-    def reduce!
-      unique_rules = {}
-      @rules.each do |rule|
-        (unique_rules[rule.selector] ||= rule).properties += rule.properties
-      end
-      @rules = unique_rules.values
-      self
     end
 
     # Get a hash of rules by property
@@ -55,6 +77,17 @@ module CSS
             "#{key}:#{values}#{important ? ' !important' : ''};"
           }.join("\n") + "\n}"
       end.sort.join("\n")
+    end
+
+    private
+    # Remove duplicate rules
+    def reduce!
+      unique_rules = {}
+      @rules.each do |rule|
+        (unique_rules[rule.selector] ||= rule).properties += rule.properties
+      end
+      @rules = unique_rules.values
+      self
     end
   end
 end

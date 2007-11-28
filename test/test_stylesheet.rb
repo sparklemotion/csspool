@@ -1,8 +1,36 @@
 require File.dirname(__FILE__) + "/helper"
 
-class StyleSheetTest < ConditionTestCase
+class StyleSheetTest < SelectorTestCase
   def setup
-    @sac = CSS::SAC::Parser.new(CSS::StyleSheet.new())
+    @sac = CSS::SAC::Parser.new
+  end
+
+  def test_rules_matching
+    doc = @sac.parse("div > p { letter-spacing: 1px; }")
+    node = parent_child_tree('div', 'p')
+    expected = doc.rules.first
+
+    found = doc.rules_matching(node)
+    assert_equal 1, found.length
+    assert_equal expected.selector, found.first.selector
+
+    found2 = (doc =~ node)
+    assert_equal 1, found2.length
+    assert_equal expected.selector, found2.first.selector
+  end
+
+  def test_find_rule
+    doc = @sac.parse("h1 { letter-spacing: 1px; }")
+    expected = doc.rules.first
+    assert_equal expected, doc.find_rule('h1')
+    assert_equal expected, doc['h1']
+    assert_equal expected, doc[expected]
+  end
+
+  def test_create_rule
+    doc = @sac.parse("h1 { letter-spacing: 1px; }")
+    rule = doc.create_rule('h1')
+    assert_equal doc.rules.first.selector, rule.selector
   end
 
   def test_reduce!
@@ -14,11 +42,7 @@ class StyleSheetTest < ConditionTestCase
   h1 { letter-spacing: 1px; }
 END
     )
-    assert_equal(2, doc.rules.length)
-
-    doc.reduce!
     assert_equal(1, doc.rules.length)
-    assert_equal(3, doc.rules.first.properties.length)
   end
 
   def test_rules_by_property
@@ -58,7 +82,8 @@ END
 END
     )
     css = doc.to_css
-    assert_match('h1, div {', css)
+    assert_match('div, h1 {', css)
+
     [ 'border-color:green;',
       'background-color:red;',
       'url(images/sfx1_bg.gif',

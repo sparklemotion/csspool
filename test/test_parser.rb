@@ -10,6 +10,22 @@ class ParserTest < Test::Unit::TestCase
     flexmock_close
   end
 
+  def test_parse_rule
+    class << @sac.document_handler
+      attr_accessor :selector
+      alias :start_selector :selector=
+    end
+    @sac.parse('h1 > div { }')
+
+    expected_rule = @sac.document_handler.selector
+    assert expected_rule
+
+    rule = @sac.parse_rule('h1 > div')
+    assert rule
+    assert_equal 1, rule.length
+    assert_equal expected_rule, rule
+  end
+
   def test_page
     flexmock(@sac.document_handler).
       should_receive(:start_page).ordered.
