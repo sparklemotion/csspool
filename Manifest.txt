@@ -32,6 +32,10 @@ lib/css/sac/selectors/simple_selector.rb
 lib/css/sac/token.rb
 lib/css/sac/tokenizer.rb
 lib/css/sac/visitable.rb
+lib/css/stylesheet.rb
+lib/css/stylesheet/rule.rb
+lib/css/stylesheet/stylesheet.rb
+lib/csspool.rb
 lib/parser.y
 lib/property_parser.y
 lib/property_parser.y.erb
@@ -50,7 +54,13 @@ test/test_descendant_selector.rb
 test/test_element_selector.rb
 test/test_id_condition.rb
 test/test_lexeme.rb
+test/test_lexical_color.rb
+test/test_lexical_function.rb
+test/test_lexical_ident.rb
+test/test_lexical_number.rb
+test/test_lexical_string.rb
 test/test_lexical_unit.rb
+test/test_lexical_uri.rb
 test/test_one_of_condition.rb
 test/test_parse_error.rb
 test/test_parser.rb
@@ -61,6 +71,7 @@ test/test_selector_parser.rb
 test/test_sibling_selector.rb
 test/test_simple_selector.rb
 test/test_specificity.rb
+test/test_stylesheet.rb
 test/test_token.rb
 test/test_tokenizer.rb
 test/test_xpath.rb
