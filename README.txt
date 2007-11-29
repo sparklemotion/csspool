@@ -24,7 +24,6 @@ Building CSSpool requires:
 
   parser = CSS::SAC::Parser.new
   doc = parser.parse(File.read(ARGV[0]))
-  doc.reduce! # Merge duplicate selectors
   puts doc.to_css
 
 === Find custom attributes
