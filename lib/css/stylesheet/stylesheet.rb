@@ -68,7 +68,7 @@ module CSS
 
     def to_css
       rules_by_property.map do |properties, rules|
-        rules.map { |rule| rule.selector.to_css }.join(', ') + " {\n" +
+        rules.map { |rule| rule.selector.to_css }.sort.join(', ') + " {\n" +
           properties.map { |key,value,important|
             # Super annoying.  If the property is font-family, its supposed to
             # be commas
