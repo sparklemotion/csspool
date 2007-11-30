@@ -1,3 +1,7 @@
+== 0.2.1
+
+* Recovering from unexpected tokens in the properties section.
+
 == 0.2.0
 
 * Added CSS::SAC::Parser#parse_rule to parse a single rule.

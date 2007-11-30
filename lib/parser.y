@@ -191,6 +191,11 @@ rule
         error = ParseException.new("Unkown property: \"#{val[1]}\"")
         self.error_handler.error(error)
       }
+    | error ';' s_0toN declaration_0toN {
+        yyerrok
+        error = ParseException.new("Unkown property: \"#{val[0]}\"")
+        self.error_handler.error(error)
+      }
     | declaration
     | s_0toN ';' s_0toN declaration_0toN
     |
