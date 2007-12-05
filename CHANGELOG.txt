@@ -1,3 +1,7 @@
+== 0.2.3
+
+* Fixed a bug where nil selectors on conditional selectors were being visited.
+
 == 0.2.2
 
 * I suck.

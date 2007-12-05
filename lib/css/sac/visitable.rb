@@ -69,7 +69,9 @@ module CSS
 
       def visit_ConditionalSelector(o)
         return false unless visit_SimpleSelector(o) # *sigh*
-        o.selector.accept(self) && o.condition.accept(self)
+        [o.selector, o.condition].compact.all? { |x|
+          x.accept(self)
+        }
       end
 
       def visit_AttributeCondition(o)

@@ -35,6 +35,9 @@ class ConditionalSelectorTest < SelectorTestCase
 
     assert sel =~ node
 
+    sel = ConditionalSelector.new(nil, attribute)
+    assert(sel =~ node)
+
     node.attributes = { 'class' => 'bar' }
     assert(!(sel =~ node))
   end
