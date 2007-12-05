@@ -14,6 +14,7 @@ lib/css/sac/conditions/one_of_condition.rb
 lib/css/sac/conditions/pseudo_class_condition.rb
 lib/css/sac/document_handler.rb
 lib/css/sac/error_handler.rb
+lib/css/sac/generated_parser.rb
 lib/css/sac/generated_property_parser.rb
 lib/css/sac/lexeme.rb
 lib/css/sac/lexical_unit.rb

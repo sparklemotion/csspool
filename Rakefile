@@ -15,7 +15,7 @@ Hoe.new('csspool', '0.2.2') do |p|
   p.description     = p.paragraphs_of('README.txt', 3).join("\n\n")
   p.url             = p.paragraphs_of('README.txt', 1).first.strip
   p.changes         = p.paragraphs_of('CHANGELOG.txt', 0..1).join("\n\n")
-  p.clean_globs     = [GENERATED_PARSER]
+  p.clean_globs     = [GENERATED_PARSER, GENERATED_PROPERTY_PARSER]
 end
 
 class Array
@@ -54,3 +54,4 @@ task :parser => [GENERATED_PARSER, GENERATED_PROPERTY_PARSER]
 
 # make sure the parser's up-to-date when we test
 Rake::Task[:test].prerequisites << :parser
+Rake::Task[:check_manifest].prerequisites << :parser
