@@ -1,3 +1,7 @@
+== 0.2.2
+
+* I suck.
+
 == 0.2.1
 
 * Recovering from unexpected tokens in the properties section.

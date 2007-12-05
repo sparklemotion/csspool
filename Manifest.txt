@@ -51,6 +51,7 @@ test/test_condition.rb
 test/test_conditional_selector.rb
 test/test_descendant_selector.rb
 test/test_element_selector.rb
+test/test_error_recovery.rb
 test/test_id_condition.rb
 test/test_lexeme.rb
 test/test_lexical_color.rb
