@@ -14,7 +14,7 @@ module CSS
   module SAC
     class Parser < CSS::SAC::GeneratedParser
       # The version of CSSPool you're using
-      VERSION = '0.2.3'
+      VERSION = '0.2.4'
 
       TOKENIZER = Tokenizer.new
       
@@ -82,7 +82,11 @@ module CSS
             token = next_token
             eliminate_pair_matches(token[1])
             logger.warn("Eliminated token: #{token.join(' ')}") if logger
-            break if token[1] == pairs[error_value]
+            if token[1] == pairs[error_value]
+              @position -= 1
+              @tokens[@position] = Token.new(:S, ' ', nil) # super hack
+              break
+            end
           }
         end
       end
