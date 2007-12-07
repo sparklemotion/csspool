@@ -1,3 +1,7 @@
+== 0.2.5
+
+* Accepting spaces after error rules.
+
 == 0.2.4
 
 * Fixed error handling on at rules.  Thanks Dan for tests!

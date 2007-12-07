@@ -6,7 +6,7 @@ token IMPORTANT_SYM IMPORT_SYM MEDIA_SYM PAGE_SYM CHARSET_SYM DIMENSION
 
 rule
   stylesheet
-    : s_cdo_cdc_0toN CHARSET_SYM s_0toN STRING ';' import_0toN ruleset_media_page_0toN
+    : s_cdo_cdc_0toN CHARSET_SYM s_0toN STRING s_0toN ';' s_0toN import_0toN ruleset_media_page_0toN
     | s_cdo_cdc_0toN import_0toN ruleset_media_page_0toN
     ;
   ruleset_media_page_0toN
@@ -24,7 +24,7 @@ rule
       }
     ;
   ignorable_at
-    : '@' IDENT s_0toN string_uri_or_ident_1toN s_0toN medium_0toN ';' s_0toN {
+    : '@' IDENT s_0toN string_uri_or_ident_1toN medium_0toN ';' s_0toN {
         self.document_handler.ignorable_at_rule(val[1])
       }
     | '@' IDENT s_0toN error S {
@@ -281,8 +281,8 @@ rule
   string_uri_or_ident_1toN
     : string_or_uri s_0toN string_uri_or_ident_1toN
     | IDENT s_0toN string_uri_or_ident_1toN
-    | IDENT
-    | string_or_uri
+    | IDEN s_0toN
+    | string_or_uri s_0toN
     ;
   s_cdo_cdc_0toN
     : S s_cdo_cdc_0toN
