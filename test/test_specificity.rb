@@ -22,55 +22,55 @@ class SpecificityTest < Test::Unit::TestCase
     @sac.parse('* {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 0, selector.specificity
+    assert_equal [0, 0, 0, 0], selector.specificity
   end
 
   def test_li
     @sac.parse('li {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 1, selector.specificity
+    assert_equal [0, 0, 0, 1], selector.specificity
   end
 
   def test_ul_li
     @sac.parse('ul li {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 2, selector.specificity
+    assert_equal [0, 0, 0, 2], selector.specificity
   end
 
   def test_ul_ol_plus_li
     @sac.parse('ul ol+li {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 3, selector.specificity
+    assert_equal [0, 0, 0, 3], selector.specificity
   end
 
   def test_h1_attributes
     @sac.parse('h1 + *[REL=up] {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 11, selector.specificity
+    assert_equal [0, 0, 1, 1], selector.specificity
   end
 
   def test_one_class_selector
     @sac.parse('ul ol li.red {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 13, selector.specificity
+    assert_equal [0, 0, 1, 3], selector.specificity
   end
 
   def test_two_class_selectors
     @sac.parse('li.red.level {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 21, selector.specificity
+    assert_equal [0, 0, 2, 1], selector.specificity
   end
 
   def test_id_selector
     @sac.parse('#x34y {}')
     selector = @sac.document_handler.selectors.first
     assert_not_nil selector
-    assert_equal 100, selector.specificity
+    assert_equal [0, 1, 0, 0], selector.specificity
   end
 end

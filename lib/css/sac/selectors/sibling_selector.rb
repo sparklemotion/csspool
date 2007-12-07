@@ -23,7 +23,7 @@ module CSS
         end
 
         def specificity
-          selector.specificity + sibling.specificity
+          selector.specificity.zip(sibling.specificity).map { |x,y| x + y }
         end
 
         def ==(other)

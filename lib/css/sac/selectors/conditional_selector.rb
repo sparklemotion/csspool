@@ -30,8 +30,10 @@ module CSS
         end
 
         def specificity
-          (selector ? selector.specificity : 0) +
-            (condition ? condition.specificity : 0)
+          (selector ? selector.specificity : ([0] * 4)).zip(
+            (condition ? condition.specificity : ([0] * 4))).map { |x,y|
+              x + y
+          }
         end
 
         def ==(other)

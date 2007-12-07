@@ -24,7 +24,7 @@ module CSS
         end
 
         def specificity
-          ancestor.specificity + selector.specificity
+          ancestor.specificity.zip(selector.specificity).map { |x,y| x + y }
         end
 
         def ==(other)

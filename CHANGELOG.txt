@@ -1,6 +1,8 @@
 == 0.2.4
 
 * Fixed error handling on at rules.  Thanks Dan for tests!
+* Made specificity an array
+* Made StyleSheet::Rule comparable on specificity
 
 == 0.2.3
 

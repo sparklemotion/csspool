@@ -39,7 +39,7 @@ module CSS
         end
 
         def specificity
-          10
+          [0, 0, 1, 0]
         end
 
         def ==(other)

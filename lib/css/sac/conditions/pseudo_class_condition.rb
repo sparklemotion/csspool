@@ -16,7 +16,7 @@ module CSS
         end
 
         def specificity
-          0
+          [0, 0, 0, 0]
         end
       end
     end

@@ -19,7 +19,7 @@ module CSS
         end
 
         def specificity
-          100
+          [0, 1, 0, 0]
         end
       end
     end
