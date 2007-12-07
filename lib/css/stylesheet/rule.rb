@@ -4,14 +4,16 @@ module CSS
     class Rule
       include Comparable
 
-      attr_accessor :selector, :properties
-      def initialize(selector, properties = [])
+      attr_accessor :selector, :properties, :index
+      def initialize(selector, index, properties = [])
         @selector = selector
         @properties = Set.new(properties)
+        @index = index
       end
 
       def <=>(other)
-        selector.specificity <=> other.selector.specificity
+        comp = selector.specificity <=> other.selector.specificity
+        comp == 0 ? index <=> other.index : comp
       end
     end
   end

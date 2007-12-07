@@ -6,17 +6,19 @@ module CSS
       @sac   = sac
       @rules = []
       @current_rules = []
+      @selector_index = 0
     end
 
     def start_selector(selectors)
       selectors.each { |selector|
-        @current_rules << Rule.new(selector)
+        @current_rules << Rule.new(selector, @selector_index)
       }
     end
 
     def end_selector(selectors)
       @rules += @current_rules
       @current_rules = []
+      @selector_index += 1
       reduce!
     end
 
@@ -47,7 +49,7 @@ module CSS
     alias :=~ :rules_matching
 
     def create_rule(rule)
-      Rule.new(@sac.parse_rule(rule).first)
+      Rule.new(@sac.parse_rule(rule).first, @selector_index += 1)
     end
 
     def property(name, value, important)
