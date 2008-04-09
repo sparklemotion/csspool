@@ -1,6 +1,8 @@
 == 0.2.5
 
 * Accepting spaces after error rules.
+* Comments with asterisks tokenize correctly. [Seth Rasmussen]
+* Stop polluting the global namespace with includes. [Thomas Kadauke]
 
 == 0.2.4
 
