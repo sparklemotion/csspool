@@ -1,4 +1,5 @@
 /doc
+/pkg
 
 /lib/property_parser.y
 /lib/css/parser.rb
