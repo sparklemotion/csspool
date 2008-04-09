@@ -119,8 +119,8 @@ module CSS
         tokens = []
         pos = 0
 
-        comments = input_data.scan(/\/\*[^*]*\*+\//m)
-        non_comments = input_data.split(/\/\*[^*]*\*+\//m)
+        comments = input_data.scan(/\/\*.*\*\//m)
+        non_comments = input_data.split(/\/\*.*\*\//m)
 
         # Handle a small edge case, if our CSS is *only* comments,
         # the split, zip, scan trick won't work

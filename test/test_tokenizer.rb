@@ -99,9 +99,12 @@ class TokenizerTest < Test::Unit::TestCase
       :IDENT, :LBRACE, :IDENT, :delim, [:IDENT, "pink"], :delim, :delim)
   end
   
+  def test_comment_with_an_asterisk_in_it
+    assert_tokens("/* * */", :COMMENT)
+  end
+  
   def assert_tokens(text, *expected)
     tokens = @tokenizer.tokenize(text).reject { |t| t.name == :S }
-    # puts tokens.collect { |t| [t.name, t.value].inspect }.join(",\n")
     
     assert_equal(expected.size, tokens.size)
     
