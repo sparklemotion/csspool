@@ -302,6 +302,7 @@ end
 ---- header
   require "css/sac/conditions"
   require "css/sac/selectors"
-  
+
+---- inner
   include CSS::SAC::Conditions
   include CSS::SAC::Selectors

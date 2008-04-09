@@ -26,7 +26,7 @@ class ConditionalSelectorTest < SelectorTestCase
   end
 
   def test_equals_tilde
-    attribute = AttributeCondition.new('class', 'foo', true)
+    attribute = CSS::SAC::Conditions::AttributeCondition.new('class', 'foo', true)
     div = ElementSelector.new('div')
     sel = ConditionalSelector.new(div, attribute)
 
