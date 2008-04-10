@@ -1,3 +1,7 @@
+== 0.2.6
+
+* Fix comment greediness. [Seth Rasmussen]
+
 == 0.2.5
 
 * Accepting spaces after error rules.

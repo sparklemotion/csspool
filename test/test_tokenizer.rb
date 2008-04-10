@@ -117,4 +117,11 @@ class TokenizerTest < Test::Unit::TestCase
       count += 1
     end
   end
+  
+  def test_comments_pattern_is_lazy
+    text = "/* * HAI * */ a {display:block} /* * BAI * */ em {font-style:normal}"
+    assert_tokens text,
+      :COMMENT, :IDENT, :LBRACE, :IDENT, :delim, [:IDENT, "block"], :delim,
+      :COMMENT, :IDENT, :LBRACE, :IDENT, :delim, [:IDENT, "normal"], :delim
+  end
 end
