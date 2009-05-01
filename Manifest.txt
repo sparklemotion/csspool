@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/crocodile
+lib/crocodile.rb
+test/test_crocodile.rb
