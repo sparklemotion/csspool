@@ -29,6 +29,41 @@ VALUE statement_type(VALUE self)
   return INT2NUM(statement->type);
 }
 
+VALUE parent_sheet(VALUE self)
+{
+  CRStatement * statement;
+  Data_Get_Struct(self, CRStatement, statement);
+  return (VALUE)statement->parent_sheet->app_data;
+}
+
+VALUE specificity(VALUE self)
+{
+  CRStatement * statement;
+  Data_Get_Struct(self, CRStatement, statement);
+  return INT2NUM(statement->specificity);
+}
+
+VALUE line(VALUE self)
+{
+  CRStatement * statement;
+  Data_Get_Struct(self, CRStatement, statement);
+  return INT2NUM(statement->location.line);
+}
+
+VALUE column(VALUE self)
+{
+  CRStatement * statement;
+  Data_Get_Struct(self, CRStatement, statement);
+  return INT2NUM(statement->location.column);
+}
+
+VALUE byte(VALUE self)
+{
+  CRStatement * statement;
+  Data_Get_Struct(self, CRStatement, statement);
+  return INT2NUM(statement->location.byte_offset);
+}
+
 void init_crocodile_statement()
 {
   VALUE crocodile = rb_define_module("Crocodile");
@@ -38,4 +73,9 @@ void init_crocodile_statement()
   cCrocodileRuleSet   = rb_define_class_under(crocodile, "RuleSet", klass);
 
   rb_define_method(klass, "statement_type", statement_type, 0);
+  rb_define_method(klass, "parent_sheet", parent_sheet, 0);
+  rb_define_method(klass, "specificity", specificity, 0);
+  rb_define_method(klass, "line", line, 0);
+  rb_define_method(klass, "column", column, 0);
+  rb_define_method(klass, "byte", byte, 0);
 }
