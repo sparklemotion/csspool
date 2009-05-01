@@ -16,7 +16,8 @@ static VALUE selector(VALUE self)
 void init_crocodile_rule_set()
 {
   VALUE crocodile = rb_define_module("Crocodile");
-  VALUE stmt      = rb_define_class_under(crocodile, "Statement", rb_cObject);
+  VALUE node      = rb_define_class_under(crocodile, "Node", rb_cObject);
+  VALUE stmt      = rb_define_class_under(crocodile, "Statement", node);
   VALUE klass     = rb_define_class_under(crocodile, "RuleSet", stmt);
   cCrocodileRuleSet = klass;
 

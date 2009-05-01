@@ -68,7 +68,8 @@ static VALUE byte(VALUE self)
 void init_crocodile_statement()
 {
   VALUE crocodile = rb_define_module("Crocodile");
-  VALUE klass     = rb_define_class_under(crocodile, "Statement", rb_cObject);
+  VALUE node      = rb_define_class_under(crocodile, "Node", rb_cObject);
+  VALUE klass     = rb_define_class_under(crocodile, "Statement", node);
 
   cCrocodileStatement = klass;
 

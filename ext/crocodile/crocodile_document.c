@@ -45,7 +45,8 @@ VALUE cCrocodileDocument;
 void init_crocodile_document()
 {
   VALUE crocodile = rb_define_module("Crocodile");
-  VALUE klass     = rb_define_class_under(crocodile, "Document", rb_cObject);
+  VALUE node      = rb_define_class_under(crocodile, "Node", rb_cObject);
+  VALUE klass     = rb_define_class_under(crocodile, "Document", node);
 
   cCrocodileDocument = klass;
 
