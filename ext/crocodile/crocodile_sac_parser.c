@@ -12,6 +12,23 @@ static void end_document(CRDocHandler *dh)
   rb_funcall(document, rb_intern("end_document"), 0);
 }
 
+static void charset(CRDocHandler *dh,
+    CRString *name,
+    CRParsingLocation *location)
+{
+  VALUE document = (VALUE)dh->app_data;
+  VALUE loc = rb_hash_new();
+  rb_hash_aset(loc, ID2SYM(rb_intern("line")), INT2NUM(location->line));
+  rb_hash_aset(loc, ID2SYM(rb_intern("column")), INT2NUM(location->column));
+  rb_hash_aset(loc, ID2SYM(rb_intern("byte_offset")),
+      INT2NUM(location->byte_offset));
+
+  rb_funcall(document, rb_intern("charset"), 2,
+    rb_str_new2(cr_string_peek_raw_str(name)),
+    loc
+  );
+}
+
 static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
 {
   CRParser * parser = cr_parser_new_from_buf(
@@ -24,8 +41,10 @@ static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
   CRDocHandler * sac_handler = cr_doc_handler_new();
 
   sac_handler->app_data = (gpointer)rb_funcall(self, rb_intern("document"), 0);
+
   sac_handler->start_document = start_document;
   sac_handler->end_document = end_document;
+  sac_handler->charset = charset;
 
   cr_parser_set_sac_handler(parser, sac_handler);
   cr_parser_parse(parser);

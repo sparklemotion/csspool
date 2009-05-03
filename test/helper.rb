@@ -11,10 +11,12 @@ module Crocodile
 
     class MyDoc < Crocodile::SAC::Document
       attr_accessor :start_documents, :end_documents
+      attr_accessor :charsets
 
       def initialize
         @start_documents = []
         @end_documents = []
+        @charsets = []
       end
 
       def start_document
@@ -23,6 +25,10 @@ module Crocodile
 
       def end_document
         @end_documents << true
+      end
+
+      def charset name, location
+        @charsets << [name, location]
       end
     end
   end

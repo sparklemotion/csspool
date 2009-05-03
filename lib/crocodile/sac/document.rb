@@ -6,6 +6,9 @@ module Crocodile
 
       def end_document
       end
+
+      def charset name, location
+      end
     end
   end
 end
