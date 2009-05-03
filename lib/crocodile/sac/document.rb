@@ -9,6 +9,9 @@ module Crocodile
 
       def charset name, location
       end
+
+      def import_style media_list, uri, default_ns, location
+      end
     end
   end
 end

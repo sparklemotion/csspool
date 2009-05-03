@@ -5,19 +5,18 @@ module Crocodile
     class TestParser < Crocodile::TestCase
       def setup
         @doc = MyDoc.new
-        @parser = Crocodile::SAC::Parser.new(@doc)
-        @parser.parse(<<-eocss)
+        @css = <<-eocss
           @charset "UTF-8";
+          @import url("foo.css") screen;
           a { background: red; }
         eocss
+        @parser = Crocodile::SAC::Parser.new(@doc)
+        @parser.parse(@css)
       end
 
       def test_parse_no_doc
         parser = Crocodile::SAC::Parser.new
-        parser.parse(<<-eocss)
-          @charset "UTF-8";
-          a { background: red; }
-        eocss
+        parser.parse(@css)
       end
 
       def test_start_document
@@ -32,6 +31,13 @@ module Crocodile
         assert_equal(
           [["UTF-8", { :line => 1, :byte_offset => 10, :column => 11}]],
           @doc.charsets)
+      end
+
+      def test_import_style
+        styles = @doc.import_styles.first
+        assert_equal ["screen"], styles.first
+        assert_equal "foo.css", styles[1]
+        assert_nil styles[2]
       end
     end
   end

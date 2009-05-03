@@ -35,6 +35,29 @@ static void charset(CRDocHandler *dh,
   );
 }
 
+static void import_style(CRDocHandler *dh,
+    GList *media_list,
+    CRString *uri,
+    CRString *default_ns,
+    CRParsingLocation *location)
+{
+  VALUE document = (VALUE)dh->app_data;
+
+  GList * list = media_list;
+  VALUE mlist = rb_ary_new();
+  while(list != NULL) {
+    rb_ary_push(mlist,
+        rb_str_new2(cr_string_peek_raw_str((CRString *)list->data)));
+    list = list->next;
+  }
+  rb_funcall(document, rb_intern("import_style"), 4,
+      mlist,
+      uri ? rb_str_new2(cr_string_peek_raw_str(uri)) : Qnil,
+      default_ns ? rb_str_new2(cr_string_peek_raw_str(default_ns)) : Qnil,
+      location_to_h(location)
+  );
+}
+
 static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
 {
   CRParser * parser = cr_parser_new_from_buf(
@@ -51,11 +74,13 @@ static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
   sac_handler->start_document = start_document;
   sac_handler->end_document = end_document;
   sac_handler->charset = charset;
+  sac_handler->import_style = import_style;
 
   cr_parser_set_sac_handler(parser, sac_handler);
   cr_parser_parse(parser);
   cr_parser_destroy(parser);
   cr_doc_handler_destroy(sac_handler);
+  return self;
 }
 
 void init_crocodile_sac_parser()

@@ -11,12 +11,13 @@ module Crocodile
 
     class MyDoc < Crocodile::SAC::Document
       attr_accessor :start_documents, :end_documents
-      attr_accessor :charsets
+      attr_accessor :charsets, :import_styles
 
       def initialize
         @start_documents = []
         @end_documents = []
         @charsets = []
+        @import_styles = []
       end
 
       def start_document
@@ -29,6 +30,10 @@ module Crocodile
 
       def charset name, location
         @charsets << [name, location]
+      end
+
+      def import_style media_list, uri, default_ns, location
+        @import_styles << [media_list, uri, default_ns, location]
       end
     end
   end
