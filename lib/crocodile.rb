@@ -1,3 +1,4 @@
+require 'crocodile/sac'
 require 'crocodile/crocodile'
 require 'crocodile/document'
 require 'crocodile/version'

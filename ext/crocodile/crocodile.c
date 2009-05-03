@@ -9,4 +9,5 @@ void Init_crocodile()
   init_crocodile_statement();
   init_crocodile_rule_set();
   init_crocodile_selector();
+  init_crocodile_sac_parser();
 }

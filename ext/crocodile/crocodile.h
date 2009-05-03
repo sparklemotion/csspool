@@ -10,6 +10,7 @@
 #include <crocodile_statement.h>
 #include <crocodile_rule_set.h>
 #include <crocodile_selector.h>
+#include <crocodile_sac_parser.h>
 
 extern VALUE mCrocodile;
 
