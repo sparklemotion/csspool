@@ -1,5 +1,16 @@
 #include <crocodile_sac_parser.h>
 
+static VALUE location_to_h(CRParsingLocation * location)
+{
+  VALUE loc = rb_hash_new();
+  rb_hash_aset(loc, ID2SYM(rb_intern("line")), INT2NUM(location->line));
+  rb_hash_aset(loc, ID2SYM(rb_intern("column")), INT2NUM(location->column));
+  rb_hash_aset(loc, ID2SYM(rb_intern("byte_offset")),
+      INT2NUM(location->byte_offset));
+
+  return loc;
+}
+
 static void start_document(CRDocHandler *dh)
 {
   VALUE document = (VALUE)dh->app_data;
@@ -17,15 +28,10 @@ static void charset(CRDocHandler *dh,
     CRParsingLocation *location)
 {
   VALUE document = (VALUE)dh->app_data;
-  VALUE loc = rb_hash_new();
-  rb_hash_aset(loc, ID2SYM(rb_intern("line")), INT2NUM(location->line));
-  rb_hash_aset(loc, ID2SYM(rb_intern("column")), INT2NUM(location->column));
-  rb_hash_aset(loc, ID2SYM(rb_intern("byte_offset")),
-      INT2NUM(location->byte_offset));
 
   rb_funcall(document, rb_intern("charset"), 2,
     rb_str_new2(cr_string_peek_raw_str(name)),
-    loc
+    location_to_h(location)
   );
 }
 
