@@ -8,7 +8,8 @@ module Crocodile
         @css = <<-eocss
           @charset "UTF-8";
           @import url("foo.css") screen;
-          a { background: red; }
+          /* This is a comment */
+          div a.foo, #bar, * { background: red; }
         eocss
         @parser = Crocodile::SAC::Parser.new(@doc)
         @parser.parse(@css)
@@ -38,6 +39,12 @@ module Crocodile
         assert_equal ["screen"], styles.first
         assert_equal "foo.css", styles[1]
         assert_nil styles[2]
+      end
+
+      def test_start_selector
+        start = @doc.start_selectors.first
+        assert start, "should have start selectors"
+        assert_equal 1, start.simple_selectors.length
       end
     end
   end
