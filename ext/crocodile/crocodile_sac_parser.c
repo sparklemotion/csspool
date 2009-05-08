@@ -19,6 +19,9 @@ static VALUE add_sel_to_rb(CRAdditionalSel * add_sel)
   {
     case CLASS_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Class"));
+      return rb_funcall(klass, rb_intern("new"), 1,
+        rb_str_new2(cr_string_peek_raw_str(add_sel->content.class_name))
+      );
       break;
     case PSEUDO_CLASS_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("PseudoClass"));
@@ -28,6 +31,8 @@ static VALUE add_sel_to_rb(CRAdditionalSel * add_sel)
       break;
     case ATTRIBUTE_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Attribute"));
+      break;
+    case NO_ADD_SELECTOR:
       break;
   }
 
@@ -44,6 +49,8 @@ static VALUE simple_selector_to_rb(CRSimpleSel * simple_sel)
       break;
     case TYPE_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Type"));
+      break;
+    case NO_SELECTOR_TYPE:
       break;
   }
 
@@ -64,6 +71,7 @@ static VALUE simple_selector_to_rb(CRSimpleSel * simple_sel)
     rb_ary_push(add_sel_list, add_sel_to_rb(add_sel));
     add_sel = add_sel->next;
   }
+  rb_funcall(simple, rb_intern("additional_selectors="), 1, add_sel_list);
   return simple;
 }
 
