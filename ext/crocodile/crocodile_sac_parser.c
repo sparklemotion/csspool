@@ -11,18 +11,59 @@ static VALUE location_to_h(CRParsingLocation * location)
   return loc;
 }
 
+static VALUE add_sel_to_rb(CRAdditionalSel * add_sel)
+{
+  VALUE klass = rb_const_get(mCrocodileSelectors, rb_intern("Additional"));
+
+  switch(add_sel->type)
+  {
+    case CLASS_ADD_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("Class"));
+      break;
+    case PSEUDO_CLASS_ADD_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("PseudoClass"));
+      break;
+    case ID_ADD_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("Id"));
+      break;
+    case ATTRIBUTE_ADD_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("Attribute"));
+      break;
+  }
+
+  return rb_funcall(klass, rb_intern("new"), 0);
+}
+
 static VALUE simple_selector_to_rb(CRSimpleSel * simple_sel)
 {
-  VALUE klass = rb_const_get(mCrocodile, rb_intern("SimpleSelector"));
-  VALUE simple = rb_funcall(klass, rb_intern("new"), 3,
+  VALUE klass = rb_const_get(mCrocodileSelectors, rb_intern("Simple"));
+
+  switch(simple_sel->type_mask) {
+    case UNIVERSAL_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("Universal"));
+      break;
+    case TYPE_SELECTOR:
+      klass = rb_const_get(mCrocodileSelectors, rb_intern("Type"));
+      break;
+  }
+
+  VALUE simple = rb_funcall(klass, rb_intern("new"), 2,
       simple_sel->name ?
         rb_str_new2(cr_string_peek_raw_str(simple_sel->name)) :
         Qnil,
-      INT2NUM(simple_sel->type_mask),
       INT2NUM(simple_sel->combinator)
   );
   rb_funcall(simple, rb_intern("parse_location="), 1,
       location_to_h(&simple_sel->location));
+
+  VALUE add_sel_list = rb_ary_new();
+
+  // Copy our list of additional selectors
+  CRAdditionalSel * add_sel = simple_sel->add_sel;
+  while(NULL != add_sel) {
+    rb_ary_push(add_sel_list, add_sel_to_rb(add_sel));
+    add_sel = add_sel->next;
+  }
   return simple;
 }
 

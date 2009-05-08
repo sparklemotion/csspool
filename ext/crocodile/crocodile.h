@@ -13,5 +13,6 @@
 #include <crocodile_sac_parser.h>
 
 extern VALUE mCrocodile;
+extern VALUE mCrocodileSelectors;
 
 #endif

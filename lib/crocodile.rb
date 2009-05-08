@@ -1,6 +1,6 @@
 require 'crocodile/node'
+require 'crocodile/selectors'
 require 'crocodile/selector'
-require 'crocodile/simple_selector'
 require 'crocodile/sac'
 require 'crocodile/crocodile'
 require 'crocodile/document'

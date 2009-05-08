@@ -10,6 +10,7 @@ module Crocodile
           @import url("foo.css") screen;
           /* This is a comment */
           div a.foo, #bar, * { background: red; }
+          div#a, a.foo, a:hover, a[href='watever'] { background: red; }
         eocss
         @parser = Crocodile::SAC::Parser.new(@doc)
         @parser.parse(@css)
@@ -54,6 +55,14 @@ module Crocodile
         selector.simple_selectors.each do |ss|
           assert ss.parse_location
         end
+      end
+
+      def test_additional_selector_list
+        selectors_for_rule = @doc.start_selectors.first
+        selector = selectors_for_rule.first # => div a.foo
+        simple_selector = selector.simple_selectors[1] # => a.foo
+        assert additional_selectors = simple_selector.additional_selectors
+        assert_equal 1, additional_selectors.length
       end
     end
   end
