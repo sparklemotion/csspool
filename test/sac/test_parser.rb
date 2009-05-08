@@ -42,9 +42,18 @@ module Crocodile
       end
 
       def test_start_selector
-        start = @doc.start_selectors.first
-        assert start, "should have start selectors"
-        assert_equal 1, start.simple_selectors.length
+        selectors_for_rule = @doc.start_selectors.first
+        assert selectors_for_rule
+        assert_equal 3, selectors_for_rule.length
+      end
+
+      def test_simple_selector
+        selectors_for_rule = @doc.start_selectors.first
+        selector = selectors_for_rule.first # => div a.foo
+        assert_equal 2, selector.simple_selectors.length
+        selector.simple_selectors.each do |ss|
+          assert ss.parse_location
+        end
       end
     end
   end

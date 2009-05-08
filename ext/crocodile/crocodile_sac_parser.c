@@ -14,10 +14,16 @@ static VALUE location_to_h(CRParsingLocation * location)
 static VALUE simple_selector_to_rb(CRSimpleSel * simple_sel)
 {
   VALUE klass = rb_const_get(mCrocodile, rb_intern("SimpleSelector"));
-
-  printf("sel: %d\n", simple_sel->combinator);
-
-  return Qnil;
+  VALUE simple = rb_funcall(klass, rb_intern("new"), 3,
+      simple_sel->name ?
+        rb_str_new2(cr_string_peek_raw_str(simple_sel->name)) :
+        Qnil,
+      INT2NUM(simple_sel->type_mask),
+      INT2NUM(simple_sel->combinator)
+  );
+  rb_funcall(simple, rb_intern("parse_location="), 1,
+      location_to_h(&simple_sel->location));
+  return simple;
 }
 
 static VALUE selector_to_rb(CRSelector * sel)
@@ -105,6 +111,7 @@ static void start_selector(CRDocHandler *dh, CRSelector *list)
     rb_ary_push(selectors, selector_to_rb(sel));
     sel = sel->next;
   }
+  rb_funcall(document, rb_intern("start_selector"), 1, selectors);
 }
 
 static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)

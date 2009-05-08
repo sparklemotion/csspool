@@ -11,7 +11,7 @@ HOE = Hoe.new('crocodile', Crocodile::VERSION) do |p|
 end
 
 Rake::ExtensionTask.new("crocodile", HOE.spec) do |ext|
-  ext.lib_dir                         = "ext/crocodile"
+  ext.lib_dir = "lib/crocodile"
 end
 
 Rake::Task[:test].prerequisites << :compile

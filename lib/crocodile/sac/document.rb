@@ -12,6 +12,9 @@ module Crocodile
 
       def import_style media_list, uri, default_ns, location
       end
+
+      def start_selector selector_list
+      end
     end
   end
 end
