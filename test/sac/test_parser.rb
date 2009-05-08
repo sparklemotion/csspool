@@ -81,6 +81,15 @@ module Crocodile
         simple_selector = selector.simple_selectors.first # => div#a
         assert_equal 'a', simple_selector.additional_selectors.first.name
       end
+
+      # div#a, a.foo, a:hover, a:foo(), a[href='watever'] { background: red; }
+      def test_pseudo_additional_selector
+        selectors_for_rule = @doc.start_selectors[1]
+        selector = selectors_for_rule[2] # => 'a:hover'
+        simple_selector = selector.simple_selectors.first # => a:hover
+        assert_equal 'hover', simple_selector.additional_selectors.first.name
+        assert_nil simple_selector.additional_selectors.first.extra
+      end
     end
   end
 end
