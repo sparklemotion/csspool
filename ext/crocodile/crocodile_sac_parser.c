@@ -28,6 +28,9 @@ static VALUE add_sel_to_rb(CRAdditionalSel * add_sel)
       break;
     case ID_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Id"));
+      return rb_funcall(klass, rb_intern("new"), 1,
+        rb_str_new2(cr_string_peek_raw_str(add_sel->content.id_name))
+      );
       break;
     case ATTRIBUTE_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Attribute"));
