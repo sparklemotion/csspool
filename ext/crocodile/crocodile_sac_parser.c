@@ -46,6 +46,15 @@ static VALUE add_sel_to_rb(CRAdditionalSel * add_sel)
       break;
     case ATTRIBUTE_ADD_SELECTOR:
       klass = rb_const_get(mCrocodileSelectors, rb_intern("Attribute"));
+      return rb_funcall(klass, rb_intern("new"), 3,
+        add_sel->content.attr_sel->name ?
+          rb_str_new2(cr_string_peek_raw_str(add_sel->content.attr_sel->name)) :
+          Qnil,
+        add_sel->content.attr_sel->value ?
+          rb_str_new2(cr_string_peek_raw_str(add_sel->content.attr_sel->value)) :
+          Qnil,
+        INT2NUM(add_sel->content.attr_sel->match_way)
+      );
       break;
     case NO_ADD_SELECTOR:
       break;

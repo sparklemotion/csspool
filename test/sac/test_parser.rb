@@ -10,7 +10,7 @@ module Crocodile
           @import url("foo.css") screen;
           /* This is a comment */
           div a.foo, #bar, * { background: red; }
-          div#a, a.foo, a:hover, a[href='watever'] { background: red; }
+          div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
         eocss
         @parser = Crocodile::SAC::Parser.new(@doc)
         @parser.parse(@css)
@@ -82,13 +82,28 @@ module Crocodile
         assert_equal 'a', simple_selector.additional_selectors.first.name
       end
 
-      # div#a, a.foo, a:hover, a:foo(), a[href='watever'] { background: red; }
+      # div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
       def test_pseudo_additional_selector
         selectors_for_rule = @doc.start_selectors[1]
         selector = selectors_for_rule[2] # => 'a:hover'
         simple_selector = selector.simple_selectors.first # => a:hover
         assert_equal 'hover', simple_selector.additional_selectors.first.name
         assert_nil simple_selector.additional_selectors.first.extra
+      end
+
+      # div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+      def test_attribute_selector
+        selectors_for_rule = @doc.start_selectors[1]
+        selector = selectors_for_rule[3] # => a[href][int="10"]
+        simple_selector = selector.simple_selectors.first
+
+        assert_equal 'href', simple_selector.additional_selectors.first.name
+        assert_nil simple_selector.additional_selectors.first.value
+        assert_equal 1, simple_selector.additional_selectors.first.match_way
+
+        assert_equal 'int', simple_selector.additional_selectors[1].name
+        assert_equal '10', simple_selector.additional_selectors[1].value
+        assert_equal 2, simple_selector.additional_selectors[1].match_way
       end
     end
   end
