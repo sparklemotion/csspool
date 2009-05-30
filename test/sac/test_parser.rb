@@ -16,6 +16,10 @@ module Crocodile
         @parser.parse(@css)
       end
 
+      def test_start_and_end_called_with_the_same
+        assert_equal @doc.start_selectors, @doc.end_selectors
+      end
+
       def test_parse_no_doc
         parser = Crocodile::SAC::Parser.new
         parser.parse(@css)

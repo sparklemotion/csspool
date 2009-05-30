@@ -12,6 +12,7 @@ module Crocodile
     class MyDoc < Crocodile::SAC::Document
       attr_accessor :start_documents, :end_documents
       attr_accessor :charsets, :import_styles, :comments, :start_selectors
+      attr_accessor :end_selectors
 
       def initialize
         @start_documents = []
@@ -20,6 +21,7 @@ module Crocodile
         @import_styles = []
         @comments = []
         @start_selectors = []
+        @end_selectors = []
       end
 
       def start_document
@@ -48,6 +50,10 @@ module Crocodile
 
       def start_selector selectors
         @start_selectors << selectors
+      end
+
+      def end_selector selectors
+        @end_selectors << selectors
       end
     end
   end

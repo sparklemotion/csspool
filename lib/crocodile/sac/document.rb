@@ -15,6 +15,9 @@ module Crocodile
 
       def start_selector selector_list
       end
+
+      def end_selector selector_list
+      end
     end
   end
 end

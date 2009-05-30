@@ -120,13 +120,15 @@ static VALUE selector_to_rb(CRSelector * sel)
 
 static void start_document(CRDocHandler *dh)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
   rb_funcall(document, rb_intern("start_document"), 0);
 }
 
 static void end_document(CRDocHandler *dh)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
   rb_funcall(document, rb_intern("end_document"), 0);
 }
 
@@ -134,7 +136,8 @@ static void charset(CRDocHandler *dh,
     CRString *name,
     CRParsingLocation *location)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
 
   rb_funcall(document, rb_intern("charset"), 2,
     rb_str_new2(cr_string_peek_raw_str(name)),
@@ -148,7 +151,8 @@ static void import_style(CRDocHandler *dh,
     CRString *default_ns,
     CRParsingLocation *location)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
 
   GList * list = media_list;
   VALUE mlist = rb_ary_new();
@@ -167,7 +171,8 @@ static void import_style(CRDocHandler *dh,
 
 static void css_comment(CRDocHandler *dh, CRString *string)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
 
   rb_funcall(document, rb_intern("comment"), 1,
     rb_str_new2(cr_string_peek_raw_str(string))
@@ -176,7 +181,8 @@ static void css_comment(CRDocHandler *dh, CRString *string)
 
 static void start_selector(CRDocHandler *dh, CRSelector *list)
 {
-  VALUE document = (VALUE)dh->app_data;
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
   VALUE selectors = rb_ary_new();
 
   CRSelector * sel = list;
@@ -184,7 +190,18 @@ static void start_selector(CRDocHandler *dh, CRSelector *list)
     rb_ary_push(selectors, selector_to_rb(sel));
     sel = sel->next;
   }
+
+  rb_funcall(parser, rb_intern("push"), 1, selectors);
   rb_funcall(document, rb_intern("start_selector"), 1, selectors);
+}
+
+static void end_selector(CRDocHandler *dh, CRSelector *list)
+{
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
+  VALUE selectors = rb_funcall(parser, rb_intern("pop"), 0);
+
+  rb_funcall(document, rb_intern("end_selector"), 1, selectors);
 }
 
 static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
@@ -198,7 +215,7 @@ static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
 
   CRDocHandler * sac_handler = cr_doc_handler_new();
 
-  sac_handler->app_data = (gpointer)rb_funcall(self, rb_intern("document"), 0);
+  sac_handler->app_data = (gpointer)self;
 
   sac_handler->start_document = start_document;
   sac_handler->end_document = end_document;
@@ -206,6 +223,7 @@ static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
   sac_handler->import_style = import_style;
   sac_handler->comment = css_comment;
   sac_handler->start_selector = start_selector;
+  sac_handler->end_selector = end_selector;
 
   cr_parser_set_sac_handler(parser, sac_handler);
   cr_parser_parse(parser);
