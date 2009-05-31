@@ -213,10 +213,10 @@ static VALUE term_to_rb(CRTerm *expression)
     case NO_OP:
       break;
     case DIVIDE:
-      operator = ID2SYM(rb_intern("/"));
+      operator = ID2SYM(rb_intern("divide"));
       break;
     case COMMA:
-      operator = ID2SYM(rb_intern(","));
+      operator = ID2SYM(rb_intern("comma"));
       break;
   }
 
