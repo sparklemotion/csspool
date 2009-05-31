@@ -204,6 +204,57 @@ static void end_selector(CRDocHandler *dh, CRSelector *list)
   rb_funcall(document, rb_intern("end_selector"), 1, selectors);
 }
 
+static VALUE term_to_rb(CRTerm *expression)
+{
+  VALUE klass = Qnil;
+
+  VALUE operator = Qnil;
+  switch(expression->the_operator) {
+    case NO_OP:
+      break;
+    case DIVIDE:
+      operator = ID2SYM(rb_intern("/"));
+      break;
+    case COMMA:
+      operator = ID2SYM(rb_intern(","));
+      break;
+  }
+
+  switch(expression->type) {
+    case TERM_IDENT:
+      klass = rb_const_get(mCrocodileTerms, rb_intern("Ident"));
+      return rb_funcall(klass, rb_intern("new"), 3,
+        rb_str_new2(cr_string_peek_raw_str(expression->content.str)),
+        operator,
+        location_to_h(&expression->location)
+      );
+      break;
+    default:
+      rb_raise(rb_eRuntimeError, "unknown type");
+  }
+  return Qnil;
+}
+
+static void property(CRDocHandler *dh,
+    CRString *name,
+    CRTerm *expression,
+    gboolean important_eh)
+{
+  VALUE parser = (VALUE)dh->app_data;
+  VALUE document = rb_funcall(parser, rb_intern("document"), 0);
+
+  VALUE expressions = rb_ary_new();
+  while(expression) {
+    rb_ary_push(expressions, term_to_rb(expression));
+    expression = expression->next;
+  }
+
+  rb_funcall(document, rb_intern("property"), 2,
+    rb_str_new2(cr_string_peek_raw_str(name)),
+    expressions
+  );
+}
+
 static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
 {
   CRParser * parser = cr_parser_new_from_buf(
@@ -224,6 +275,7 @@ static VALUE parse_memory(VALUE self, VALUE string, VALUE encoding)
   sac_handler->comment = css_comment;
   sac_handler->start_selector = start_selector;
   sac_handler->end_selector = end_selector;
+  sac_handler->property = property;
 
   cr_parser_set_sac_handler(parser, sac_handler);
   cr_parser_parse(parser);

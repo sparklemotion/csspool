@@ -14,5 +14,6 @@
 
 extern VALUE mCrocodile;
 extern VALUE mCrocodileSelectors;
+extern VALUE mCrocodileTerms;
 
 #endif

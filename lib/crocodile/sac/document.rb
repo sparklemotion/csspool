@@ -18,6 +18,9 @@ module Crocodile
 
       def end_selector selector_list
       end
+
+      def property name, expression
+      end
     end
   end
 end

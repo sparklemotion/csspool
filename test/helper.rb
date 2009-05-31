@@ -12,16 +12,21 @@ module Crocodile
     class MyDoc < Crocodile::SAC::Document
       attr_accessor :start_documents, :end_documents
       attr_accessor :charsets, :import_styles, :comments, :start_selectors
-      attr_accessor :end_selectors
+      attr_accessor :end_selectors, :properties
 
       def initialize
-        @start_documents = []
-        @end_documents = []
-        @charsets = []
-        @import_styles = []
-        @comments = []
-        @start_selectors = []
-        @end_selectors = []
+        @start_documents  = []
+        @end_documents    = []
+        @charsets         = []
+        @import_styles    = []
+        @comments         = []
+        @start_selectors  = []
+        @end_selectors    = []
+        @properties       = []
+      end
+
+      def property name, expression
+        @properties << [name, expression]
       end
 
       def start_document

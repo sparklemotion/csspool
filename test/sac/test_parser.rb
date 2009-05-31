@@ -4,6 +4,7 @@ module Crocodile
   module SAC
     class TestParser < Crocodile::TestCase
       def setup
+        super
         @doc = MyDoc.new
         @css = <<-eocss
           @charset "UTF-8";
@@ -14,6 +15,14 @@ module Crocodile
         eocss
         @parser = Crocodile::SAC::Parser.new(@doc)
         @parser.parse(@css)
+      end
+
+      def test_properties
+        assert_equal ['background'], @doc.properties.map { |x| x.first }.uniq
+        @doc.properties.each do |property|
+          assert_equal 1, property[1].length
+        end
+        assert_equal ['red'], @doc.properties.map { |x| x[1].first.name }.uniq
       end
 
       def test_start_and_end_called_with_the_same
