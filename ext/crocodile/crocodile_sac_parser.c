@@ -204,11 +204,17 @@ static void end_selector(CRDocHandler *dh, CRSelector *list)
   rb_funcall(document, rb_intern("end_selector"), 1, selectors);
 }
 
+static VALUE crnum_to_rb(CRNum *num)
+{
+}
+
 static VALUE term_to_rb(CRTerm *expression)
 {
   VALUE klass = Qnil;
 
   VALUE operator = Qnil;
+  VALUE unary_operator = Qnil;
+
   switch(expression->the_operator) {
     case NO_OP:
       break;
@@ -220,6 +226,19 @@ static VALUE term_to_rb(CRTerm *expression)
       break;
   }
 
+  switch(expression->unary_op) {
+    case EMPTY_UNARY_UOP:
+    case NO_UNARY_UOP:
+      break;
+    case PLUS_UOP:
+      unary_operator = ID2SYM(rb_intern("plus"));
+      break;
+    case MINUS_UOP:
+      unary_operator = ID2SYM(rb_intern("minus"));
+      break;
+  }
+
+
   switch(expression->type) {
     case TERM_IDENT:
       klass = rb_const_get(mCrocodileTerms, rb_intern("Ident"));
@@ -229,6 +248,14 @@ static VALUE term_to_rb(CRTerm *expression)
         location_to_h(&expression->location)
       );
       break;
+    case TERM_NUMBER:
+      klass = rb_const_get(mCrocodileTerms, rb_intern("Number"));
+      return rb_funcall(klass, rb_intern("new"), 3,
+          crnum_to_rb(expression->content.num),
+          unary_operator,
+          location_to_h(&expression->location)
+      );
+
     default:
       rb_raise(rb_eRuntimeError, "unknown type");
   }
