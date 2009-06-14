@@ -40,6 +40,51 @@ module Crocodile
       )
     end
 
+    class CRPseudo < FFI::Struct
+      layout(
+        :pseudo_type, :int,
+        :name,        :pointer,
+        :extra,       :pointer,
+        :line,        :int,
+        :column,      :int,
+        :byte_offset, :int
+      )
+    end
+
+    class CRAdditionalSel < FFI::Struct
+      layout(
+        :sel_type,    :int,
+        :content,     :pointer,
+        :next,        :pointer,
+        :prev,        :pointer,
+        :line,        :int,
+        :column,      :int,
+        :byte_offset, :int
+      )
+
+      def to_additional_selector
+        case self[:sel_type]
+        when 1      # CLASS_ADD_SELECTOR
+          Crocodile::Selectors::Class.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string
+          )
+        when 1 << 1 # PSEUDO_CLASS_ADD_SELECTOR
+          pseudo = CRPseudo.new(self[:content])
+          Crocodile::Selectors::PseudoClass.new(
+            pseudo[:name].null? ? nil :
+              LibCroco.cr_string_peek_raw_str(pseudo[:name]).read_string,
+            pseudo[:extra].null? ? nil :
+              LibCroco.cr_string_peek_raw_str(pseudo[:extra]).read_string
+          )
+        when 1 << 3 # ID_ADD_SELECTOR
+          Crocodile::Selectors::Id.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string
+          )
+        when 1 << 4 # ATTRIBUTE_ADD_SELECTOR
+        end
+      end
+    end
+
     class CRSimpleSel < FFI::Struct
       layout(
         :type_mask,       :int,
@@ -75,6 +120,18 @@ module Crocodile
           :column       => self[:column],
           :byte_offset  => self[:byte_offset]
         }
+
+        additional_selectors = []
+        pointer = self[:add_sel]
+        until pointer.null?
+          additional_selectors << CRAdditionalSel.new(pointer)
+          pointer = additional_selectors.last[:next]
+        end
+
+        simple_sel.additional_selectors = additional_selectors.map { |as|
+          as.to_additional_selector
+        }
+
         simple_sel
       end
     end

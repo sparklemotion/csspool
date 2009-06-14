@@ -73,9 +73,8 @@ module Crocodile
             list << LibCroco::CRSelector.new(pointer)
             pointer = list.last[:next]
           end
-          list = list.map { |l| l.to_selector }
-          selector_stack.push(list)
-          @document.start_selector list
+          selector_stack.push list.map { |l| l.to_selector }
+          @document.start_selector selector_stack.last
         }
 
         sac_handler[:end_selector] = lambda { |dh, list|
