@@ -55,7 +55,8 @@ module Crocodile
         :prev,          :pointer,
         :line,          :int,
         :column,        :int,
-        :byte_offset,   :int
+        :byte_offset,   :int,
+        :ref_count,     :long
       )
 
       def to_selector
