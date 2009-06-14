@@ -46,6 +46,35 @@ module Crocodile
           )
         }
 
+        sac_handler[:import_style] = lambda { |dh, media_list, uri, ns, loc|
+          media_list = LibCroco::GList.new(media_list)
+          media_list = media_list.to_a.map { |data|
+            LibCroco.cr_string_peek_raw_str(data).read_string
+          }
+          uri = uri.null? ? nil :
+            LibCroco.cr_string_peek_raw_str(uri).read_string
+
+          ns = ns.null? ? nil : LibCroco.cr_string_peek_raw_str(ns).read_string
+
+          @document.import_style(
+            media_list,
+            uri,
+            ns,
+            LibCroco::CRParsingLocation.new(loc).to_h
+          )
+        }
+
+        sac_handler[:start_selector] = lambda { |dh, list|
+          sel = LibCroco::CRSelector.new(list)
+          list    = [sel]
+          pointer = sel[:next]
+          until pointer.null?
+            list << LibCroco::CRSelector.new(pointer)
+            pointer = list.last[:next]
+          end
+          list = list.map { |l| l.to_selector }
+        }
+
         LibCroco.cr_parser_set_sac_handler(parser, sac_handler)
         LibCroco.cr_parser_parse(parser)
         LibCroco.cr_doc_handler_destroy(sac_handler)
