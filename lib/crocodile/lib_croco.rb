@@ -51,6 +51,19 @@ module Crocodile
       )
     end
 
+    class CRAttrSel < FFI::Struct
+      layout(
+        :name,        :pointer,
+        :value,       :pointer,
+        :match_way,   :int,
+        :next,        :pointer,
+        :prev,        :pointer,
+        :line,        :int,
+        :column,      :int,
+        :byte_offset, :int
+      )
+    end
+
     class CRAdditionalSel < FFI::Struct
       layout(
         :sel_type,    :int,
@@ -81,6 +94,14 @@ module Crocodile
             LibCroco.cr_string_peek_raw_str(self[:content]).read_string
           )
         when 1 << 4 # ATTRIBUTE_ADD_SELECTOR
+          attr_sel = CRAttrSel.new(self[:content])
+          Crocodile::Selectors::Attribute.new(
+            attr_sel[:name].null? ? nil :
+              LibCroco.cr_string_peek_raw_str(attr_sel[:name]).read_string,
+            attr_sel[:value].null? ? nil :
+              LibCroco.cr_string_peek_raw_str(attr_sel[:value]).read_string,
+            attr_sel[:match_way]
+          )
         end
       end
     end
@@ -199,12 +220,12 @@ module Crocodile
       end
     end
 
-    class Parser < FFI::ManagedStruct
+    class Parser < FFI::Struct
       layout(:priv, :pointer)
 
-      def self.release pointer
-        Croc::LibCroco.cr_parser_destroy pointer
-      end
+      #def self.release pointer
+      #  Crocodile::LibCroco.cr_parser_destroy pointer
+      #end
     end
   end
 end
