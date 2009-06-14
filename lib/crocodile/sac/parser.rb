@@ -81,6 +81,18 @@ module Crocodile
           @document.end_selector selector_stack.pop
         }
 
+        sac_handler[:property] = lambda { |dh, name, expr, important|
+          expr_list = []
+          until expr.null?
+            expr_list << LibCroco::CRTerm.new(expr)
+            expr = expr_list.last[:next]
+          end
+          @document.property(
+            LibCroco.cr_string_peek_raw_str(name).read_string,
+            expr_list.map { |ex| ex.to_term }
+          )
+        }
+
         LibCroco.cr_parser_set_sac_handler(parser, sac_handler)
         LibCroco.cr_parser_parse(parser)
         LibCroco.cr_doc_handler_destroy(sac_handler)

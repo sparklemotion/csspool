@@ -23,6 +23,15 @@ module Crocodile
     callback :comment, [:pointer, :pointer], :void
     callback :start_selector, [:pointer, :pointer], :void
     callback :end_selector, [:pointer, :pointer], :void
+    callback :property, [:pointer] * 4, :void
+
+    def self.location_to_h thing
+      {
+        :line         => thing[:line],
+        :column       => thing[:column],
+        :byte_offset  => thing[:byte_offset]
+      }
+    end
 
     class CSSSACHandler < FFI::Struct
       layout(
@@ -36,7 +45,8 @@ module Crocodile
         :namespace_declaration, :namespace_declaration,
         :comment,               :comment,
         :start_selector,        :start_selector,
-        :end_selector,          :end_selector
+        :end_selector,          :end_selector,
+        :property,              :property
       )
     end
 
@@ -49,6 +59,59 @@ module Crocodile
         :column,      :int,
         :byte_offset, :int
       )
+    end
+
+    class CRTerm < FFI::Struct
+      layout(
+        :type,        :int,
+        :unary_op,    :int,
+        :operator,    :int,
+        :content,     :pointer,
+        :ext_content, :pointer,
+        :app_data,    :pointer,
+        :ref_count,   :long,
+        :next,        :pointer,
+        :pref,        :pointer,
+        :line,        :int,
+        :column,      :int,
+        :byte_offset, :int
+      )
+
+      def to_term
+        operator = {
+          0 => nil,
+          1 => :divide,
+          2 => :comma
+        }[self[:operator]]
+
+        unary_op = {
+          0 => nil,
+          1 => :plus,
+          2 => :minus
+        }[self[:unary_op]]
+
+        case self[:type]
+        when 0  # TERM_NO_TYPE
+        when 1  # TERM_NUMBER
+          Crocodile::Terms::Number.new(
+            nil,
+            unary_op,
+            LibCroco.location_to_h(self)
+          )
+        when 2  # TERM_FUNCTION
+        when 3  # TERM_STRING
+        when 4  # TERM_IDENT
+          Crocodile::Terms::Ident.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
+            operator,
+            LibCroco.location_to_h(self)
+          )
+        when 5  # TERM_URI
+        when 6  # TERM_RGB
+        when 7  # TERM_UNICODERANGE
+        when 8  # TERM_HASH
+        end
+      end
     end
 
     class CRAttrSel < FFI::Struct
