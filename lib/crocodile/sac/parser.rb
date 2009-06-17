@@ -31,7 +31,7 @@ module Crocodile
           )
         )
         sac_handler =
-          LibCroco::CSSSACHandler.new(LibCroco.cr_doc_handler_new)
+          LibCroco::CRDocHandler.new(LibCroco.cr_doc_handler_new)
 
         sac_handler[:start_document] = lambda { |parser|
           @document.start_document
