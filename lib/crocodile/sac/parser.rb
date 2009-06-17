@@ -66,9 +66,8 @@ module Crocodile
 
         selector_stack = []
         sac_handler[:start_selector] = lambda { |dh, list|
-          sel = LibCroco::CRSelector.new(list)
-          list    = [sel]
-          pointer = sel[:next]
+          list    = [LibCroco::CRSelector.new(list)]
+          pointer = list.last[:next]
           until pointer.null?
             list << LibCroco::CRSelector.new(pointer)
             pointer = list.last[:next]
