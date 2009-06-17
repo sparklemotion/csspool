@@ -22,7 +22,7 @@ module Crocodile
       end
 
       def parse_memory string, encoding
-        parser = LibCroco::Parser.new(
+        parser = LibCroco::CRParser.new(
           LibCroco.cr_parser_new_from_buf(
             string,
             string.length,

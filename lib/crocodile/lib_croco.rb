@@ -32,14 +32,6 @@ module Crocodile
         :byte_offset  => thing[:byte_offset]
       }
     end
-
-    class Parser < FFI::Struct
-      layout(:priv, :pointer)
-
-      #def self.release pointer
-      #  Crocodile::LibCroco.cr_parser_destroy pointer
-      #end
-    end
   end
 end
 
@@ -52,3 +44,4 @@ require 'crocodile/lib_croco/cr_selector'
 require 'crocodile/lib_croco/cr_additional_sel'
 require 'crocodile/lib_croco/cr_attr_sel'
 require 'crocodile/lib_croco/cr_term'
+require 'crocodile/lib_croco/cr_parser'
