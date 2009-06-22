@@ -88,7 +88,8 @@ module Crocodile
           end
           @document.property(
             LibCroco.cr_string_peek_raw_str(name).read_string,
-            expr_list.map { |ex| ex.to_term }
+            expr_list.map { |ex| ex.to_term },
+            important == 1
           )
         }
 

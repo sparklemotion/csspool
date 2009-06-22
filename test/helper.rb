@@ -25,7 +25,7 @@ module Crocodile
         @properties       = []
       end
 
-      def property name, expression
+      def property name, expression, important
         @properties << [name, expression]
       end
 

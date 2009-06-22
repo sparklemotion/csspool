@@ -19,8 +19,9 @@ module Crocodile
         @document.rule_sets << RuleSet.new(selector_list)
       end
 
-      def property name, exp
-        @document.rule_sets.last.declarations << Declaration.new(name, exp)
+      def property name, exp, important
+        @document.rule_sets.last.declarations <<
+          Declaration.new(name, exp, important)
       end
     end
   end

@@ -23,7 +23,7 @@ module Crocodile
     callback :comment, [:pointer, :pointer], :void
     callback :start_selector, [:pointer, :pointer], :void
     callback :end_selector, [:pointer, :pointer], :void
-    callback :property, [:pointer] * 4, :void
+    callback :property, [:pointer, :pointer, :pointer, :int], :void
 
     def self.location_to_h thing
       {

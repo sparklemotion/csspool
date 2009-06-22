@@ -88,6 +88,26 @@ module Crocodile
         assert_equal '"hello"', string.to_css
       end
 
+      def test_inherit
+        @parser.parse <<-eocss
+          div { color: inherit; }
+        eocss
+        assert_equal 1, @doc.properties.length
+        string = @doc.properties.first[1].first
+        assert_equal 'inherit', string.value
+        assert_equal 'inherit', string.to_css
+      end
+
+      def test_important
+        @parser.parse <<-eocss
+          div { color: inherit !important; }
+        eocss
+        assert_equal 1, @doc.properties.length
+        string = @doc.properties.first[1].first
+        assert_equal 'inherit', string.value
+        assert_equal 'inherit', string.to_css
+      end
+
       def test_function
         @parser.parse <<-eocss
           div { border: foo("hello"); }

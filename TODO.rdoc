@@ -1,0 +1,4 @@
+* converting back to CSS:
+  * when Selectors::Attribute::NO_MATCH
+  * when Selectors::Attribute::INCLUDES
+  * when Selectors::Attribute::DASHMATCH

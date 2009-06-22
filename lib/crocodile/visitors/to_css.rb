@@ -11,9 +11,11 @@ module Crocodile
       end
 
       visitor_for CSS::Declaration do |target|
+        important = target.important? ? ' !important' : ''
+
         "  #{target.property}: " + target.expressions.map { |exp|
           exp.accept self
-        }.join + ";"
+        }.join + "#{important};"
       end
 
       visitor_for Terms::Ident do |target|

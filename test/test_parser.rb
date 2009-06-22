@@ -39,6 +39,13 @@ module Crocodile
       assert_match 'div > a', doc.to_css
     end
 
+    def test_important
+      doc = Crocodile.CSS <<-eocss
+        div > a { background: #123 !important; }
+      eocss
+      assert_match '!important', doc.to_css
+    end
+
     def test_doc_func_to_css
       doc = Crocodile.CSS <<-eocss
         div { border: foo(1, 2); }
