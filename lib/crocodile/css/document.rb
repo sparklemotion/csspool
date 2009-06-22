@@ -1,6 +1,8 @@
 module Crocodile
   module CSS
     class Document
+      include Crocodile::Visitable
+
       def self.parse string
         handler = Crocodile::CSS::DocumentHandler.new
         parser = Crocodile::SAC::Parser.new(handler)

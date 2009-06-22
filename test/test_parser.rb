@@ -14,7 +14,6 @@ module Crocodile
     def test_doc_parser
       doc = Crocodile.CSS <<-eocss
         @charset "UTF-8";
-        @import url("foo.css") screen;
         div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
       eocss
 
@@ -23,6 +22,14 @@ module Crocodile
       assert_equal 4, rule_set.selectors.length
       assert_equal 1, rule_set.declarations.length
       assert_equal 'background', rule_set.declarations.first.property
+    end
+
+    def test_doc_to_css
+      doc = Crocodile.CSS <<-eocss
+        div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+      eocss
+      assert_match 'div#a, a.foo, a:hover, a[href][int="10"]',
+        doc.to_css
     end
   end
 end

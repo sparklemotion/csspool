@@ -1,6 +1,6 @@
 module Crocodile
   module Selectors
-    class Additional
+    class Additional < Crocodile::Node
     end
   end
 end
