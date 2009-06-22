@@ -92,6 +92,12 @@ module Crocodile
           )
         }
 
+        sac_handler[:comment] = lambda { |dh, comment|
+          @document.comment(
+            LibCroco.cr_string_peek_raw_str(comment).read_string
+          )
+        }
+
         LibCroco.cr_parser_set_sac_handler(parser, sac_handler)
         LibCroco.cr_parser_parse(parser)
         LibCroco.cr_doc_handler_destroy(sac_handler)

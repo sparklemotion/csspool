@@ -1,0 +1,28 @@
+require 'helper'
+
+module Crocodile
+  class TestParser < Crocodile::TestCase
+    def test_doc_charset
+      doc = Crocodile.CSS <<-eocss
+        @charset "UTF-8";
+        @import url("foo.css") screen;
+        div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+      eocss
+      assert_equal 'UTF-8', doc.charset
+    end
+
+    def test_doc_parser
+      doc = Crocodile.CSS <<-eocss
+        @charset "UTF-8";
+        @import url("foo.css") screen;
+        div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+      eocss
+
+      assert_equal 1, doc.rule_sets.length
+      rule_set = doc.rule_sets.first
+      assert_equal 4, rule_set.selectors.length
+      assert_equal 1, rule_set.declarations.length
+      assert_equal 'background', rule_set.declarations.first.property
+    end
+  end
+end

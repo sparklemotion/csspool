@@ -21,6 +21,9 @@ module Crocodile
 
       def property name, expression
       end
+
+      def comment comment
+      end
     end
   end
 end
