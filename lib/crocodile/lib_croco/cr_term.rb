@@ -55,7 +55,6 @@ module Crocodile
         when 3  # TERM_STRING
           Crocodile::Terms::String.new(
             LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
-            unary_op,
             LibCroco.location_to_h(self)
           )
         when 4  # TERM_IDENT
@@ -65,7 +64,12 @@ module Crocodile
             LibCroco.location_to_h(self)
           )
         when 5  # TERM_URI
+          Crocodile::Terms::URI.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
+            LibCroco.location_to_h(self)
+          )
         when 6  # TERM_RGB
+          LibCroco::CRRgb.new(self[:content]).to_rgb
         when 7  # TERM_UNICODERANGE
         when 8  # TERM_HASH
         end
