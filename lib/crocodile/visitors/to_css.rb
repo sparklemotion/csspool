@@ -40,6 +40,32 @@ module Crocodile
           target.additional_selectors.map { |as| as.accept self }.join
       end
 
+      visitor_for Terms::Number do |target|
+        units = {
+          2   => 'em',
+          3   => 'ex',
+          4   => 'px',
+          5   => 'in',
+          6   => 'cm',
+          7   => 'mm',
+          8   => 'pt',
+          9   => 'pc',
+          10  => 'deg',
+          11  => 'rad',
+          12  => 'grad',
+          13  => 'ms',
+          14  => 's',
+          15  => 'Hz',
+          16  => 'kHz',
+          17  => '%',
+        }[target.type]
+        [
+          target.operator == :minus ? '-' : nil,
+          target.value,
+          units
+        ].compact.join
+      end
+
       visitor_for Selectors::Id do |target|
         "##{target.name}"
       end

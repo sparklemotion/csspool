@@ -71,6 +71,7 @@ module Crocodile
           size = @doc.properties.first[1].first
           assert_equal 1, size.value
           assert_equal expected, size.to_s
+          assert_equal expected, size.to_css
         end
       end
 

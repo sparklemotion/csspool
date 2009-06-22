@@ -7,5 +7,6 @@ module Crocodile
     def to_css
       accept Visitors::ToCSS.new
     end
+    alias :to_s :to_css
   end
 end
