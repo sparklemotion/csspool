@@ -41,6 +41,11 @@ module Crocodile
           )
         when 2  # TERM_FUNCTION
         when 3  # TERM_STRING
+          Crocodile::Terms::String.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
+            unary_op,
+            LibCroco.location_to_h(self)
+          )
         when 4  # TERM_IDENT
           Crocodile::Terms::Ident.new(
             LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
