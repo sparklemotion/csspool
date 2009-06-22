@@ -19,8 +19,8 @@ module Crocodile
       def to_term
         operator = {
           0 => nil,
-          1 => :divide,
-          2 => :comma
+          1 => '/',
+          2 => ','
         }[self[:operator]]
 
         unary_op = {

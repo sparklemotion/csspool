@@ -6,7 +6,22 @@ module Crocodile
       end
 
       visitor_for CSS::RuleSet do |target|
-        target.selectors.map { |sel| sel.accept self }.join(", ")
+        target.selectors.map { |sel| sel.accept self }.join(", ") + " {\n" +
+          target.declarations.map { |decl| decl.accept self }.join("\n") + "\n}\n"
+      end
+
+      visitor_for CSS::Declaration do |target|
+        "  #{target.property}: " + target.expressions.map { |exp|
+          exp.accept self
+        }.join + ";"
+      end
+
+      visitor_for Terms::Ident do |target|
+        [target.operator, target.value].compact.join(' ')
+      end
+
+      visitor_for Terms::Hash do |target|
+        "##{target.value}"
       end
 
       visitor_for Selector do |target|
@@ -14,9 +29,15 @@ module Crocodile
       end
 
       visitor_for Selectors::Type do |target|
-        target.name + target.additional_selectors.map { |as|
-          as.accept self
-        }.join
+        combo = {
+          0 => nil,
+          1 => ' ',
+          2 => ' + ',
+          3 => ' > '
+        }[target.combinator]
+
+        [combo, target.name].compact.join +
+          target.additional_selectors.map { |as| as.accept self }.join
       end
 
       visitor_for Selectors::Id do |target|

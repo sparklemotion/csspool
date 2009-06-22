@@ -34,7 +34,7 @@ module Crocodile
         assert_equal 1, doc.properties.length
         values = doc.properties.first[1]
         assert_equal 3, values.length
-        assert_equal [nil, :comma, :comma],
+        assert_equal [nil, ',', ','],
           values.map { |value| value.operator }
         values.each { |value| assert value.parse_location }
       end

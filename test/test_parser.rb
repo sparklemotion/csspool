@@ -26,10 +26,17 @@ module Crocodile
 
     def test_doc_to_css
       doc = Crocodile.CSS <<-eocss
-        div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+        div#a, a.foo, a:hover, a[href][int="10"]{ background: red, blue; }
       eocss
-      assert_match 'div#a, a.foo, a:hover, a[href][int="10"]',
-        doc.to_css
+      assert_match 'div#a, a.foo, a:hover, a[href][int="10"]', doc.to_css
+      assert_match 'background: red, blue;', doc.to_css
+    end
+
+    def test_doc_desc_to_css
+      doc = Crocodile.CSS <<-eocss
+        div > a { background: #123; }
+      eocss
+      assert_match 'div > a', doc.to_css
     end
   end
 end

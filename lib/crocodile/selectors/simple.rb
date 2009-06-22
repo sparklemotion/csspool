@@ -9,6 +9,8 @@ module Crocodile
       attr_accessor :name
       attr_accessor :parse_location
       attr_accessor :additional_selectors
+      attr_accessor :combinator
+
       def initialize name, combinator = nil
         @name                 = name
         @combinator           = combinator
