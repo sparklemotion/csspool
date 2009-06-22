@@ -8,6 +8,14 @@ module Crocodile
         @parser = Crocodile::SAC::Parser.new(@doc)
       end
 
+      def test_hash_range
+        @parser.parse <<-eocss
+          div { border: #123; }
+        eocss
+        hash = @doc.properties.first[1].first
+        assert_equal '123', hash.value
+      end
+
       def test_rgb
         @parser.parse <<-eocss
           div { border: rgb(1,2,3); }

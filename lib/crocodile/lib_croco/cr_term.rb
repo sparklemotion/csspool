@@ -71,7 +71,12 @@ module Crocodile
         when 6  # TERM_RGB
           LibCroco::CRRgb.new(self[:content]).to_rgb
         when 7  # TERM_UNICODERANGE
+          raise "I can't get this one to work!"
         when 8  # TERM_HASH
+          Crocodile::Terms::Hash.new(
+            LibCroco.cr_string_peek_raw_str(self[:content]).read_string,
+            LibCroco.location_to_h(self)
+          )
         end
       end
     end
