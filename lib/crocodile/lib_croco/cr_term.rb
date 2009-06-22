@@ -49,7 +49,8 @@ module Crocodile
           end
           Crocodile::Terms::Function.new(
             name,
-            params.map { |param| param.to_term }
+            params.map { |param| param.to_term },
+            LibCroco.location_to_h(self)
           )
         when 3  # TERM_STRING
           Crocodile::Terms::String.new(
