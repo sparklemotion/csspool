@@ -24,6 +24,30 @@ module Crocodile
         "##{target.value}"
       end
 
+      visitor_for Terms::URI do |target|
+        "url(#{target.value})"
+      end
+
+      visitor_for Terms::Function do |target|
+        "#{target.name}(" +
+          target.params.map { |x| x.accept self }.join(', ') +
+          ')'
+      end
+
+      visitor_for Terms::Rgb do |target|
+        params = [
+          target.red,
+          target.green,
+          target.blue
+        ].map { |c| target.percentage? ? "#{c}%" : c }.join(',')
+
+        %{rgb(#{params})}
+      end
+
+      visitor_for Terms::String do |target|
+        "\"#{target.value}\""
+      end
+
       visitor_for Selector do |target|
         target.simple_selectors.map { |ss| ss.accept self }.join
       end

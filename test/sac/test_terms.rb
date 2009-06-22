@@ -25,6 +25,7 @@ module Crocodile
         assert_equal 2, color.green
         assert_equal 3, color.blue
         assert !color.percentage?
+        assert_match('rgb(1,2,3)', color.to_css)
       end
 
       def test_rgb_with_percentage
@@ -36,6 +37,7 @@ module Crocodile
         assert_equal 2, color.green
         assert_equal 3, color.blue
         assert color.percentage?
+        assert_match('rgb(100%,2%,3%)', color.to_css)
       end
 
       def test_negative_number
@@ -47,6 +49,7 @@ module Crocodile
         assert_equal :minus, size.operator
         assert_equal 1, size.value
         assert_equal '-1.0px', size.to_s
+        assert_equal '-1.0px', size.to_css
       end
 
       def test_positive_number
@@ -94,6 +97,7 @@ module Crocodile
         assert_equal 'foo', func.name
         assert_equal 1, func.params.length
         assert_equal 'hello', func.params.first.value
+        assert_match 'foo("hello")', func.to_css
       end
 
       def test_uri
@@ -103,6 +107,7 @@ module Crocodile
         assert_equal 1, @doc.properties.length
         url = @doc.properties.first[1].first
         assert_equal 'http://tenderlovemaking.com/', url.value
+        assert_match 'url(http://tenderlovemaking.com/)', url.to_css
       end
     end
   end
