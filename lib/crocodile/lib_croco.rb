@@ -13,6 +13,7 @@ module Crocodile
     attach_function :cr_parser_destroy, [:pointer], :void
     attach_function :cr_doc_handler_destroy, [:pointer], :void
     attach_function :cr_string_peek_raw_str, [:pointer], :pointer
+    attach_function :cr_simple_sel_compute_specificity, [:pointer], :int
 
     callback :start_document, [:pointer], :void
     callback :end_document,   [:pointer], :void

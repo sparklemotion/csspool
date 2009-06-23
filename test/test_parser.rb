@@ -24,6 +24,13 @@ module Crocodile
       assert_equal 'background', rule_set.declarations.first.property
     end
 
+    def test_universal_to_css
+      doc = Crocodile.CSS <<-eocss
+        * { background: red, blue; }
+      eocss
+      assert_match '*', doc.to_css
+    end
+
     def test_doc_to_css
       doc = Crocodile.CSS <<-eocss
         div#a, a.foo, a:hover, a[href][int="10"]{ background: red, blue; }
@@ -37,6 +44,20 @@ module Crocodile
         div > a { background: #123; }
       eocss
       assert_match 'div > a', doc.to_css
+    end
+
+    def test_doc_pseudo_to_css
+      doc = Crocodile.CSS <<-eocss
+        :hover { background: #123; }
+      eocss
+      assert_match ':hover', doc.to_css
+    end
+
+    def test_doc_id_to_css
+      doc = Crocodile.CSS <<-eocss
+        #hover { background: #123; }
+      eocss
+      assert_match '#hover', doc.to_css
     end
 
     def test_important

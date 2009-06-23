@@ -26,6 +26,12 @@ module Crocodile
         "##{target.value}"
       end
 
+      visitor_for Selectors::Simple, Selectors::Universal do |target|
+        ([target.name] + target.additional_selectors.map { |x|
+          x.accept self
+        }).join
+      end
+
       visitor_for Terms::URI do |target|
         "url(#{target.value})"
       end
