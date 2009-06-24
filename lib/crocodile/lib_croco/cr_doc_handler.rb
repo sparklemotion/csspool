@@ -13,7 +13,11 @@ module Crocodile
         :comment,               :comment,
         :start_selector,        :start_selector,
         :end_selector,          :end_selector,
-        :property,              :property
+        :property,              :property,
+        :start_font_face,       :start_font_face,
+        :end_font_face,         :end_font_face,
+        :start_media,           :start_media,
+        :end_media,             :end_media
       )
     end
   end

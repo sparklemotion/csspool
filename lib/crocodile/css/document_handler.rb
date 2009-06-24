@@ -4,7 +4,8 @@ module Crocodile
       attr_accessor :document
 
       def initialize
-        @document = nil
+        @document     = nil
+        @media_stack  = []
       end
 
       def start_document
@@ -16,12 +17,20 @@ module Crocodile
       end
 
       def start_selector selector_list
-        @document.rule_sets << RuleSet.new(selector_list)
+        @document.rule_sets << RuleSet.new(selector_list, [], @media_stack.last)
       end
 
       def property name, exp, important
         rs = @document.rule_sets.last
         rs.declarations << Declaration.new(name, exp, important, rs)
+      end
+
+      def start_media media_list
+        @media_stack << media_list
+      end
+
+      def end_media media_list
+        @media_stack.pop
       end
     end
   end

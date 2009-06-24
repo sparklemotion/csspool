@@ -33,6 +33,9 @@ module Crocodile
         sac_handler =
           LibCroco::CRDocHandler.new(LibCroco.cr_doc_handler_new)
 
+        selector_stack = []
+        media_stack = []
+
         sac_handler[:start_document] = lambda { |parser|
           @document.start_document
         }
@@ -64,7 +67,6 @@ module Crocodile
           )
         }
 
-        selector_stack = []
         sac_handler[:start_selector] = lambda { |dh, list|
           list    = [LibCroco::CRSelector.new(list)]
           pointer = list.last[:next]
@@ -97,6 +99,21 @@ module Crocodile
           @document.comment(
             LibCroco.cr_string_peek_raw_str(comment).read_string
           )
+        }
+
+        sac_handler[:start_media] = lambda { |dh,media_list,location|
+          media_list = LibCroco::GList.new(media_list)
+          media_stack << media_list.to_a.map { |data|
+            CSS::Media.new(
+              LibCroco.cr_string_peek_raw_str(data).read_string,
+              LibCroco::CRParsingLocation.new(location).to_h
+            )
+          }
+          @document.start_media media_stack.last
+        }
+
+        sac_handler[:end_media] = lambda { |dh,media_list|
+          @document.end_media media_stack.pop
         }
 
         LibCroco.cr_parser_set_sac_handler(parser, sac_handler)

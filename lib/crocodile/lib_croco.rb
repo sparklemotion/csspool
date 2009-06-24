@@ -25,6 +25,10 @@ module Crocodile
     callback :start_selector, [:pointer, :pointer], :void
     callback :end_selector, [:pointer, :pointer], :void
     callback :property, [:pointer, :pointer, :pointer, :int], :void
+    callback :start_font_face, [:pointer] * 2, :void
+    callback :end_font_face, [:pointer], :void
+    callback :start_media, [:pointer] * 3, :void
+    callback :end_media, [:pointer] * 2, :void
 
     def self.location_to_h thing
       {

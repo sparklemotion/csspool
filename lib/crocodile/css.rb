@@ -1,3 +1,4 @@
+require 'crocodile/css/media'
 require 'crocodile/css/rule_set'
 require 'crocodile/css/declaration'
 require 'crocodile/css/document'

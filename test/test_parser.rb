@@ -24,6 +24,15 @@ module Crocodile
       assert_equal 'background', rule_set.declarations.first.property
     end
 
+    def test_media
+      doc = Crocodile.CSS <<-eocss
+        @media print {
+          div { background: red, blue; }
+        }
+      eocss
+      assert_equal 1, doc.rule_sets.first.parent_media.length
+    end
+
     def test_universal_to_css
       doc = Crocodile.CSS <<-eocss
         * { background: red, blue; }
