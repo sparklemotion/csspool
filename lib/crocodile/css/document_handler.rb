@@ -13,7 +13,16 @@ module Crocodile
       end
 
       def charset name, location
-        @document.charset = name
+        @document.charsets << CSS::Charset.new(name, location)
+      end
+
+      def import_style media_list, uri, ns, loc
+        @document.import_rules << CSS::ImportRule.new(
+          uri,
+          ns,
+          media_list.map { |x| CSS::Media.new(x, loc) },
+          loc
+        )
       end
 
       def start_selector selector_list
@@ -29,11 +38,11 @@ module Crocodile
         rs.declarations << Declaration.new(name, exp, important, rs)
       end
 
-      def start_media media_list
-        @media_stack << media_list
+      def start_media media_list, parse_location
+        @media_stack << media_list.map { |x| CSS::Media.new(x, parse_location) }
       end
 
-      def end_media media_list
+      def end_media media_list, parse_location
         @media_stack.pop
       end
     end

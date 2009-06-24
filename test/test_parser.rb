@@ -8,7 +8,7 @@ module Crocodile
         @import url("foo.css") screen;
         div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
       eocss
-      assert_equal 'UTF-8', doc.charset
+      assert_equal 'UTF-8', doc.charsets.first.name
     end
 
     def test_doc_parser

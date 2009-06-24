@@ -7,8 +7,6 @@ module Crocodile
         :prev,  :pointer
       )
 
-      def null?; false; end
-
       def to_a
         list = [self]
         pointer = list.last[:next]

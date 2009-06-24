@@ -50,7 +50,7 @@ module Crocodile
         }
 
         sac_handler[:import_style] = lambda { |dh, media_list, uri, ns, loc|
-          media_list = LibCroco::GList.new(media_list)
+          media_list = media_list.null? ? [] : LibCroco::GList.new(media_list)
           media_list = media_list.to_a.map { |data|
             LibCroco.cr_string_peek_raw_str(data).read_string
           }
@@ -103,17 +103,14 @@ module Crocodile
 
         sac_handler[:start_media] = lambda { |dh,media_list,location|
           media_list = LibCroco::GList.new(media_list)
-          media_stack << media_list.to_a.map { |data|
-            CSS::Media.new(
-              LibCroco.cr_string_peek_raw_str(data).read_string,
-              LibCroco::CRParsingLocation.new(location).to_h
-            )
-          }
-          @document.start_media media_stack.last
+          media_stack << [media_list.to_a.map { |data|
+            LibCroco.cr_string_peek_raw_str(data).read_string
+          }, LibCroco::CRParsingLocation.new(location).to_h]
+          @document.start_media *media_stack.last
         }
 
         sac_handler[:end_media] = lambda { |dh,media_list|
-          @document.end_media media_stack.pop
+          @document.end_media *media_stack.pop
         }
 
         LibCroco.cr_parser_set_sac_handler(parser, sac_handler)

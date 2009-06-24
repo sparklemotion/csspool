@@ -14,6 +14,14 @@ module Crocodile
 
         tokens = []
 
+        target.charsets.each do |char_set|
+          tokens << char_set.accept(self)
+        end
+
+        target.import_rules.each do |ir|
+          tokens << ir.accept(self)
+        end
+
         target.rule_sets.each { |rs|
           if rs.media != current_media_type
             tokens << "#{indent}@media #{rs.media.map { |x| x.name }.join(", ")} {"
@@ -29,6 +37,19 @@ module Crocodile
           end
         }
         tokens.join("\n")
+      end
+
+      visitor_for CSS::Charset do |target|
+        "@charset \"#{target.name}\";"
+      end
+
+      visitor_for CSS::ImportRule do |target|
+        media = ''
+        media = " " + target.media.map { |x|
+          x.name
+        }.join(', ') if target.media.length > 0
+
+        "#{indent}@import url(\"#{target.uri}\")#{media};"
       end
 
       visitor_for CSS::RuleSet do |target|

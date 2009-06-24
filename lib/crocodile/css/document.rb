@@ -11,10 +11,13 @@ module Crocodile
       end
 
       attr_accessor :rule_sets
-      attr_accessor :charset
+      attr_accessor :charsets
+      attr_accessor :import_rules
+
       def initialize
-        @rule_sets  = []
-        @charset    = nil
+        @rule_sets    = []
+        @charsets     = []
+        @import_rules = []
       end
     end
   end

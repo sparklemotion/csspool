@@ -1,3 +1,5 @@
+require 'crocodile/css/charset'
+require 'crocodile/css/import_rule'
 require 'crocodile/css/media'
 require 'crocodile/css/rule_set'
 require 'crocodile/css/declaration'

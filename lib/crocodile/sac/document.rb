@@ -24,6 +24,12 @@ module Crocodile
 
       def comment comment
       end
+
+      def start_media media_list, parse_location
+      end
+
+      def end_media media_list, parse_location
+      end
     end
   end
 end
