@@ -20,8 +20,8 @@ module Crocodile
       end
 
       def property name, exp, important
-        @document.rule_sets.last.declarations <<
-          Declaration.new(name, exp, important)
+        rs = @document.rule_sets.last
+        rs.declarations << Declaration.new(name, exp, important, rs)
       end
     end
   end

@@ -1,9 +1,17 @@
 module Crocodile
   class Selector < Crocodile::Node
     attr_accessor :simple_selectors
+    attr_accessor :parse_location
+    attr_accessor :rule_set
+
     def initialize simple_selectors = [], parse_location = {}
       @simple_selectors = simple_selectors
       @parse_location   = parse_location
+      @rule_set         = nil
+    end
+
+    def declarations
+      @rule_set.declarations
     end
 
     def specificity
@@ -18,7 +26,7 @@ module Crocodile
           end
         end
       end
-      a * 1000000 + b * 1000 + c
+      [a, b, c]
     end
   end
 end
