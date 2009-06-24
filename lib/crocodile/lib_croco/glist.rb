@@ -10,13 +10,13 @@ module Crocodile
       def null?; false; end
 
       def to_a
-        list = []
-        node = self
-        until node.null?
-          list << self[:data]
-          node = node[:next]
+        list = [self]
+        pointer = list.last[:next]
+        until pointer.null?
+          list << GList.new(pointer)
+          pointer = list.last[:next]
         end
-        list
+        list.map { |x| x[:data] }
       end
     end
   end

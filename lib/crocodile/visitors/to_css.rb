@@ -1,21 +1,51 @@
 module Crocodile
   module Visitors
     class ToCSS < Visitor
+      def initialize
+        @indent_level = 0
+        @indent_space = '  '
+      end
+
       visitor_for CSS::Document do |target|
-        target.rule_sets.map { |rs| rs.accept self }.join("\n")
+        media_hash = {}
+
+        # Default media list is []
+        current_media_type = []
+
+        tokens = []
+
+        target.rule_sets.each { |rs|
+          if rs.media != current_media_type
+            tokens << "#{indent}@media #{rs.media.map { |x| x.name }.join(", ")} {"
+            @indent_level += 1
+          end
+
+          tokens << rs.accept(self)
+
+          if rs.media != current_media_type
+            current_media_type = rs.media
+            @indent_level -= 1
+            tokens << "#{indent}}"
+          end
+        }
+        tokens.join("\n")
       end
 
       visitor_for CSS::RuleSet do |target|
-        target.selectors.map { |sel| sel.accept self }.join(", ") + " {\n" +
-          target.declarations.map { |decl| decl.accept self }.join("\n") + "\n}\n"
+        "#{indent}" +
+          target.selectors.map { |sel| sel.accept self }.join(", ") + " {\n" +
+          target.declarations.map { |decl| decl.accept self }.join("\n") +
+          "\n#{indent}}"
       end
 
       visitor_for CSS::Declaration do |target|
         important = target.important? ? ' !important' : ''
 
-        "  #{target.property}: " + target.expressions.map { |exp|
-          exp.accept self
-        }.join + "#{important};"
+        indent {
+          "#{indent}#{target.property}: " + target.expressions.map { |exp|
+            exp.accept self
+          }.join + "#{important};"
+        }
       end
 
       visitor_for Terms::Ident do |target|
@@ -122,6 +152,17 @@ module Crocodile
         else
           raise "no matching matchway"
         end
+      end
+
+      private
+      def indent
+        if block_given?
+          @indent_level += 1
+          result = yield
+          @indent_level -= 1
+          return result
+        end
+        "#{@indent_space * @indent_level}"
       end
     end
   end

@@ -17,7 +17,11 @@ module Crocodile
       end
 
       def start_selector selector_list
-        @document.rule_sets << RuleSet.new(selector_list, [], @media_stack.last)
+        @document.rule_sets << RuleSet.new(
+          selector_list,
+          [],
+          @media_stack.last || []
+        )
       end
 
       def property name, exp, important
