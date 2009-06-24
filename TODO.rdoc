@@ -2,3 +2,24 @@
   * when Selectors::Attribute::NO_MATCH
   * when Selectors::Attribute::INCLUDES
   * when Selectors::Attribute::DASHMATCH
+
+* Test parsing blank string
+* Test parsing nil string
+
+* New api:
+
+  doc.import_rules.each do |import|
+    new_doc = import.load do |url|
+      ...
+    end
+  end
+  
+  ##
+  
+  collection = Crocodile::Collection.new base_url do |url|
+    open(url).read
+  end
+  
+  collection << some_string
+  collection << other_string
+
