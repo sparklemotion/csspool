@@ -30,7 +30,7 @@ module Crocodile
           div { background: red, blue; }
         }
       eocss
-      assert_equal 1, doc.rule_sets.first.parent_media.length
+      assert_equal 1, doc.rule_sets.first.media.length
     end
 
     def test_universal_to_css
