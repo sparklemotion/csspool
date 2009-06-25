@@ -8,6 +8,7 @@ require 'crocodile/lib_croco'
 require 'crocodile/version'
 require 'crocodile/css'
 require 'crocodile/visitors'
+require 'crocodile/collection'
 
 module Crocodile
   def self.CSS doc
