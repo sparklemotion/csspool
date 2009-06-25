@@ -163,13 +163,14 @@ module Crocodile
 
       visitor_for Selectors::Attribute do |target|
         case target.match_way
-        when Selectors::Attribute::NO_MATCH
         when Selectors::Attribute::SET
           "[#{target.name}]"
         when Selectors::Attribute::EQUALS
           "[#{target.name}=\"#{target.value}\"]"
         when Selectors::Attribute::INCLUDES
+          "[#{target.name} ~= \"#{target.value}\"]"
         when Selectors::Attribute::DASHMATCH
+          "[#{target.name} |= \"#{target.value}\"]"
         else
           raise "no matching matchway"
         end

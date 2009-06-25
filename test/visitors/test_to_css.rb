@@ -3,6 +3,28 @@ require 'helper'
 module Crocodile
   module Visitors
     class TestToCSS < Crocodile::TestCase
+      def test_includes
+        doc = Crocodile.CSS <<-eocss
+          div[bar ~= 'adsf'] { background: red, blue; }
+        eocss
+
+        assert_equal 1, doc.rule_sets.first.selectors.first.simple_selectors.first.additional_selectors.length
+
+        doc = Crocodile.CSS(doc.to_css)
+        assert_equal 1, doc.rule_sets.first.selectors.first.simple_selectors.first.additional_selectors.length
+      end
+
+      def test_dashmatch
+        doc = Crocodile.CSS <<-eocss
+          div[bar |= 'adsf'] { background: red, blue; }
+        eocss
+
+        assert_equal 1, doc.rule_sets.first.selectors.first.simple_selectors.first.additional_selectors.length
+
+        doc = Crocodile.CSS(doc.to_css)
+        assert_equal 1, doc.rule_sets.first.selectors.first.simple_selectors.first.additional_selectors.length
+      end
+
       def test_media
         doc = Crocodile.CSS <<-eocss
           @media print {
