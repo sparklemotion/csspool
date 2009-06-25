@@ -2,6 +2,11 @@ require 'helper'
 
 module Crocodile
   class TestParser < Crocodile::TestCase
+    def test_empty_doc_on_blank
+      assert Crocodile.CSS(nil)
+      assert Crocodile.CSS('')
+    end
+
     def test_doc_charset
       doc = Crocodile.CSS <<-eocss
         @charset "UTF-8";

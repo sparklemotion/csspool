@@ -4,6 +4,9 @@ module Crocodile
       include Crocodile::Visitable
 
       def self.parse string
+        unless string && string.length > 0
+          return Crocodile::CSS::Document.new
+        end
         handler = Crocodile::CSS::DocumentHandler.new
         parser = Crocodile::SAC::Parser.new(handler)
         parser.parse(string)
