@@ -1,11 +1,5 @@
 * New api:
 
-  doc.import_rules.each do |import|
-    new_doc = import.load do |url|
-      ...
-    end
-  end
-  
   ##
   
   collection = Crocodile::Collection.new base_url do |url|

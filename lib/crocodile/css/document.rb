@@ -16,11 +16,15 @@ module Crocodile
       attr_accessor :rule_sets
       attr_accessor :charsets
       attr_accessor :import_rules
+      attr_accessor :parent
+      attr_accessor :parent_import_rule
 
       def initialize
         @rule_sets    = []
         @charsets     = []
         @import_rules = []
+        @parent       = nil
+        @parent_import_rule = nil
       end
     end
   end

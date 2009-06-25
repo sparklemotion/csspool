@@ -21,6 +21,7 @@ module Crocodile
           uri,
           ns,
           media_list.map { |x| CSS::Media.new(x, loc) },
+          @document,
           loc
         )
       end
