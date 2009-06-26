@@ -2,9 +2,8 @@
 
 require 'rubygems'
 require 'hoe'
-require './lib/crocodile/version.rb'
 
-HOE = Hoe.new('crocodile', Crocodile::VERSION) do |p|
+Hoe.spec('crocodile') do |p|
   p.developer('Aaron Patterson', 'aaronp@rubyforge.org')
 end
 
