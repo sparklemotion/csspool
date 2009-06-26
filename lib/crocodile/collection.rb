@@ -1,5 +1,7 @@
 module Crocodile
   class Collection
+    include Enumerable
+
     def initialize &block
       @docs   = []
       @block  = block
@@ -27,7 +29,7 @@ module Crocodile
         end
       end
 
-      @docs += import_tree.flatten
+      @docs += import_tree.flatten.reverse
       self
     end
 
@@ -38,5 +40,11 @@ module Crocodile
     def [] idx
       @docs[idx]
     end
+
+    def each &block
+      @docs.each &block
+    end
+
+    def last; @docs.last; end
   end
 end
