@@ -110,5 +110,26 @@ module Crocodile
       css.apply_to html
       assert_equal 'red', html.at('div').styles['background'].value
     end
+
+    def test_apply_specific_wins
+      html = Nokogiri::XML(<<-eohtml)
+      <html>
+        <body>
+          <div>
+            <span>Hello world</span>
+          </div>
+        </body>
+      </html>
+      eohtml
+
+      css = Crocodile::Collection.new
+      css << "div span { background: green; }"
+      css << "span { background: red; }"
+
+      css.apply_to html
+      assert_equal 'green', html.at('span').styles['background'].value
+
+      assert_style 'background: green', 'span'
+    end
   end
 end

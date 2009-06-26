@@ -7,7 +7,7 @@ class Nokogiri::XML::Node
 
   def styles
     styles = {}
-    selectors.each do |sel|
+    selectors.sort_by { |sel| sel.specificity }.each do |sel|
       sel.declarations.each do |decl|
         styles[decl.property] = decl
       end
