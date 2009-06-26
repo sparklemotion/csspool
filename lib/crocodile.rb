@@ -9,7 +9,6 @@ require 'crocodile/version'
 require 'crocodile/css'
 require 'crocodile/visitors'
 require 'crocodile/collection'
-require 'crocodile/nokogiri'
 
 module Crocodile
   def self.CSS doc
