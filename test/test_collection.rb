@@ -77,5 +77,38 @@ module Crocodile
 
       assert_equal 2, list.length
     end
+
+    def test_two_chevrons
+      css = {
+        'foo.css' => '@import url("foo.css");',
+      }
+
+      collection = Crocodile::Collection.new do |url|
+        css[url] || raise
+      end
+
+      collection << '@import url(foo.css);'
+      collection << 'div { background: red; }'
+
+      assert_equal 3, collection.length
+    end
+
+    def test_apply_to
+      html = Nokogiri::XML(<<-eohtml)
+      <html>
+        <body>
+          <div>
+            <span>Hello world</span>
+          </div>
+        </body>
+      </html>
+      eohtml
+
+      css = Crocodile::Collection.new
+      css << "div { background: red; }"
+
+      css.apply_to html
+      assert_equal 'red', html.at('div').styles['background'].value
+    end
   end
 end

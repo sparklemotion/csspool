@@ -26,6 +26,16 @@ module Crocodile
         @parent       = nil
         @parent_import_rule = nil
       end
+
+      def apply_to doc
+        rule_sets.each do |rs|
+          rs.selectors.each do |sel|
+            doc.css(sel.to_css).each do |node|
+              node.selectors << sel
+            end
+          end
+        end
+      end
     end
   end
 end
