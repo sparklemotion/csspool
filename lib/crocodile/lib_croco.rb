@@ -4,7 +4,7 @@ module Crocodile
   module LibCroco
     extend FFI::Library
 
-    ffi_lib '/opt/local/lib/libcroco-0.6.3.dylib'
+    ffi_lib 'libcroco-0.6'
 
     attach_function :cr_doc_handler_new, [], :pointer
     attach_function :cr_parser_new_from_buf, [:string, :int, :int, :int], :pointer
