@@ -42,7 +42,7 @@ module Crocodile
     end
 
     def each &block
-      @docs.each &block
+      @docs.each(&block)
     end
 
     def last; @docs.last; end

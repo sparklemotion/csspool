@@ -1,10 +1,17 @@
 require 'ffi'
 
+ENV['LIBCROCO'] ||= 'libcroco-0.6'
+
 module Crocodile
   module LibCroco
     extend FFI::Library
 
-    ffi_lib 'libcroco-0.6'
+    begin
+      ffi_lib ENV['LIBCROCO']
+    rescue LoadError => ex
+      warn "### Please install libcroco and set LD_LIBRARY_PATH *or* set LIBCROCO to point at libcroco.dylib"
+      raise ex
+    end
 
     attach_function :cr_doc_handler_new, [], :pointer
     attach_function :cr_parser_new_from_buf, [:string, :int, :int, :int], :pointer
