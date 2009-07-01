@@ -1,10 +1,10 @@
 require 'helper'
 
-module Crocodile
+module CSSPool
   module CSS
-    class TestImportRule < Crocodile::TestCase
+    class TestImportRule < CSSPool::TestCase
       def test_import
-        doc = Crocodile.CSS <<-eocss
+        doc = CSSPool.CSS <<-eocss
           @import "foo.css";
         eocss
 
@@ -23,7 +23,7 @@ module Crocodile
       end
 
       def test_import_with_media
-        doc = Crocodile.CSS <<-eocss
+        doc = CSSPool.CSS <<-eocss
           @import "foo.css" screen, print;
         eocss
 

@@ -1,8 +1,8 @@
 require 'helper'
 
-module Crocodile
+module CSSPool
   module SAC
-    class TestProperties < Crocodile::TestCase
+    class TestProperties < CSSPool::TestCase
       def setup
         super
         @doc = MyDoc.new
@@ -13,7 +13,7 @@ module Crocodile
           div a.foo, #bar, * { background: red; }
           div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
         eocss
-        @parser = Crocodile::SAC::Parser.new(@doc)
+        @parser = CSSPool::SAC::Parser.new(@doc)
         @parser.parse(@css)
       end
 
@@ -27,7 +27,7 @@ module Crocodile
 
       def test_ident_with_comma
         doc = MyDoc.new
-        parser = Crocodile::SAC::Parser.new(doc)
+        parser = CSSPool::SAC::Parser.new(doc)
         parser.parse <<-eocss
           h1 { font-family: Verdana, sans-serif, monospace; }
         eocss

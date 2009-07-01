@@ -1,0 +1,11 @@
+module CSSPool
+  module Selectors
+    class Id < CSSPool::Selectors::Additional
+      attr_accessor :name
+
+      def initialize name
+        @name = name
+      end
+    end
+  end
+end

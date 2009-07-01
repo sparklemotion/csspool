@@ -1,21 +1,21 @@
 require 'helper'
 
-module Crocodile
-  class TestCollection < Crocodile::TestCase
+module CSSPool
+  class TestCollection < CSSPool::TestCase
     def test_new
-      assert Crocodile::Collection.new
-      assert Crocodile::Collection.new { |url| }
+      assert CSSPool::Collection.new
+      assert CSSPool::Collection.new { |url| }
     end
 
     def test_append
-      collection = Crocodile::Collection.new
+      collection = CSSPool::Collection.new
       collection << "div { background: green; }"
       assert_equal 1, collection.length
     end
 
     def test_collection_imports_stuff
       called = false
-      collection = Crocodile::Collection.new do |url|
+      collection = CSSPool::Collection.new do |url|
         called = true
         assert_equal 'hello.css', url
         "div { background: red; }"
@@ -33,7 +33,7 @@ module Crocodile
         'baz.css' => 'div { background: red; }',
       }
 
-      collection = Crocodile::Collection.new do |url|
+      collection = CSSPool::Collection.new do |url|
         css[url] || raise
       end
 
@@ -50,7 +50,7 @@ module Crocodile
         'foo.css' => '@import url("foo.css");',
       }
 
-      collection = Crocodile::Collection.new do |url|
+      collection = CSSPool::Collection.new do |url|
         css[url] || raise
       end
 
@@ -64,7 +64,7 @@ module Crocodile
         'foo.css' => '@import url("foo.css");',
       }
 
-      collection = Crocodile::Collection.new do |url|
+      collection = CSSPool::Collection.new do |url|
         css[url] || raise
       end
 

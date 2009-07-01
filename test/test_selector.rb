@@ -1,9 +1,9 @@
 require 'helper'
 
-module Crocodile
-  class TestSelector < Crocodile::TestCase
+module CSSPool
+  class TestSelector < CSSPool::TestCase
     def test_specificity
-      doc = Crocodile.CSS <<-eocss
+      doc = CSSPool.CSS <<-eocss
         *, foo > bar, #hover, :hover, div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
       eocss
       selectors = doc.rule_sets.first.selectors
@@ -21,7 +21,7 @@ module Crocodile
     end
 
     def test_selector_knows_its_ruleset
-      doc = Crocodile.CSS <<-eocss
+      doc = CSSPool.CSS <<-eocss
         a[href][int="10"]{ background: red; }
       eocss
       rs = doc.rule_sets.first
@@ -29,7 +29,7 @@ module Crocodile
     end
 
     def test_selector_gets_declarations
-      doc = Crocodile.CSS <<-eocss
+      doc = CSSPool.CSS <<-eocss
         a[href][int="10"]{ background: red; }
       eocss
       rs = doc.rule_sets.first
@@ -37,7 +37,7 @@ module Crocodile
     end
 
     def test_declaration_should_know_ruleset
-      doc = Crocodile.CSS <<-eocss
+      doc = CSSPool.CSS <<-eocss
         a[href][int="10"]{ background: red; }
       eocss
       rs = doc.rule_sets.first

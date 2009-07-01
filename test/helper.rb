@@ -1,7 +1,7 @@
 require "test/unit"
-require "crocodile"
+require "csspool"
 
-module Crocodile
+module CSSPool
   class TestCase < Test::Unit::TestCase
     unless RUBY_VERSION >= '1.9'
       undef :default_test
@@ -9,7 +9,7 @@ module Crocodile
 
     ASSET_DIR = File.join(File.dirname(__FILE__), 'files')
 
-    class MyDoc < Crocodile::SAC::Document
+    class MyDoc < CSSPool::SAC::Document
       attr_accessor :start_documents, :end_documents
       attr_accessor :charsets, :import_styles, :comments, :start_selectors
       attr_accessor :end_selectors, :properties

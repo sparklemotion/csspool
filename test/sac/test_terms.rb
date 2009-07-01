@@ -1,11 +1,11 @@
 require 'helper'
 
-module Crocodile
+module CSSPool
   module SAC
-    class TestTerms < Crocodile::TestCase
+    class TestTerms < CSSPool::TestCase
       def setup
         @doc = MyDoc.new
-        @parser = Crocodile::SAC::Parser.new(@doc)
+        @parser = CSSPool::SAC::Parser.new(@doc)
       end
 
       def test_hash_range

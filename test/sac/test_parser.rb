@@ -1,8 +1,8 @@
 require 'helper'
 
-module Crocodile
+module CSSPool
   module SAC
-    class TestParser < Crocodile::TestCase
+    class TestParser < CSSPool::TestCase
       def setup
         super
         @doc = MyDoc.new
@@ -13,7 +13,7 @@ module Crocodile
           div a.foo, #bar, * { background: red; }
           div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
         eocss
-        @parser = Crocodile::SAC::Parser.new(@doc)
+        @parser = CSSPool::SAC::Parser.new(@doc)
         @parser.parse(@css)
       end
 
@@ -22,7 +22,7 @@ module Crocodile
       end
 
       def test_parse_no_doc
-        parser = Crocodile::SAC::Parser.new
+        parser = CSSPool::SAC::Parser.new
         parser.parse(@css)
       end
 

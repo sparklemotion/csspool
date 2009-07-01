@@ -1,0 +1,8 @@
+require 'csspool/selectors/simple'
+require 'csspool/selectors/universal'
+require 'csspool/selectors/type'
+require 'csspool/selectors/additional'
+require 'csspool/selectors/id'
+require 'csspool/selectors/class'
+require 'csspool/selectors/pseudo_class'
+require 'csspool/selectors/attribute'

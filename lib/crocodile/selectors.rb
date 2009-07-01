@@ -1,8 +1,0 @@
-require 'crocodile/selectors/simple'
-require 'crocodile/selectors/universal'
-require 'crocodile/selectors/type'
-require 'crocodile/selectors/additional'
-require 'crocodile/selectors/id'
-require 'crocodile/selectors/class'
-require 'crocodile/selectors/pseudo_class'
-require 'crocodile/selectors/attribute'
