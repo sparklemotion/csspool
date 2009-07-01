@@ -1,0 +1,42 @@
+require 'helper'
+
+module Crocodile
+  module CSS
+    class TestImportRule < Crocodile::TestCase
+      def test_import
+        doc = Crocodile.CSS <<-eocss
+          @import "foo.css";
+        eocss
+
+        assert_equal 1, doc.import_rules.length
+
+        doc.import_rules.each do |ir|
+          new_doc = ir.load do |url|
+            assert_equal "foo.css", url
+            "div { background: red; }"
+          end
+          assert new_doc
+          assert_equal 1, new_doc.rule_sets.length
+          assert_equal ir, new_doc.parent_import_rule
+          assert_equal doc, new_doc.parent
+        end
+      end
+
+      def test_import_with_media
+        doc = Crocodile.CSS <<-eocss
+          @import "foo.css" screen, print;
+        eocss
+
+        assert_equal 1, doc.import_rules.length
+        doc.import_rules.each do |ir|
+          new_doc = ir.load do |url|
+            "div { background: red; }"
+          end
+          new_doc.rule_sets.each do |rs|
+            assert_equal ir.media, rs.media
+          end
+        end
+      end
+    end
+  end
+end
