@@ -1,32 +1,61 @@
-= crocodile
+= CSSPool
 
-* FIX (url)
+* http://csspool.rubyforge.org
+* http://github.com/tenderlove/csspool
 
 == DESCRIPTION:
 
-FIX (describe your package)
+CSSPool is a CSS parser.  CSSPool provides a SAC interface for parsing CSS as
+well as a document oriented interface for parsing CSS.
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+CSSPool now depends on libcroco[http://www.freespiders.org/projects/libcroco/]
+and interfaces with libcroco via FFI.  This means that if libcroco isn't
+installed in one of your default library paths, you'll need to tell CSSPool
+where to find the libcroco shared library.  This is typically the case for
+people using OS X and installing libcroco via macports.
+
+You can tell CSSPool where to find the libcroco shared library in a couple ways.
+The first way is to set LD_LIBRARY_PATH to point at the correct directory.  Just
+do this:
+
+  $ export LD_LIBRARY_PATH=/opt/local/lib
+
+Then run your script.
+
+The second way is to tell CSSPool specifically where to find the dynamic
+library.  To do that, just set the LIBCROCO environment variable.  On OS X,
+I would do this:
+
+  $ export LIBCROCO=/opt/local/lib/libcroco-0.6.dylib
+
+Then run my script.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  doc = CSSPool.CSS open('/path/to/css.css')
+  doc.rule_sets.each do |rs|
+    puts rs.to_css
+  end
+
+  puts doc.to_css
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* libcroco (on OS X do "sudo port install libcroco")
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* sudo gem install csspool
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2009 FIX
+Copyright (c) 2009
+
+* {Aaron Patterson}[http://tenderlovemaking.com]
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
