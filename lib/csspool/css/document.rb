@@ -1,8 +1,6 @@
 module CSSPool
   module CSS
-    class Document
-      include CSSPool::Visitable
-
+    class Document < Node
       def self.parse string
         unless string && string.length > 0
           return CSSPool::CSS::Document.new

@@ -8,5 +8,11 @@ module CSSPool
       accept Visitors::ToCSS.new
     end
     alias :to_s :to_css
+
+    def == other
+      return false unless self.class == other.class
+
+      accept Visitors::Comparable.new other
+    end
   end
 end
