@@ -13,16 +13,6 @@ module CSSPool
         :column,        :int,
         :byte_offset,   :int
       )
-
-      def to_rgb
-        CSSPool::Terms::Rgb.new(
-          self[:red],
-          self[:green],
-          self[:blue],
-          self[:is_percentage] == 1,
-          LibCroco.location_to_h(self)
-        )
-      end
     end
   end
 end

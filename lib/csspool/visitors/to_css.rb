@@ -64,13 +64,19 @@ module CSSPool
 
         indent {
           "#{indent}#{target.property}: " + target.expressions.map { |exp|
-            exp.accept self
-          }.join + "#{important};"
+
+            op = '/' == exp.operator ? ' /' : exp.operator
+
+            [
+              op,
+              exp.accept(self),
+            ].join ' '
+          }.join.strip + "#{important};"
         }
       end
 
       visitor_for Terms::Ident do |target|
-        [target.operator, target.value].compact.join(' ')
+        target.value
       end
 
       visitor_for Terms::Hash do |target|
@@ -89,8 +95,12 @@ module CSSPool
 
       visitor_for Terms::Function do |target|
         "#{target.name}(" +
-          target.params.map { |x| x.accept self }.join(', ') +
-          ')'
+          target.params.map { |x|
+            [
+              x.operator,
+              x.accept(self)
+            ].compact.join(' ')
+          }.join + ')'
       end
 
       visitor_for Terms::Rgb do |target|
@@ -143,7 +153,7 @@ module CSSPool
           17  => '%',
         }[target.type]
         [
-          target.operator == :minus ? '-' : nil,
+          target.unary_operator == :minus ? '-' : nil,
           target.value,
           units
         ].compact.join

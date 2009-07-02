@@ -46,7 +46,7 @@ module CSSPool
         eocss
         assert_equal 1, @doc.properties.length
         size = @doc.properties.first[1].first
-        assert_equal :minus, size.operator
+        assert_equal :minus, size.unary_operator
         assert_equal 1, size.value
         assert_equal '-1.0px', size.to_s
         assert_equal '-1.0px', size.to_css
