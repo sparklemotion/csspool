@@ -24,6 +24,11 @@ module CSSPool
         @parent       = nil
         @parent_import_rule = nil
       end
+
+      def [] selector
+        selectors = CSSPool.CSS("#{selector} {}").rule_sets.first.selectors
+        rule_sets.find_all { |rs| rs.selectors == selectors}
+      end
     end
   end
 end
