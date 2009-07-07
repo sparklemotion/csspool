@@ -3,7 +3,6 @@ CHANGELOG.rdoc
 Manifest.txt
 README.rdoc
 Rakefile
-TODO.rdoc
 lib/csspool.rb
 lib/csspool/collection.rb
 lib/csspool/css.rb
