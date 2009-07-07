@@ -6,10 +6,27 @@ module CSSPool
   module LibCroco
     extend FFI::Library
 
+    retry_times = 0
+
+    retry_places = {
+      0 => '/opt/local/lib/libcroco-0.6.dylib',
+      1 => '/opt/local/lib/libcroco-0.6.so',
+      2 => '/usr/local/lib/libcroco-0.6.dylib',
+      3 => '/usr/local/lib/libcroco-0.6.so',
+      4 => '/usr/lib/libcroco-0.6.dylib',
+      5 => '/usr/lib/libcroco-0.6.so',
+    }
+
     begin
       ffi_lib ENV['LIBCROCO']
     rescue LoadError => ex
-      warn "### Please install libcroco and set LD_LIBRARY_PATH *or* set LIBCROCO to point at libcroco.dylib"
+      if retry_places.key?(retry_times)
+        ENV['LIBCROCO'] = retry_places[retry_times]
+        retry_times += 1
+        retry
+      end
+      warn "### Please install libcroco"
+      warn "### Set LD_LIBRARY_PATH *or* set LIBCROCO to point at libcroco-0.6.dylib"
       raise ex
     end
 
