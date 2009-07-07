@@ -1,3 +1,13 @@
+== 2.0.0
+
+* Bugfixes
+
+  * Uh...  Many.
+
+* New Features
+
+  * Now wraps libcroco via FFI
+
 == 0.2.6
 
 * Fix comment greediness. [Seth Rasmussen]
