@@ -1,7 +1,7 @@
 .autotest
-History.txt
+CHANGELOG.rdoc
 Manifest.txt
-README.txt
+README.rdoc
 Rakefile
 TODO.rdoc
 lib/csspool.rb
@@ -51,8 +51,11 @@ lib/csspool/terms/string.rb
 lib/csspool/terms/uri.rb
 lib/csspool/visitable.rb
 lib/csspool/visitors.rb
+lib/csspool/visitors/comparable.rb
 lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
+test.rb
+test/css/test_document.rb
 test/css/test_import_rule.rb
 test/helper.rb
 test/sac/test_parser.rb
@@ -61,4 +64,5 @@ test/sac/test_terms.rb
 test/test_collection.rb
 test/test_parser.rb
 test/test_selector.rb
+test/visitors/test_comparable.rb
 test/visitors/test_to_css.rb
