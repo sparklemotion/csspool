@@ -53,7 +53,6 @@ lib/csspool/visitors.rb
 lib/csspool/visitors/comparable.rb
 lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
-test.rb
 test/css/test_document.rb
 test/css/test_import_rule.rb
 test/helper.rb
