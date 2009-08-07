@@ -8,6 +8,7 @@ Hoe.spec('csspool') do
   developer('John Barnette', 'jabarnette@rubyforge.org')
   self.readme_file   = 'README.rdoc'
   self.history_file  = 'CHANGELOG.rdoc'
+  self.extra_rdoc_files  = FileList['*.rdoc']
   self.extra_deps = ['ffi']
 end
 
