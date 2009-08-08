@@ -16,7 +16,6 @@ module CSSPool
         pointer = self[:simple_sel]
 
         until pointer.null?
-          LibCroco.cr_simple_sel_compute_specificity(pointer)
           simple_selectors << CRSimpleSel.new(pointer)
           pointer = simple_selectors.last[:next]
         end
