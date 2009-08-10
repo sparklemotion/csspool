@@ -15,6 +15,13 @@ module CSSPool
         doc2.each { |node| list2 << node }
 
         assert_equal list1, list2
+
+        stack = [doc1]
+        until stack.empty? do
+          stack += stack.pop.children
+        end
+
+        assert_equal doc1.hash, doc2.hash
       end
 
       def test_not_equal

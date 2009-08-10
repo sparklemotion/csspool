@@ -18,5 +18,13 @@ module CSSPool
     def each &block
       accept Visitors::Iterator.new block
     end
+
+    def children
+      accept Visitors::Children.new
+    end
+
+    def hash
+      @hash ||= children.map { |child| child.hash }.hash
+    end
   end
 end
