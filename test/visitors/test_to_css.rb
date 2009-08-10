@@ -15,6 +15,19 @@ module CSSPool
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 
+      # FIXME: this is a bug in libcroco
+      #def test_ident_followed_by_id
+      #  doc = CSSPool.CSS 'p#div { font: foo, #666; }'
+      #  assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
+
+      #  p doc.rule_sets.first.selectors
+
+      #  doc = CSSPool.CSS 'p #div { font: foo, #666; }'
+
+      #  p doc.rule_sets.first.selectors
+      #  assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
+      #end
+
       def test_hash_operator
         doc = CSSPool.CSS 'p { font: foo, #666; }'
         assert_equal 2, doc.rule_sets.first.declarations[0].expressions.length
