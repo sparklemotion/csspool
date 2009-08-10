@@ -7,6 +7,14 @@ module CSSPool
         doc1 = CSSPool.CSS css
         doc2 = CSSPool.CSS css
         assert_equal doc1, doc2
+
+        list1 = []
+        list2 = []
+
+        doc1.each { |node| list1 << node }
+        doc2.each { |node| list2 << node }
+
+        assert_equal list1, list2
       end
 
       def test_not_equal

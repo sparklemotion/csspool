@@ -14,5 +14,9 @@ module CSSPool
 
       accept Visitors::Comparable.new other
     end
+
+    def each &block
+      accept Visitors::Iterator.new block
+    end
   end
 end
