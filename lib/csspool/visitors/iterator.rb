@@ -14,6 +14,13 @@ module CSSPool
         @block.call target
       end
 
+      visitor_for Selectors::Universal, Selectors::Simple do |target|
+        target.children.each do |node|
+          node.accept self
+        end
+        @block.call target
+      end
+
       visitor_for CSS::Charset do |target|
         @block.call target
       end

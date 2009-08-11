@@ -33,6 +33,22 @@ module CSSPool
         equalitest 'div { border: #123; }'
       end
 
+      def test_div_with_id
+        equalitest 'div#foo { border: #123; }'
+      end
+
+      def test_div_with_pseudo
+        equalitest 'div:foo { border: #123; }'
+      end
+
+      def test_div_with_universal
+        equalitest '* { border: #123; }'
+      end
+
+      def test_simple
+        equalitest '.foo { border: #123; }'
+      end
+
       def test_rgb
         equalitest 'div { border: rgb(1,2,3); }'
       end

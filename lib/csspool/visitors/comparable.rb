@@ -32,11 +32,18 @@ module CSSPool
         }
       end
 
-      visitor_for CSS::Media do |target|
+      visitor_for Selectors::PseudoClass do |target|
+        [:name, :extra].all? { |m|
+          target.send(m) == @other.send(m)
+        }
+      end
+
+      visitor_for CSS::Media, Selectors::Id, Selectors::Class do |target|
         target.name == @other.name
       end
 
-      visitor_for Selectors::Type do |target|
+      visitor_for Selectors::Type, Selectors::Universal,
+        Selectors::Simple do |target|
         [:name, :combinator, :additional_selectors].all? { |m|
           target.send(m) == @other.send(m)
         }

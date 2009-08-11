@@ -41,7 +41,7 @@ module CSSPool
         target.simple_selectors
       end
 
-      visitor_for Selectors::Type do |target|
+      visitor_for Selectors::Type, Selectors::Universal, Selectors::Simple do |target|
         target.additional_selectors
       end
     end

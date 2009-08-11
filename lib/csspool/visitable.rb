@@ -14,6 +14,7 @@ module CSSPool
 
       accept Visitors::Comparable.new other
     end
+    alias :eql? :==
 
     def each &block
       accept Visitors::Iterator.new block
