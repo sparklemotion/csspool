@@ -6,3 +6,4 @@
 
 /lib/css/sac/generated_parser.rb
 /lib/css/sac/generated_property_parser.rb
+/lib/csspool/css/tokenizer.rb

@@ -1,3 +1,4 @@
+require 'csspool/css/tokenizer'
 require 'csspool/css/charset'
 require 'csspool/css/import_rule'
 require 'csspool/css/media'
