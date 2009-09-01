@@ -20,6 +20,7 @@ macro
   invalid1  "([^\n\r\f"]|{nl}|{nonascii}|{escape})*
   invalid2  '([^\n\r\f']|{nl}|{nonascii}|{escape})*
   invalid   ({invalid1}|{invalid2})
+  comment   \/\*(.|{w})*?\*\/
 
 rule
 
@@ -28,13 +29,14 @@ rule
             url\({w}{string}{w}\) { [:URI, text] }
             url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, text] }
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, text] }
-            {w}\/\*(.|{w})*?\*\/{w} { [:COMMENT, text] }
+            {w}{comment}{w}  { [:COMMENT, text] }
 
             {ident}\(\s*     { [:FUNCTION, text] }
             {w}@import{w}    { [:IMPORT_SYM, text] }
             {w}@page{w}      { [:PAGE_SYM, text] }
             {w}@charset{w}   { [:CHARSET_SYM, text] }
             {w}@media{w}     { [:MEDIA_SYM, text] }
+            {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
             {w}~={w}         { [:INCLUDES, text] }

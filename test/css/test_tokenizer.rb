@@ -13,6 +13,19 @@ module CSSPool
         }.new
       end
 
+      def test_important
+        [
+          '!important',
+          '  !important',
+          '!important  ',
+          '!  important  ',
+          '  !  important  ',
+        ].each do |str|
+          @scanner.scan str
+          assert_tokens([[:IMPORTANT_SYM, str]], @scanner)
+        end
+      end
+
       {
         '@page'     => :PAGE_SYM,
         '@import'   => :IMPORT_SYM,
