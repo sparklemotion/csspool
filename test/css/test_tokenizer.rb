@@ -18,6 +18,11 @@ module CSSPool
         assert_tokens([[:URI, "url('http://tlm.com')"]], @scanner)
       end
 
+      def test_url_with_others
+        @scanner.scan("url(http://tlm.com?f&b)")
+        assert_tokens([[:URI, "url(http://tlm.com?f&b)"]], @scanner)
+      end
+
       def test_unicode
         @scanner.scan("a日本語")
         assert_tokens([[:IDENT, 'a日本語']], @scanner)

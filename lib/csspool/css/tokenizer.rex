@@ -23,6 +23,7 @@ rule
 # [:state]  pattern  [actions]
 
             url\({w}{string}{w}\) { [:URI, text] }
+            url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, text] }
             {ident}\(\s*     { [:FUNCTION, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
