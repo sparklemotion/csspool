@@ -13,6 +13,14 @@ module CSSPool
         }.new
       end
 
+      def test_page
+        sym = '@page'
+        [sym, "  #{sym}", "#{sym}  ", " #{sym} "].each do |str|
+          @scanner.scan str
+          assert_tokens([[:PAGE_SYM, str]], @scanner)
+        end
+      end
+
       def test_import
         ['@import', '  @import', '@import  '].each do |str|
           @scanner.scan str
