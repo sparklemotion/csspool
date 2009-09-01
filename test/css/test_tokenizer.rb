@@ -13,6 +13,34 @@ module CSSPool
         }.new
       end
 
+      def test_rbrace
+        str = "  }  \n  "
+        @scanner.scan str
+        assert_tokens([[:RBRACE, str]], @scanner)
+      end
+
+      def test_lbrace
+        str = "  {    "
+        @scanner.scan str
+        assert_tokens([[:LBRACE, str]], @scanner)
+      end
+
+      def test_semi
+        str = "  ;    "
+        @scanner.scan str
+        assert_tokens([[:SEMI, str]], @scanner)
+      end
+
+      def test_cdc
+        @scanner.scan("-->")
+        assert_tokens([[:CDC, "-->"]], @scanner)
+      end
+
+      def test_cdo
+        @scanner.scan("<!--")
+        assert_tokens([[:CDO, "<!--"]], @scanner)
+      end
+
       def test_unicode_range
         @scanner.scan("U+0-10FFFF")
         assert_tokens([[:UNICODE_RANGE, "U+0-10FFFF"]], @scanner)

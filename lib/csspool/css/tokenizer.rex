@@ -40,13 +40,18 @@ rule
             {w}\[{w}         { [:LSQUARE, text] }
             {w}\]            { [:RSQUARE, text] }
             {w}\+{w}         { [:PLUS, text] }
+            {w}{{w}          { [:LBRACE, text] }
+            {w}}{w}          { [:RBRACE, text] }
             {w}>{w}          { [:GREATER, text] }
             {w},{w}          { [:COMMA, text] }
+            {w};{w}          { [:SEMI, text] }
             {w}~{w}          { [:TILDE, text] }
             \:not\({w}       { [:NOT, text] }
             {num}            { [:NUMBER, text] }
             {w}\/\/{w}       { [:DOUBLESLASH, text] }
             {w}\/{w}         { [:SLASH, text] }
+            <!--             { [:CDO, text] }
+            -->              { [:CDC, text] }
             
             
             [\s\t\r\n\f]+    { [:S, text] }
