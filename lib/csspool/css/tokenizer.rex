@@ -17,6 +17,9 @@ macro
   string1   "([^\n\r\f"]|{nl}|{nonascii}|{escape})*"
   string2   '([^\n\r\f']|{nl}|{nonascii}|{escape})*'
   string    ({string1}|{string2})
+  invalid1  "([^\n\r\f"]|{nl}|{nonascii}|{escape})*
+  invalid2  '([^\n\r\f']|{nl}|{nonascii}|{escape})*
+  invalid   ({invalid1}|{invalid2})
 
 rule
 
@@ -57,6 +60,7 @@ rule
             
             [\s\t\r\n\f]+    { [:S, text] }
             {string}         { [:STRING, text] }
+            {invalid}        { [:INVALID, text] }
             .                { [text, text] }
 end
 end

@@ -13,6 +13,16 @@ module CSSPool
         }.new
       end
 
+      def test_invalid
+        str = "'internet"
+        @scanner.scan str
+        assert_tokens([[:INVALID, str]], @scanner)
+
+        str = '"internet'
+        @scanner.scan str
+        assert_tokens([[:INVALID, str]], @scanner)
+      end
+
       def test_comment
         str = "/**** Hello World ***/"
         @scanner.scan str
@@ -71,9 +81,9 @@ module CSSPool
         assert_tokens([[:IDENT, 'a日本語']], @scanner)
       end
 
-      def test_tokenize_bad_single_quote
-        @scanner.scan("'")
-        assert_tokens([["'", "'"]], @scanner)
+      def test_tokenize_bad_percent
+        @scanner.scan("%")
+        assert_tokens([["%", "%"]], @scanner)
       end
 
       def test_not_equal
