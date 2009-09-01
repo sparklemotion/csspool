@@ -25,6 +25,7 @@ rule
             url\({w}{string}{w}\) { [:URI, text] }
             url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, text] }
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, text] }
+            {w}\/\*(.|{w})*?\*\/{w} { [:COMMENT, text] }
 
             {ident}\(\s*     { [:FUNCTION, text] }
             {ident}          { [:IDENT, text] }
