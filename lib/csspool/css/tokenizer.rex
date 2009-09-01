@@ -31,6 +31,7 @@ rule
             {w}\/\*(.|{w})*?\*\/{w} { [:COMMENT, text] }
 
             {ident}\(\s*     { [:FUNCTION, text] }
+            {w}@import{w}    { [:IMPORT_SYM, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
             {w}~={w}         { [:INCLUDES, text] }
@@ -44,8 +45,8 @@ rule
             {w}\[{w}         { [:LSQUARE, text] }
             {w}\]            { [:RSQUARE, text] }
             {w}\+{w}         { [:PLUS, text] }
-            {w}{{w}          { [:LBRACE, text] }
-            {w}}{w}          { [:RBRACE, text] }
+            {w}\{{w}         { [:LBRACE, text] }
+            {w}\}{w}         { [:RBRACE, text] }
             {w}>{w}          { [:GREATER, text] }
             {w},{w}          { [:COMMA, text] }
             {w};{w}          { [:SEMI, text] }

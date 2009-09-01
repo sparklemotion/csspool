@@ -13,6 +13,13 @@ module CSSPool
         }.new
       end
 
+      def test_import
+        ['@import', '  @import', '@import  '].each do |str|
+          @scanner.scan str
+          assert_tokens([[:IMPORT_SYM, str]], @scanner)
+        end
+      end
+
       def test_invalid
         str = "'internet"
         @scanner.scan str
