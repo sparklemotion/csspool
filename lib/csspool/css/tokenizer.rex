@@ -16,12 +16,13 @@ macro
   name      ({nmchar})+
   string1   "([^\n\r\f"]|{nl}|{nonascii}|{escape})*"
   string2   '([^\n\r\f']|{nl}|{nonascii}|{escape})*'
-  string    {string1}|{string2}
+  string    ({string1}|{string2})
 
 rule
 
 # [:state]  pattern  [actions]
 
+            url\({w}{string}{w}\) { [:URI, text] }
             {ident}\(\s*     { [:FUNCTION, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
