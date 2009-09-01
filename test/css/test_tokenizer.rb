@@ -13,6 +13,13 @@ module CSSPool
         }.new
       end
 
+      def test_num
+        ['10', '-10', '0.1', '-0.1'].each do |num|
+          @scanner.scan num
+          assert_tokens([[:NUMBER, num]], @scanner)
+        end
+      end
+
       def test_important
         [
           '!important',
