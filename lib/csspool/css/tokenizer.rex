@@ -24,6 +24,8 @@ rule
 
             url\({w}{string}{w}\) { [:URI, text] }
             url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, text] }
+            U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, text] }
+
             {ident}\(\s*     { [:FUNCTION, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
@@ -46,7 +48,6 @@ rule
             {w}\/\/{w}       { [:DOUBLESLASH, text] }
             {w}\/{w}         { [:SLASH, text] }
             
-            U\+[0-9a-f?]{1,6}(-[0-9a-f]{1,6})?  {[:UNICODE_RANGE, text] }
             
             [\s\t\r\n\f]+    { [:S, text] }
             {string}         { [:STRING, text] }

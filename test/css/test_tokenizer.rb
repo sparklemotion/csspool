@@ -13,6 +13,11 @@ module CSSPool
         }.new
       end
 
+      def test_unicode_range
+        @scanner.scan("U+0-10FFFF")
+        assert_tokens([[:UNICODE_RANGE, "U+0-10FFFF"]], @scanner)
+      end
+
       def test_url_with_string
         @scanner.scan("url('http://tlm.com')")
         assert_tokens([[:URI, "url('http://tlm.com')"]], @scanner)
