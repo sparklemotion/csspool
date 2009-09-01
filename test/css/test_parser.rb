@@ -28,13 +28,14 @@ module CSSPool
       end
 
       def test_start_stop
-        assert_calls [[:start_document, []], [:end_document, []]],
-          '@import "foo"'
+        @parser.scan_str "@import 'foo'"
+        assert_equal [:start_document, []], @doc.calls.first
+        assert_equal [:end_document, []], @doc.calls.last
       end
 
-      def assert_calls calls, css
-        @parser.scan_str css
-        assert_equal calls, @doc.calls
+      def test_charset
+        @parser.scan_str '@charset "UTF-8";'
+        assert_equal [:charset, ['UTF-8']], @doc.calls[1]
       end
     end
   end
