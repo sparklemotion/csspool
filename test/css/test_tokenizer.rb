@@ -13,18 +13,17 @@ module CSSPool
         }.new
       end
 
-      def test_page
-        sym = '@page'
-        [sym, "  #{sym}", "#{sym}  ", " #{sym} "].each do |str|
-          @scanner.scan str
-          assert_tokens([[:PAGE_SYM, str]], @scanner)
-        end
-      end
-
-      def test_import
-        ['@import', '  @import', '@import  '].each do |str|
-          @scanner.scan str
-          assert_tokens([[:IMPORT_SYM, str]], @scanner)
+      {
+        '@page'     => :PAGE_SYM,
+        '@import'   => :IMPORT_SYM,
+        '@media'    => :MEDIA_SYM,
+        '@charset'  => :CHARSET_SYM,
+      }.each do |k,v|
+        define_method(:"test_#{k.sub(/@/, '')}") do
+          [k, "  #{k}", "#{k}  ", " #{k} "].each do |str|
+            @scanner.scan str
+            assert_tokens([[v, str]], @scanner)
+          end
         end
       end
 

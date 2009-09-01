@@ -33,6 +33,8 @@ rule
             {ident}\(\s*     { [:FUNCTION, text] }
             {w}@import{w}    { [:IMPORT_SYM, text] }
             {w}@page{w}      { [:PAGE_SYM, text] }
+            {w}@charset{w}   { [:CHARSET_SYM, text] }
+            {w}@media{w}     { [:MEDIA_SYM, text] }
             {ident}          { [:IDENT, text] }
             \#{name}         { [:HASH, text] }
             {w}~={w}         { [:INCLUDES, text] }
