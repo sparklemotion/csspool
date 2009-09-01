@@ -57,7 +57,16 @@ rule
             {w};{w}          { [:SEMI, text] }
             {w}~{w}          { [:TILDE, text] }
             \:not\({w}       { [:NOT, text] }
-            {num}            { [:NUMBER, text] }
+            {w}{num}em{w}    { [:EMS, text] }
+            {w}{num}ex{w}    { [:EXS, text] }
+
+            {w}{num}(px|cm|mm|in|pt|pc){w}    { [:LENGTH, text] }
+            {w}{num}(deg|rad|grad){w} { [:ANGLE, text] }
+            {w}{num}(ms|s){w} { [:TIME, text] }
+            {w}{num}(hz|khz){w} { [:FREQ, text] }
+
+            {w}{num}%{w}     { [:PERCENTAGE, text] }
+            {w}{num}{w}      { [:NUMBER, text] }
             {w}\/\/{w}       { [:DOUBLESLASH, text] }
             {w}\/{w}         { [:SLASH, text] }
             <!--             { [:CDO, text] }

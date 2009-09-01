@@ -13,10 +13,41 @@ module CSSPool
         }.new
       end
 
+      {
+        'em'    => :EMS,
+        'ex'    => :EXS,
+        'px'    => :LENGTH,
+        'cm'    => :LENGTH,
+        'mm'    => :LENGTH,
+        'in'    => :LENGTH,
+        'pt'    => :LENGTH,
+        'pc'    => :LENGTH,
+        'deg'   => :ANGLE,
+        'rad'   => :ANGLE,
+        'grad'  => :ANGLE,
+        'ms'    => :TIME,
+        's'     => :TIME,
+        'hz'    => :FREQ,
+        'khz'   => :FREQ,
+        '%'     => :PERCENTAGE,
+      }.each do |unit,sym|
+        define_method :"test_#{unit}" do
+          ['10', '-10', '0.1', '-0.1'].each do |num|
+            num = "#{num}#{unit}"
+            [num, "  #{num}", "#{num}  ", " #{num} "].each do |str|
+              @scanner.scan str
+              assert_tokens([[sym, str]], @scanner)
+            end
+          end
+        end
+      end
+
       def test_num
         ['10', '-10', '0.1', '-0.1'].each do |num|
-          @scanner.scan num
-          assert_tokens([[:NUMBER, num]], @scanner)
+          [num, "  #{num}", "#{num}  ", " #{num} "].each do |str|
+            @scanner.scan str
+            assert_tokens([[:NUMBER, str]], @scanner)
+          end
         end
       end
 
