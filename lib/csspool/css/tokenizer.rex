@@ -1,6 +1,6 @@
 module CSSPool
 module CSS
-class Tokenizer
+class Tokenizer < Parser
 
 macro
   nl        \n|\r\n|\r|\f

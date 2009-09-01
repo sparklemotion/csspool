@@ -1,6 +1,6 @@
 module CSSPool
   module SAC
-    class Parser
+    class Parser < CSSPool::CSS::Tokenizer
       attr_accessor :document
 
       def initialize document = CSSPool::SAC::Document.new
@@ -8,9 +8,7 @@ module CSSPool
         @selector_stack = []
       end
 
-      def parse string
-        parse_memory(string, 5)
-      end
+      alias :parse :scan_str
 
       private
       def push selectors
