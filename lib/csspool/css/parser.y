@@ -52,12 +52,13 @@ rule
   hcap
     : HASH
     | class
-    | attribute
+    | attrib
+    | pseudo
     ;
   class
     : '.' IDENT
     ;
-  attribute
+  attrib
     : LSQUARE IDENT EQUAL IDENT RSQUARE
     | LSQUARE IDENT EQUAL STRING RSQUARE
     | LSQUARE IDENT INCLUDES STRING RSQUARE
@@ -65,6 +66,9 @@ rule
     | LSQUARE IDENT DASHMATCH IDENT RSQUARE
     | LSQUARE IDENT DASHMATCH STRING RSQUARE
     | LSQUARE IDENT RSQUARE
+    ;
+  pseudo
+    : ':' IDENT
     ;
   declaration
     :
