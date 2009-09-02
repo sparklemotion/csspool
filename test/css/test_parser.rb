@@ -98,6 +98,10 @@ module CSSPool
 
       def test_ruleset_space_combinator
         assert_attribute 'div p { }'
+
+        sel = args_for(:start_selector).first.first
+        assert_equal 2, sel.simple_selectors.length
+        assert_equal [nil, ' '], sel.simple_selectors.map { |x| x.combinator }
       end
 
       def test_import
@@ -145,6 +149,9 @@ module CSSPool
 
         assert_equal values, property[1].map { |x| x.value }
       end
+
+      def doc; @parser.document end
+      def args_for s; doc.calls.find { |x| x.first == s }[1] end
     end
   end
 end

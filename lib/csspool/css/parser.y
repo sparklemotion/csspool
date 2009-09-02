@@ -44,6 +44,10 @@ rule
     ;
   selector
     : selector combinator simple_selector
+      {
+        val.last.combinator = val[1]
+        result = [val.first, val.last]
+      }
     | simple_selector
     ;
   combinator
