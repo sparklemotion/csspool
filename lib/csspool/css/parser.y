@@ -70,6 +70,7 @@ rule
   pseudo
     : ':' IDENT
     | ':' FUNCTION RPAREN
+    | ':' FUNCTION IDENT RPAREN
     ;
   declaration
     :
