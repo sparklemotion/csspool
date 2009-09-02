@@ -1,6 +1,6 @@
 class CSSPool::CSS::Parser
 
-token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA
+token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR
 
 rule
   document
@@ -9,7 +9,7 @@ rule
       { @document.end_document }
     ;
   stylesheet
-    : charset import
+    : charset import body
     ;
   charset
     : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2] }
@@ -26,4 +26,27 @@ rule
   medium
     : medium COMMA IDENT { result = [val.first, val.last] }
     | IDENT
+    ;
+  body
+    : ruleset
+    ;
+  ruleset
+    : selector LBRACE
+      { @document.start_selector }
+      declaration RBRACE
+      { @document.end_selector }
+    |
+    ;
+  selector
+    : simple_selector
+    ;
+  simple_selector
+    : element_name
+    ;
+  element_name
+    : IDENT
+    | STAR
+    ;
+  declaration
+    :
     ;

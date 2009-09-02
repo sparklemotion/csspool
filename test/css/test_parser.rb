@@ -27,6 +27,18 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_ruleset_div
+        @parser.scan_str 'div { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
+      def test_ruleset_star
+        @parser.scan_str '* { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
       def test_import
         @parser.scan_str '@import "foo";'
         assert_equal [:import_style, [[], 'foo']], @doc.calls[1]
