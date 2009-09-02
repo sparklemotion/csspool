@@ -102,11 +102,12 @@ module CSSPool
         ' + ' => :+
       }.each do |combo, sym|
         define_method(:"test_combo_#{sym}") do
-          assert_attribute "div #{combo} p { }"
+          assert_attribute "div #{combo} p  a { }"
 
           sel = args_for(:start_selector).first.first
-          assert_equal 2, sel.simple_selectors.length
-          assert_equal [nil, sym], sel.simple_selectors.map { |x| x.combinator }
+          assert_equal 3, sel.simple_selectors.length
+          assert_equal [nil, sym, :s],
+            sel.simple_selectors.map { |x| x.combinator }
         end
       end
 

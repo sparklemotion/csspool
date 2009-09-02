@@ -43,10 +43,11 @@ rule
       }
     ;
   selector
-    : selector combinator simple_selector
+    : simple_selector combinator selector
       {
-        val.last.combinator = val[1]
-        result = [val.first, val.last]
+        val = val.flatten
+        val[2].combinator = val.delete_at 1
+        result = val
       }
     | simple_selector
     ;
