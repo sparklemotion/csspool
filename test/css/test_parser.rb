@@ -27,6 +27,18 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_ruleset_div_class
+        @parser.scan_str 'div.foo { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
+      def test_ruleset_div_hash
+        @parser.scan_str 'div#foo { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
       def test_ruleset_div
         @parser.scan_str 'div { }'
         assert_equal :start_selector, @doc.calls[1].first

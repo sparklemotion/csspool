@@ -1,6 +1,6 @@
 class CSSPool::CSS::Parser
 
-token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR
+token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 
 rule
   document
@@ -41,11 +41,19 @@ rule
     : simple_selector
     ;
   simple_selector
-    : element_name
+    : element_name hcap
+    | element_name
     ;
   element_name
     : IDENT
     | STAR
+    ;
+  hcap
+    : HASH
+    | class
+    ;
+  class
+    : '.' IDENT
     ;
   declaration
     :
