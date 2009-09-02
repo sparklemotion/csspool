@@ -46,7 +46,7 @@ rule
       }
     | selector
       {
-        result = Selector.new(val.first, {})
+        result = Selector.new(Array(val.first), {})
       }
     ;
   selector
@@ -66,24 +66,30 @@ rule
   simple_selector
     : element_name hcap { result = val.first }
     | element_name
-    | hcap              { result = Selectors::Simple.new nil, nil }
+    | hcap
+      {
+        result = Selectors::Simple.new nil, nil
+        result.additional_selectors = val
+      }
     ;
   element_name
     : IDENT { result = Selectors::Type.new val.first, nil }
     | STAR  { result = Selectors::Universal.new val.first, nil }
     ;
   hcap
-    : HASH
+    : hash
     | class
     | attrib
     | pseudo
-    | HASH hcap
+    | hash hcap
     | class hcap
     | attrib hcap
     | pseudo hcap
     ;
+  hash
+    : HASH { result = Selectors::Id.new val.first }
   class
-    : '.' IDENT
+    : '.' IDENT { result = Selectors::Class.new val.last }
     ;
   attrib
     : LSQUARE IDENT EQUAL IDENT RSQUARE
@@ -95,9 +101,12 @@ rule
     | LSQUARE IDENT RSQUARE
     ;
   pseudo
-    : ':' IDENT
-    | ':' FUNCTION RPAREN
+    : ':' IDENT { result = Selectors::PseudoClass.new val[1], nil }
+    | ':' FUNCTION RPAREN { result = Selectors::PseudoClass.new val[1], nil }
     | ':' FUNCTION IDENT RPAREN
+      {
+        result = Selectors::PseudoClass.new val[1], val[2]
+      }
     ;
   declaration
     : property ':' S expr SEMI

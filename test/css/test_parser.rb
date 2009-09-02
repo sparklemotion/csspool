@@ -41,7 +41,24 @@ module CSSPool
         assert_attribute 'div.foo[a] { }'
       end
 
-      def test_multiple_selectors
+      def test_additional_selectors_pseudo
+        assert_additional_selector(
+          { Selectors::PseudoClass => 'foo' }, ':foo { }')
+        assert_additional_selector(
+          { Selectors::PseudoClass => 'foo(' }, ':foo() { }')
+        assert_additional_selector(
+          { Selectors::PseudoClass => 'foo(' }, ':foo(a) { }')
+      end
+
+      def test_additional_selectors_id
+        assert_additional_selector({ Selectors::Id => '#foo' }, '#foo { }')
+      end
+
+      def test_additional_selectors_class
+        assert_additional_selector({ Selectors::Class => 'foo' }, '.foo { }')
+      end
+
+      def test_ruleset_multiple_selectors
         assert_attribute '.foo, bar, #baz { }'
         sels = args_for(:start_selector).first
         assert_equal 3, sels.length
@@ -177,6 +194,23 @@ module CSSPool
 
       def doc; @parser.document end
       def args_for s; doc.calls.find { |x| x.first == s }[1] end
+
+      def assert_additional_selector things, css
+        @parser.document = MethodCatcher.new
+        @parser.scan_str css
+        args = @parser.document.calls.find { |x|
+          x.first == :start_selector
+        }[1]
+
+        ss = args.first.first.simple_selectors.first
+
+        assert_equal things.keys.length, ss.additional_selectors.length
+        things.each do |klass, name|
+          assert_instance_of klass, ss.additional_selectors.first
+          assert_equal name, ss.additional_selectors.first.name
+        end
+      end
+
     end
   end
 end
