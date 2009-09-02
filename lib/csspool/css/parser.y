@@ -54,6 +54,10 @@ rule
     | class
     | attrib
     | pseudo
+    | HASH hcap
+    | class hcap
+    | attrib hcap
+    | pseudo hcap
     ;
   class
     : '.' IDENT

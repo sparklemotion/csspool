@@ -21,94 +21,74 @@ module CSSPool
         super
         @doc = MethodCatcher.new
         @parser = Class.new(CSSPool::CSS::Tokenizer) {
+          attr_accessor :document
           def initialize doc
             @document = doc
           end
         }.new(@doc)
       end
 
+      def test_ruleset_div_attribute_recurses
+        assert_attribute 'div[a]:foo { }'
+        assert_attribute 'div:foo[a] { }'
+        assert_attribute 'div#foo[a] { }'
+        assert_attribute 'div.foo[a] { }'
+      end
+
       def test_ruleset_div_pseudo_function_with_arg
-        @parser.scan_str 'div:foo(bar) { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div:foo(bar) { }'
       end
 
       def test_ruleset_div_pseudo_function
-        @parser.scan_str 'div:foo() { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div:foo() { }'
       end
 
       def test_ruleset_div_pseudo
-        @parser.scan_str 'div:foo { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div:foo { }'
       end
 
       def test_ruleset_div_attribute_dashmatch_string
-        @parser.scan_str 'div[a |= "b"] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a |= "b"] { }'
       end
 
       def test_ruleset_div_attribute_dashmatch_ident
-        @parser.scan_str 'div[a |= b] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a |= b] { }'
       end
 
       def test_ruleset_div_attribute_includes_ident
-        @parser.scan_str 'div[a ~= b] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a ~= b] { }'
       end
 
       def test_ruleset_div_attribute_includes_string
-        @parser.scan_str 'div[a ~= "b"] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a ~= "b"] { }'
       end
 
       def test_ruleset_div_attribute_equals_string
-        @parser.scan_str 'div[a = "b"] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a = "b"] { }'
       end
 
       def test_ruleset_div_attribute_equals_ident
-        @parser.scan_str 'div[a = b] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a = b] { }'
       end
 
       def test_ruleset_div_attribute_exists
-        @parser.scan_str 'div[a] { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div[a] { }'
       end
 
       def test_ruleset_div_class
-        @parser.scan_str 'div.foo { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div.foo { }'
       end
 
       def test_ruleset_div_hash
-        @parser.scan_str 'div#foo { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div#foo { }'
       end
 
       def test_ruleset_div
-        @parser.scan_str 'div { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute 'div { }'
       end
 
       def test_ruleset_star
-        @parser.scan_str '* { }'
-        assert_equal :start_selector, @doc.calls[1].first
-        assert_equal :end_selector, @doc.calls[2].first
+        assert_attribute '* { }'
       end
 
       def test_import
@@ -135,6 +115,13 @@ module CSSPool
       def test_charset
         @parser.scan_str '@charset "UTF-8";'
         assert_equal [:charset, ['UTF-8']], @doc.calls[1]
+      end
+
+      def assert_attribute css
+        @parser.document = MethodCatcher.new
+        @parser.scan_str css
+        assert_equal :start_selector, @parser.document.calls[1].first
+        assert_equal :end_selector, @parser.document.calls[2].first
       end
     end
   end
