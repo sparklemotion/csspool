@@ -59,6 +59,7 @@ rule
     ;
   attribute
     : LSQUARE IDENT EQUAL IDENT RSQUARE
+    | LSQUARE IDENT EQUAL STRING RSQUARE
     | LSQUARE IDENT RSQUARE
     ;
   declaration
