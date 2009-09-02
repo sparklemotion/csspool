@@ -1,7 +1,7 @@
 class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
-token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION
+token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 
 rule
   document
@@ -51,7 +51,9 @@ rule
     | simple_selector
     ;
   combinator
-    : S
+    : S       { result = :s }
+    | GREATER { result = :> }
+    | PLUS    { result = :+ }
     ;
   simple_selector
     : element_name hcap { result = val.first }

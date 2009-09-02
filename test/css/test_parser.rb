@@ -96,12 +96,18 @@ module CSSPool
         assert_attribute '* { }'
       end
 
-      def test_ruleset_space_combinator
-        assert_attribute 'div p { }'
+      {
+        ' '   => :s,
+        ' > ' => :>,
+        ' + ' => :+
+      }.each do |combo, sym|
+        define_method(:"test_combo_#{sym}") do
+          assert_attribute "div #{combo} p { }"
 
-        sel = args_for(:start_selector).first.first
-        assert_equal 2, sel.simple_selectors.length
-        assert_equal [nil, ' '], sel.simple_selectors.map { |x| x.combinator }
+          sel = args_for(:start_selector).first.first
+          assert_equal 2, sel.simple_selectors.length
+          assert_equal [nil, sym], sel.simple_selectors.map { |x| x.combinator }
+        end
       end
 
       def test_import
