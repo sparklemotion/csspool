@@ -1,7 +1,7 @@
 class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
-token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH
+token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION
 
 rule
   document
@@ -69,6 +69,7 @@ rule
     ;
   pseudo
     : ':' IDENT
+    | ':' FUNCTION RPAREN
     ;
   declaration
     :
