@@ -32,7 +32,7 @@ module CSSPool
         '%'     => :PERCENTAGE,
       }.each do |unit,sym|
         define_method :"test_#{unit}" do
-          ['10', '-10', '0.1', '-0.1'].each do |num|
+          ['10', '0.1'].each do |num|
             num = "#{num}#{unit}"
             [num, "  #{num}", "#{num}  ", " #{num} "].each do |str|
               @scanner.scan str
@@ -43,7 +43,7 @@ module CSSPool
       end
 
       def test_num
-        ['10', '-10', '0.1', '-0.1'].each do |num|
+        ['10', '0.1'].each do |num|
           [num, "  #{num}", "#{num}  ", " #{num} "].each do |str|
             @scanner.scan str
             assert_tokens([[:NUMBER, str]], @scanner)
@@ -223,7 +223,7 @@ module CSSPool
 
       def test_scan_star
         @scanner.scan('*')
-        assert_tokens([ ['*', '*'], ], @scanner)
+        assert_tokens([ [:STAR, '*'], ], @scanner)
       end
 
       def test_scan_class
@@ -284,7 +284,8 @@ module CSSPool
         assert_tokens([ [:IDENT, 'x'],
                         [':', ':'],
                         [:FUNCTION, 'nth-child('],
-                        [:NUMBER, '-1'],
+                        [:MINUS, '-'],
+                        [:NUMBER, '1'],
                         [:IDENT, 'n'],
                         [:PLUS, '+'],
                         [:NUMBER, '3'],
