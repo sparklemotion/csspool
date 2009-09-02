@@ -38,6 +38,24 @@ module CSSPool
         assert_attribute 'div:foo[a] { }'
         assert_attribute 'div#foo[a] { }'
         assert_attribute 'div.foo[a] { }'
+        assert_attribute 'div.foo[a] { }'
+      end
+
+      def test_multiple_selectors
+        assert_attribute '.foo, bar, #baz { }'
+        sels = args_for(:start_selector).first
+        assert_equal 3, sels.length
+        sels.each do |sel|
+          assert_instance_of Selector, sel
+        end
+      end
+
+      def test_ruleset_class_no_name
+        assert_attribute '.foo { }'
+      end
+
+      def test_ruleset_id_no_name
+        assert_attribute '#foo { }'
       end
 
       def test_ruleset_div_pseudo_function_with_arg

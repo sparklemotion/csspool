@@ -36,10 +36,17 @@ rule
     |
     ;
   start_selector
-    : selector LBRACE
+    : selectors LBRACE { @document.start_selector Array(val.first) }
+    ;
+  selectors
+    : selector COMMA selectors
+      {
+        sel = Selector.new(val.first, {})
+        result = [sel, val[2]].flatten
+      }
+    | selector
       {
         result = Selector.new(val.first, {})
-        @document.start_selector [result]
       }
     ;
   selector
@@ -59,6 +66,7 @@ rule
   simple_selector
     : element_name hcap { result = val.first }
     | element_name
+    | hcap              { result = Selectors::Simple.new nil, nil }
     ;
   element_name
     : IDENT { result = Selectors::Type.new val.first, nil }
