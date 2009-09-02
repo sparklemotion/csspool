@@ -78,15 +78,20 @@ rule
     ;
   declaration
     : property ':' S expr SEMI
-      { @document.property val.first, [val[3]] }
+      { @document.property val.first, Array(val[3]) }
     |
     ;
   property
     : IDENT
     ;
   expr
-    : term
+    : term expr { result = val }
+    | term
     ;
   term
-    : IDENT { result = CSSPool::Terms::Ident.new(val.first, nil, {}) }
+    : term_ident { result = Terms::Ident.new(val.first, nil, {}) }
+    ;
+  term_ident
+    : IDENT S { result = val.first }
+    | IDENT
     ;

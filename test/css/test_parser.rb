@@ -30,6 +30,7 @@ module CSSPool
 
       def test_declaration
         assert_decl 'background', ['red'], 'div { background: red; }'
+        assert_decl 'background', %w{red green},'div { background: red green; }'
       end
 
       def test_ruleset_div_attribute_recurses
