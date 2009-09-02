@@ -27,6 +27,30 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_ruleset_div_attribute_dashmatch_string
+        @parser.scan_str 'div[a |= "b"] { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
+      def test_ruleset_div_attribute_dashmatch_ident
+        @parser.scan_str 'div[a |= b] { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
+      def test_ruleset_div_attribute_includes_ident
+        @parser.scan_str 'div[a ~= b] { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
+      def test_ruleset_div_attribute_includes_string
+        @parser.scan_str 'div[a ~= "b"] { }'
+        assert_equal :start_selector, @doc.calls[1].first
+        assert_equal :end_selector, @doc.calls[2].first
+      end
+
       def test_ruleset_div_attribute_equals_string
         @parser.scan_str 'div[a = "b"] { }'
         assert_equal :start_selector, @doc.calls[1].first
