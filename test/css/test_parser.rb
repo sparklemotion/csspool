@@ -28,6 +28,10 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_declaration
+        assert_decl 'background', ['red'], 'div { background: red; }'
+      end
+
       def test_ruleset_div_attribute_recurses
         assert_attribute 'div[a]:foo { }'
         assert_attribute 'div:foo[a] { }'
@@ -122,6 +126,19 @@ module CSSPool
         @parser.scan_str css
         assert_equal :start_selector, @parser.document.calls[1].first
         assert_equal :end_selector, @parser.document.calls[2].first
+      end
+
+      def assert_decl name, values, css
+        @parser.document = MethodCatcher.new
+        @parser.scan_str css
+        assert_equal :start_selector, @parser.document.calls[1].first
+        assert_equal :property, @parser.document.calls[2].first
+        assert_equal :end_selector, @parser.document.calls[3].first
+
+        property = @parser.document.calls[2][1]
+        assert_equal name, property.first
+
+        assert_equal values, property[1].map { |x| x.value }
       end
     end
   end

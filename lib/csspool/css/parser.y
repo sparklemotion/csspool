@@ -77,5 +77,16 @@ rule
     | ':' FUNCTION IDENT RPAREN
     ;
   declaration
-    :
+    : property ':' S expr SEMI
+      { @document.property val.first, [val[3]] }
+    |
+    ;
+  property
+    : IDENT
+    ;
+  expr
+    : term
+    ;
+  term
+    : IDENT { result = CSSPool::Terms::Ident.new(val.first, nil, {}) }
     ;
