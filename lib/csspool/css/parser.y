@@ -1,6 +1,7 @@
 class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
+token LSQUARE RSQUARE EQUAL
 
 rule
   document
@@ -51,9 +52,14 @@ rule
   hcap
     : HASH
     | class
+    | attribute
     ;
   class
     : '.' IDENT
+    ;
+  attribute
+    : LSQUARE IDENT EQUAL IDENT RSQUARE
+    | LSQUARE IDENT RSQUARE
     ;
   declaration
     :
