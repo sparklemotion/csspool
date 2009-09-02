@@ -28,7 +28,7 @@ module CSSPool
         }.new(@doc)
       end
 
-      def test_declaration
+      def test_declaration_ident
         assert_decl 'background', ['red'], 'div { background: red; }'
         assert_decl 'background', %w{red green},'div { background: red green; }'
       end
@@ -96,6 +96,10 @@ module CSSPool
         assert_attribute '* { }'
       end
 
+      def test_ruleset_space_combinator
+        assert_attribute 'div p { }'
+      end
+
       def test_import
         @parser.scan_str '@import "foo";'
         assert_equal [:import_style, [[], 'foo']], @doc.calls[1]
@@ -119,7 +123,7 @@ module CSSPool
 
       def test_charset
         @parser.scan_str '@charset "UTF-8";'
-        assert_equal [:charset, ['UTF-8']], @doc.calls[1]
+        assert_equal [:charset, ['UTF-8', {}]], @doc.calls[1]
       end
 
       def assert_attribute css

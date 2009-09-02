@@ -13,7 +13,7 @@ rule
     : charset import body
     ;
   charset
-    : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2] }
+    : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2], {} }
     |
     ;
   import
@@ -32,22 +32,30 @@ rule
     : ruleset
     ;
   ruleset
-    : selector LBRACE
-      { @document.start_selector }
-      declaration RBRACE
-      { @document.end_selector }
+    : start_selector declaration RBRACE { @document.end_selector [val.first] }
     |
     ;
+  start_selector
+    : selector LBRACE
+      {
+        result = Selector.new(val.first, {})
+        @document.start_selector [result]
+      }
+    ;
   selector
-    : simple_selector
+    : selector combinator simple_selector
+    | simple_selector
+    ;
+  combinator
+    : S
     ;
   simple_selector
-    : element_name hcap
+    : element_name hcap { result = val.first }
     | element_name
     ;
   element_name
-    : IDENT
-    | STAR
+    : IDENT { result = Selectors::Type.new val.first, nil }
+    | STAR  { result = Selectors::Universal.new val.first, nil }
     ;
   hcap
     : HASH
