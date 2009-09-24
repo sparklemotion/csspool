@@ -70,7 +70,7 @@ rule
     | hcap
       {
         result = Selectors::Simple.new nil, nil
-        result.additional_selectors = val
+        result.additional_selectors = val.flatten
       }
     ;
   element_name
@@ -82,7 +82,7 @@ rule
     | class
     | attrib
     | pseudo
-    | hash hcap
+    | hash hcap { result = val }
     | class hcap
     | attrib hcap
     | pseudo hcap
@@ -93,13 +93,34 @@ rule
     : '.' IDENT { result = Selectors::Class.new val.last }
     ;
   attrib
-    : LSQUARE IDENT EQUAL IDENT RSQUARE
-    | LSQUARE IDENT EQUAL STRING RSQUARE
-    | LSQUARE IDENT INCLUDES STRING RSQUARE
-    | LSQUARE IDENT INCLUDES IDENT RSQUARE
-    | LSQUARE IDENT DASHMATCH IDENT RSQUARE
-    | LSQUARE IDENT DASHMATCH STRING RSQUARE
-    | LSQUARE IDENT RSQUARE
+    : LSQUARE IDENT EQUAL IDENT RSQUARE {
+        result =
+          Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
+      }
+    | LSQUARE IDENT EQUAL STRING RSQUARE {
+        result =
+          Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
+      }
+    | LSQUARE IDENT INCLUDES STRING RSQUARE {
+        result =
+        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::INCLUDES
+      }
+    | LSQUARE IDENT INCLUDES IDENT RSQUARE {
+        result =
+        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::INCLUDES
+      }
+    | LSQUARE IDENT DASHMATCH IDENT RSQUARE {
+        result =
+        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
+      }
+    | LSQUARE IDENT DASHMATCH STRING RSQUARE {
+        result =
+        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
+      }
+    | LSQUARE IDENT RSQUARE {
+        result =
+          Selectors::Attribute.new val[1], nil, Selectors::Attribute::SET
+      }
     ;
   pseudo
     : ':' IDENT { result = Selectors::PseudoClass.new val[1], nil }

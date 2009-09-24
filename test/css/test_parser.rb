@@ -52,10 +52,29 @@ module CSSPool
         assert_attribute 'div.foo[a] { }'
       end
 
-      def test_additional_selectors_attribute
-        flunk
+      def test_additional_selectors_id_pesuedoclass
         assert_additional_selector(
-          { Selectors::PseudoClass => 'foo' }, ':foo { }')
+          [
+            [ Selectors::Id, '#foo' ],
+            [ Selectors::PseudoClass, 'foo' ]
+          ], '#foo:foo { }')
+      end
+
+      def test_additional_selectors_attribute
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo |= "bar"] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo |= bar] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo ~= bar] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo ~= "bar"] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo = "bar"] { }')
+        assert_additional_selector(
+          { Selectors::Attribute => 'foo' }, '[foo = bar] { }')
       end
 
       def test_additional_selectors_pseudo
@@ -224,10 +243,12 @@ module CSSPool
 
         ss = args.first.first.simple_selectors.first
 
-        assert_equal things.keys.length, ss.additional_selectors.length
+        assert_equal things.length, ss.additional_selectors.length
+        i = 0
         things.each do |klass, name|
-          assert_instance_of klass, ss.additional_selectors.first
-          assert_equal name, ss.additional_selectors.first.name
+          assert_instance_of klass, ss.additional_selectors[i]
+          assert_equal name, ss.additional_selectors[i].name
+          i += 1
         end
       end
 
