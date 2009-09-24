@@ -28,6 +28,17 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_element_op
+        assert_decl 'background',
+                    %w{red green},
+                    'div { background: red, green; }',
+                    [',', nil]
+        assert_decl 'background',
+                    %w{red green},
+                    'div { background: red / green; }',
+                    ['/', nil]
+      end
+
       def test_declaration_ident
         assert_decl 'background', ['red'], 'div { background: red; }'
         assert_decl 'background', %w{red green},'div { background: red green; }'
@@ -39,6 +50,12 @@ module CSSPool
         assert_attribute 'div#foo[a] { }'
         assert_attribute 'div.foo[a] { }'
         assert_attribute 'div.foo[a] { }'
+      end
+
+      def test_additional_selectors_attribute
+        flunk
+        assert_additional_selector(
+          { Selectors::PseudoClass => 'foo' }, ':foo { }')
       end
 
       def test_additional_selectors_pseudo
@@ -179,7 +196,7 @@ module CSSPool
         assert_equal :end_selector, @parser.document.calls[2].first
       end
 
-      def assert_decl name, values, css
+      def assert_decl name, values, css, ops = nil
         @parser.document = MethodCatcher.new
         @parser.scan_str css
         assert_equal :start_selector, @parser.document.calls[1].first
@@ -190,6 +207,9 @@ module CSSPool
         assert_equal name, property.first
 
         assert_equal values, property[1].map { |x| x.value }
+        if ops
+          assert_equal ops, property[1].map { |x| x.operator }
+        end
       end
 
       def doc; @parser.document end

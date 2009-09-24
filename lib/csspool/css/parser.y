@@ -2,6 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
+token SLASH
 
 rule
   document
@@ -116,8 +117,16 @@ rule
   property
     : IDENT
     ;
+  operator
+    : COMMA
+    | SLASH
+    ;
   expr
-    : term expr { result = val }
+    : term operator expr {
+        result = [val.first, val.last].flatten
+        result.first.operator = val[1]
+      }
+    | term expr { result = val }
     | term
     ;
   term

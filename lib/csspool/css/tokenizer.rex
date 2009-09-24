@@ -53,8 +53,8 @@ rule
             {w}\{{w}         { [:LBRACE, text] }
             {w}\}{w}         { [:RBRACE, text] }
             {w}>{w}          { [:GREATER, text] }
-            {w},{w}          { [:COMMA, text] }
-            {w};{w}          { [:SEMI, text] }
+            {w},{w}          { [:COMMA, ','] }
+            {w};{w}          { [:SEMI, ';'] }
             {w}\*{w}         { [:STAR, text] }
             {w}~{w}          { [:TILDE, text] }
             \:not\({w}       { [:NOT, text] }
@@ -69,7 +69,7 @@ rule
             {w}{num}%{w}     { [:PERCENTAGE, text] }
             {w}{num}{w}      { [:NUMBER, text] }
             {w}\/\/{w}       { [:DOUBLESLASH, text] }
-            {w}\/{w}         { [:SLASH, text] }
+            {w}\/{w}         { [:SLASH, '/'] }
             <!--             { [:CDO, text] }
             -->              { [:CDC, text] }
             {w}\-{w}         { [:MINUS, text] }
