@@ -60,6 +60,30 @@ module CSSPool
           ], '#foo:foo { }')
       end
 
+      def test_additional_selectors_class_pesuedoclass
+        assert_additional_selector(
+          [
+            [ Selectors::Class, 'foo' ],
+            [ Selectors::PseudoClass, 'foo' ]
+          ], '.foo:foo { }')
+      end
+
+      def test_additional_selectors_attribute_pesuedoclass
+        assert_additional_selector(
+          [
+            [ Selectors::Attribute, 'foo' ],
+            [ Selectors::PseudoClass, 'foo' ]
+          ], '[foo]:foo { }')
+      end
+
+      def test_additional_selectors_pseudo_class
+        assert_additional_selector(
+          [
+            [ Selectors::PseudoClass, 'foo' ],
+            [ Selectors::Class, 'foo' ]
+          ], ':foo.foo { }')
+      end
+
       def test_additional_selectors_attribute
         assert_additional_selector(
           { Selectors::Attribute => 'foo' }, '[foo] { }')

@@ -82,10 +82,10 @@ rule
     | class
     | attrib
     | pseudo
-    | hash hcap { result = val }
-    | class hcap
-    | attrib hcap
-    | pseudo hcap
+    | hash hcap   { result = val.flatten }
+    | class hcap  { result = val.flatten }
+    | attrib hcap { result = val.flatten }
+    | pseudo hcap { result = val.flatten }
     ;
   hash
     : HASH { result = Selectors::Id.new val.first }
