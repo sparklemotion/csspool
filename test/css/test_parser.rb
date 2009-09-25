@@ -46,6 +46,17 @@ module CSSPool
         end
       end
 
+      def test_term_string
+        assert_term({
+          :class  => Terms::String,
+          :value  => "'foo'",
+        }, "div { foo: 'foo'; }")
+        assert_term({
+          :class  => Terms::String,
+          :value  => "'foo'",
+        }, "div { foo: 'foo'   ; }")
+      end
+
       def test_term_length
         assert_term({
           :class  => Terms::Number,

@@ -1,6 +1,6 @@
 module CSSPool
   module Terms
-    class String < Ident
+    class String < CSSPool::Terms::Ident
     end
   end
 end

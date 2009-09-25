@@ -153,8 +153,9 @@ rule
     | term
     ;
   term
-    : term_ident { result = Terms::Ident.new(val.first, nil, {}) }
+    : term_ident { result = Terms::Ident.new val.first }
     | term_numeric
+    | STRING { result = Terms::String.new val.first }
     ;
   term_numeric
     : unary_operator term_numeric {
