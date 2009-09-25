@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
-token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ
+token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 
 rule
   document
@@ -156,6 +156,7 @@ rule
     : term_ident { result = Terms::Ident.new val.first }
     | term_numeric
     | STRING { result = Terms::String.new val.first }
+    | URI { result = Terms::URI.new val.first }
     ;
   term_numeric
     : unary_operator term_numeric {
