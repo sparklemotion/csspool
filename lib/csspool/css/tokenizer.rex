@@ -57,7 +57,7 @@ rule
             {w};{w}          { [:SEMI, ';'] }
             {w}\*{w}         { [:STAR, text] }
             {w}~{w}          { [:TILDE, text] }
-            \:not\({w}       { [:NOT, text] }
+            \:not\({w}       { [:NOT, text]  }
             {w}{num}em{w}    { [:EMS, text] }
             {w}{num}ex{w}    { [:EXS, text] }
 

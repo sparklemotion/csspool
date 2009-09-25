@@ -28,8 +28,27 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_term_length
+        assert_term({
+          :class  => Terms::Number,
+          :value  => 10,
+          :type   => 'mm'
+        }, 'div { foo: 10mm; }')
+        assert_term({
+          :class  => Terms::Number,
+          :value  => 1.2,
+          :type   => 'mm'
+        }, 'div { foo: 1.2mm; }')
+        assert_term({
+          :class  => Terms::Number,
+          :value  => 1.2,
+          :type   => 'mm'
+        }, 'div { foo: 1.2mm; }')
+      end
+
       def test_term_number
-        assert_term({ :class => Terms::Number }, 'div { foo: 10; }')
+        assert_term({ :class => Terms::Number, :value => 1.2 }, 'div { foo: 1.2; }')
+        assert_term({ :class => Terms::Number, :value => 10 }, 'div { foo: 10; }')
         assert_term({ :class => Terms::Number, :unary_operator => :minus },
                     'div { foo: -10; }')
         assert_term({ :class => Terms::Number, :unary_operator => :plus },

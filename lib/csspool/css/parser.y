@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
-token SLASH NUMBER MINUS
+token SLASH NUMBER MINUS LENGTH
 
 rule
   document
@@ -161,7 +161,17 @@ rule
         result = val[1]
         val[1].unary_operator = val.first
       }
-    | NUMBER { result = Terms::Number.new(val.first) }
+    | NUMBER {
+        numeric = Integer(val.first) rescue Float(val.first)
+        result = Terms::Number.new numeric
+      }
+    | LENGTH {
+        digits  = val.first.gsub(/[^\d.]/, '')
+        unit    = val.first.gsub(/[\s\d.]/, '')
+
+        numeric = Integer(digits) rescue Float(digits)
+        result = Terms::Number.new numeric, nil, unit
+      }
     ;
   unary_operator
     : MINUS { result = :minus }

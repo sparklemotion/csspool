@@ -113,7 +113,7 @@ module CSSPool
       def test_semi
         str = "  ;    "
         @scanner.scan str
-        assert_tokens([[:SEMI, str]], @scanner)
+        assert_tokens([[:SEMI, ';']], @scanner)
       end
 
       def test_cdc
