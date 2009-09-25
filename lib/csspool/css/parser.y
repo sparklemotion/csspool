@@ -14,6 +14,8 @@ rule
   stylesheet
     : charset stylesheet
     | import stylesheet
+    | charset
+    | import
     | body
     ;
   charset
@@ -37,28 +39,20 @@ rule
     | IDENT { result = Terms::Ident.new val.first }
     ;
   body
-    : rulesets medias
-    | medias
-    | rulesets
-    |
-    ;
-  medias
-    : media medias
+    : ruleset body
+    | media body
+    | ruleset
     | media
     ;
   media
-    : start_media rulesets RBRACE { @document.end_media val.first }
-    | start_media RBRACE          { @document.end_media [] }
+    : start_media body RBRACE { @document.end_media val.first }
     ;
   start_media
     : MEDIA_SYM medium LBRACE {
         result = [val[1]].flatten
         @document.start_media result
       }
-    ;
-  rulesets
-    : ruleset rulesets
-    | ruleset
+    | MEDIA_SYM LBRACE { result = [] }
     ;
   ruleset
     : start_selector declaration RBRACE {
