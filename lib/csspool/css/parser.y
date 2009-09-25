@@ -42,10 +42,13 @@ rule
     ;
   body
     : ruleset
+    |
     ;
   ruleset
-    : start_selector declaration RBRACE { @document.end_selector [val.first] }
-    |
+    : start_selector declaration RBRACE ruleset {
+        @document.end_selector [val.first]
+      }
+    | start_selector declaration RBRACE { @document.end_selector [val.first] }
     ;
   start_selector
     : S start_selector
@@ -54,7 +57,7 @@ rule
   selectors
     : selector COMMA selectors
       {
-        sel = Selector.new(val.first, {})
+        sel = Selector.new(Array(val.first), {})
         result = [sel, val[2]].flatten
       }
     | selector
@@ -103,7 +106,7 @@ rule
     | pseudo hcap { result = val.flatten }
     ;
   hash
-    : HASH { result = Selectors::Id.new val.first }
+    : HASH { result = Selectors::Id.new val.first.sub(/^#/, '') }
   class
     : '.' IDENT { result = Selectors::Class.new val.last }
     ;
@@ -113,12 +116,18 @@ rule
           Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
       }
     | LSQUARE IDENT EQUAL STRING RSQUARE {
-        result =
-          Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
+        result = Selectors::Attribute.new(
+          val[1],
+          strip_string(val[3]),
+          Selectors::Attribute::EQUALS
+        )
       }
     | LSQUARE IDENT INCLUDES STRING RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::INCLUDES
+        result = Selectors::Attribute.new(
+          val[1],
+          strip_string(val[3]),
+          Selectors::Attribute::INCLUDES
+        )
       }
     | LSQUARE IDENT INCLUDES IDENT RSQUARE {
         result =
@@ -129,8 +138,11 @@ rule
         Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
       }
     | LSQUARE IDENT DASHMATCH STRING RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
+        result = Selectors::Attribute.new(
+          val[1],
+          strip_string(val[3]),
+          Selectors::Attribute::DASHMATCH
+        )
       }
     | LSQUARE IDENT RSQUARE {
         result =

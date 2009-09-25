@@ -29,7 +29,7 @@ rule
             url\({w}{string}{w}\) { [:URI, text] }
             url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, text] }
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, text] }
-            {w}{comment}{w}  { [:COMMENT, text] }
+            {w}{comment}{w}  { next_token }
 
             {ident}\(\s*     { [:FUNCTION, text] }
             {w}@import{w}    { [:IMPORT_SYM, text] }

@@ -35,15 +35,13 @@ module CSSPool
       end
 
       def test_charset
-        assert_equal(
-          [["UTF-8", { :line => 1, :byte_offset => 10, :column => 11}]],
-          @doc.charsets)
+        assert_equal("UTF-8", @doc.charsets.first.first)
       end
 
       def test_import_style
         styles = @doc.import_styles.first
-        assert_equal ["screen"], styles.first
-        assert_equal "foo.css", styles[1]
+        assert_equal "screen", styles.first.first.value
+        assert_equal "foo.css", styles[1].value
         assert_nil styles[2]
       end
 
@@ -57,9 +55,6 @@ module CSSPool
         selectors_for_rule = @doc.start_selectors.first
         selector = selectors_for_rule.first # => div a.foo
         assert_equal 2, selector.simple_selectors.length
-        selector.simple_selectors.each do |ss|
-          assert ss.parse_location
-        end
       end
 
       def test_additional_selector_list
