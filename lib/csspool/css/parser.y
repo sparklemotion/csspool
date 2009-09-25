@@ -41,14 +41,17 @@ rule
     | IDENT { result = Terms::Ident.new val.first }
     ;
   body
-    : ruleset
+    : rulesets
     |
     ;
+  rulesets
+    : ruleset rulesets
+    | ruleset
+    ;
   ruleset
-    : start_selector declaration RBRACE ruleset {
-        @document.end_selector [val.first]
+    : start_selector declaration RBRACE {
+        @document.end_selector Array(val.first)
       }
-    | start_selector declaration RBRACE { @document.end_selector [val.first] }
     ;
   start_selector
     : S start_selector
