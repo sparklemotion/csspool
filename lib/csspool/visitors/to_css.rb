@@ -123,10 +123,9 @@ module CSSPool
 
       visitor_for Selectors::Type do |target|
         combo = {
-          0 => nil,
-          1 => ' ',
-          2 => ' + ',
-          3 => ' > '
+          :s => ' ',
+          :+ => ' + ',
+          :> => ' > '
         }[target.combinator]
 
         [combo, target.name].compact.join +
