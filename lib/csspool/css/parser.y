@@ -12,17 +12,12 @@ rule
       { @document.end_document }
     ;
   stylesheet
-    : charset imports body
-    | charset body
-    | imports body
+    : charset stylesheet
+    | import stylesheet
     | body
     ;
   charset
     : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2], {} }
-    ;
-  imports
-    : imports import
-    | import
     ;
   import
     : IMPORT_SYM import_location medium SEMI {
