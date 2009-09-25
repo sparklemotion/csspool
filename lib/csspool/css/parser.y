@@ -132,9 +132,9 @@ rule
     ;
   declaration
     : property ':' expr SEMI
-      { @document.property val.first, Array(val[2]) }
+      { @document.property val.first, Array(val[2]), false }
     | property ':' S expr SEMI
-      { @document.property val.first, Array(val[3]) }
+      { @document.property val.first, Array(val[3]), false }
     |
     ;
   property
