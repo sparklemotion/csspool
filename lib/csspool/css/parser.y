@@ -3,6 +3,7 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
+token IMPORTANT_SYM
 
 rule
   document
@@ -161,11 +162,15 @@ rule
       }
     ;
   declaration
-    : property ':' expr SEMI
-      { @document.property val.first, Array(val[2]), false }
-    | property ':' S expr SEMI
-      { @document.property val.first, Array(val[3]), false }
+    : property ':' expr prio SEMI
+      { @document.property val.first, Array(val[2]), val[3] }
+    | property ':' S expr prio SEMI
+      { @document.property val.first, Array(val[3]), val[4] }
     |
+    ;
+  prio
+    : IMPORTANT_SYM { result = true }
+    |               { result = false }
     ;
   property
     : IDENT
