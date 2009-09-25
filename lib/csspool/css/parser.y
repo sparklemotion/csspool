@@ -37,8 +37,8 @@ rule
     | URI { result = Terms::URI.new strip_uri val.first }
     ;
   medium
-    : medium COMMA IDENT { result = [val.first, val.last] }
-    | IDENT
+    : medium COMMA IDENT { result = [val.first, Terms::Ident.new(val.last)] }
+    | IDENT { result = Terms::Ident.new val.first }
     ;
   body
     : ruleset

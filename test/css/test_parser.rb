@@ -49,48 +49,48 @@ module CSSPool
       def test_term_function
         assert_term({
           :class  => Terms::Function,
-          :name   => "foo(",
+          :name   => "foo",
         }, "div { foo: foo(bar); }")
         assert_term({
           :class  => Terms::Function,
-          :name   => "foo(",
+          :name   => "foo",
         }, "div { foo: foo(bar) baz; }")
       end
 
       def test_term_hexcolor
         assert_term({
           :class  => Terms::Hash,
-          :value  => "#666",
+          :value  => "666",
         }, "div { foo: #666; }")
         assert_term({
           :class  => Terms::Hash,
-          :value  => "#666",
+          :value  => "666",
         }, "div { foo: #666 foo; }")
       end
 
       def test_term_string
         assert_term({
           :class  => Terms::String,
-          :value  => "'foo'",
+          :value  => "foo",
         }, "div { foo: 'foo'; }")
         assert_term({
           :class  => Terms::String,
-          :value  => "'foo'",
+          :value  => "foo",
         }, "div { foo: 'foo'   ; }")
         assert_term({
           :class  => Terms::String,
-          :value  => "'foo'",
+          :value  => "foo",
         }, "div { foo: 'foo'  bar; }")
       end
 
       def test_term_uri
         assert_term({
           :class  => Terms::URI,
-          :value  => "url(http://example.com/)",
+          :value  => "http://example.com/",
         }, "div { foo: url(http://example.com/); }")
         assert_term({
           :class  => Terms::URI,
-          :value  => "url(http://example.com/)",
+          :value  => "http://example.com/",
         }, "div { foo: url(http://example.com/) bar; }")
       end
 
@@ -313,17 +313,23 @@ module CSSPool
 
       def test_import
         @parser.scan_str '@import "foo";'
-        assert_equal [:import_style, [[], 'foo']], @doc.calls[1]
+        assert_equal 'foo', doc.calls[1][1][1].value
+        assert_equal :import_style, doc.calls[1].first
       end
 
       def test_import_medium
         @parser.scan_str '@import "foo" page;'
-        assert_equal [:import_style, [['page'], 'foo']], @doc.calls[1]
+        assert_equal :import_style, doc.calls[1].first
+        assert_equal 'foo', doc.calls[1][1][1].value
+        assert_equal 'page', doc.calls[1][1].first.first.value
       end
 
       def test_import_medium_multi
         @parser.scan_str '@import "foo" page, print;'
-        assert_equal [:import_style, [['page', 'print'], 'foo']], @doc.calls[1]
+        assert_equal :import_style, doc.calls[1].first
+        assert_equal 'foo', doc.calls[1][1][1].value
+        assert_equal 'page', doc.calls[1][1].first.first.value
+        assert_equal 'print', doc.calls[1][1].first[1].value
       end
 
       def test_start_stop
