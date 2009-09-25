@@ -55,6 +55,10 @@ module CSSPool
           :class  => Terms::String,
           :value  => "'foo'",
         }, "div { foo: 'foo'   ; }")
+        assert_term({
+          :class  => Terms::String,
+          :value  => "'foo'",
+        }, "div { foo: 'foo'  bar; }")
       end
 
       def test_term_uri
@@ -62,6 +66,10 @@ module CSSPool
           :class  => Terms::URI,
           :value  => "url(http://example.com/)",
         }, "div { foo: url(http://example.com/); }")
+        assert_term({
+          :class  => Terms::URI,
+          :value  => "url(http://example.com/)",
+        }, "div { foo: url(http://example.com/) bar; }")
       end
 
       def test_term_length

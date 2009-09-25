@@ -153,10 +153,17 @@ rule
     | term
     ;
   term
-    : term_ident { result = Terms::Ident.new val.first }
+    : term_ident
     | term_numeric
-    | STRING { result = Terms::String.new val.first }
+    | term_string
+    | term_uri
+    ;
+  term_uri
+    : term_uri S { result = val.first }
     | URI { result = Terms::URI.new val.first }
+  term_string
+    : term_string S { result = val.first }
+    | STRING { result = Terms::String.new val.first }
     ;
   term_numeric
     : unary_operator term_numeric {
@@ -197,8 +204,8 @@ rule
     | PLUS  { result = :plus }
     ;
   term_ident
-    : IDENT S { result = val.first }
-    | IDENT
+    : term_ident S { result = val.first }
+    | IDENT { result = Terms::Ident.new val.first }
     ;
 
 ---- inner

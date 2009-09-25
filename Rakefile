@@ -36,6 +36,7 @@ file GENERATED_PARSER => "lib/csspool/css/parser.y" do |t|
   begin
     racc = `which racc`.strip
     racc = "#{::Config::CONFIG['bindir']}/racc" if racc.empty?
+    #sh "#{racc} -l -o #{t.name} #{t.prerequisites.first}"
     sh "#{racc} -o #{t.name} #{t.prerequisites.first}"
   rescue
     abort "need racc, sudo gem install racc"
