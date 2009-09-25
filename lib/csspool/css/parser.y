@@ -159,7 +159,7 @@ rule
   expr
     : term operator expr {
         result = [val.first, val.last].flatten
-        result.first.operator = val[1]
+        Array(val.last).first.operator = val[1]
       }
     | term expr { result = val.flatten }
     | term
