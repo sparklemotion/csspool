@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
-token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS
+token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE
 
 rule
   document
@@ -172,12 +172,14 @@ rule
         result = Terms::Number.new numeric(val.first), nil, unit
       }
     | EMS {
-        unit    = val.first.gsub(/[\s\d.]/, '')
         result = Terms::Number.new numeric(val.first), nil, 'em'
       }
     | EXS {
-        unit    = val.first.gsub(/[\s\d.]/, '')
         result = Terms::Number.new numeric(val.first), nil, 'ex'
+      }
+    | ANGLE {
+        unit    = val.first.gsub(/[\s\d.]/, '')
+        result = Terms::Number.new numeric(val.first), nil, unit
       }
     ;
   unary_operator
