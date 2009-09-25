@@ -65,7 +65,7 @@ module CSSPool
       }
 
       collection = CSSPool::Collection.new do |url|
-        css[url] || raise
+        css[url] || raise(url.inspect)
       end
 
       collection << '@import url(foo.css);'

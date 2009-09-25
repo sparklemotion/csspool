@@ -16,7 +16,7 @@ module CSSPool
         @document.charsets << CSS::Charset.new(name, location)
       end
 
-      def import_style media_list, uri, ns, loc
+      def import_style media_list, uri, ns = nil, loc = {}
         @document.import_rules << CSS::ImportRule.new(
           uri,
           ns,

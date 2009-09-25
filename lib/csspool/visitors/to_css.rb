@@ -49,7 +49,7 @@ module CSSPool
           x.name
         }.join(', ') if target.media.length > 0
 
-        "#{indent}@import url(\"#{target.uri}\")#{media};"
+        "#{indent}@import #{target.uri.accept(self)}#{media};"
       end
 
       visitor_for CSS::RuleSet do |target|
@@ -114,7 +114,7 @@ module CSSPool
       end
 
       visitor_for Terms::String do |target|
-        "\"#{target.value}\""
+        target.value.inspect
       end
 
       visitor_for Selector do |target|

@@ -11,19 +11,30 @@ rule
       { @document.end_document }
     ;
   stylesheet
-    : charset import body
+    : charset imports body
+    | charset body
+    | imports body
+    | body
     ;
   charset
     : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2], {} }
-    |
+    ;
+  imports
+    : imports import
+    | import
     ;
   import
-    : IMPORT_SYM STRING S medium SEMI
-      {
-        @document.import_style [val[3]].flatten, val[1][1..-2]
+    : IMPORT_SYM import_location medium SEMI {
+        @document.import_style [val[2]].flatten, val[1]
       }
-    | IMPORT_SYM STRING SEMI { @document.import_style [], val[1][1..-2] }
-    |
+    | IMPORT_SYM import_location SEMI {
+        @document.import_style [], val[1]
+      }
+    ;
+  import_location
+    : import_location S
+    | STRING { result = Terms::String.new strip_string val.first }
+    | URI { result = Terms::URI.new strip_uri val.first }
     ;
   medium
     : medium COMMA IDENT { result = [val.first, val.last] }
@@ -170,10 +181,10 @@ rule
     ;
   uri
     : uri S { result = val.first }
-    | URI { result = Terms::URI.new val.first }
+    | URI { result = Terms::URI.new strip_uri val.first }
   string
     : string S { result = val.first }
-    | STRING { result = Terms::String.new val.first }
+    | STRING { result = Terms::String.new strip_string val.first }
     ;
   numeric
     : unary_operator numeric {
@@ -223,4 +234,12 @@ rule
 def numeric thing
   thing = thing.gsub(/[^\d.]/, '')
   Integer(thing) rescue Float(thing)
+end
+
+def strip_uri uri
+  strip_string uri.sub(/^url\(/, '').sub(/\)$/, '')
+end
+
+def strip_string s
+  s.sub(/^["']/, '').sub(/["']$/, '')
 end
