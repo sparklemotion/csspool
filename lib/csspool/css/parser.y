@@ -56,14 +56,10 @@ rule
     | start_media RBRACE          { @document.end_media [] }
     ;
   start_media
-    : MEDIA_SYM media_list LBRACE {
+    : MEDIA_SYM medium LBRACE {
         result = [val[1]].flatten
         @document.start_media result
       }
-    ;
-  media_list
-    : medium  { result = val }
-    |         { result = [] }
     ;
   rulesets
     : ruleset rulesets
