@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
-token SLASH NUMBER MINUS LENGTH
+token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS
 
 rule
   document
@@ -162,15 +162,18 @@ rule
         val[1].unary_operator = val.first
       }
     | NUMBER {
-        numeric = Integer(val.first) rescue Float(val.first)
-        result = Terms::Number.new numeric
+        result = Terms::Number.new numeric val.first
+      }
+    | PERCENTAGE {
+        result = Terms::Number.new numeric(val.first), nil, '%'
       }
     | LENGTH {
-        digits  = val.first.gsub(/[^\d.]/, '')
         unit    = val.first.gsub(/[\s\d.]/, '')
-
-        numeric = Integer(digits) rescue Float(digits)
-        result = Terms::Number.new numeric, nil, unit
+        result = Terms::Number.new numeric(val.first), nil, unit
+      }
+    | EMS {
+        unit    = val.first.gsub(/[\s\d.]/, '')
+        result = Terms::Number.new numeric(val.first), nil, 'em'
       }
     ;
   unary_operator
@@ -181,3 +184,10 @@ rule
     : IDENT S { result = val.first }
     | IDENT
     ;
+
+---- inner
+
+def numeric thing
+  thing = thing.gsub(/[^\d.]/, '')
+  Integer(thing) rescue Float(thing)
+end

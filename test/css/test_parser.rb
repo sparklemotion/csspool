@@ -28,6 +28,19 @@ module CSSPool
         }.new(@doc)
       end
 
+      {
+        'em'  => 'em',
+        'per' => '%',
+      }.each do |type, s|
+        define_method(:"test_term_#{type}") do
+          assert_term({
+            :class  => Terms::Number,
+            :value  => 10,
+            :type   => s
+          }, "div { foo: 10#{s}; }")
+        end
+      end
+
       def test_term_length
         assert_term({
           :class  => Terms::Number,
