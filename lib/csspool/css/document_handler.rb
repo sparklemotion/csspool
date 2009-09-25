@@ -39,11 +39,11 @@ module CSSPool
         rs.declarations << Declaration.new(name, exp, important, rs)
       end
 
-      def start_media media_list, parse_location
+      def start_media media_list, parse_location = {}
         @media_stack << media_list.map { |x| CSS::Media.new(x, parse_location) }
       end
 
-      def end_media media_list, parse_location
+      def end_media media_list, parse_location = {}
         @media_stack.pop
       end
     end

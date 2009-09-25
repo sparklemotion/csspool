@@ -25,10 +25,10 @@ module CSSPool
       def comment comment
       end
 
-      def start_media media_list, parse_location
+      def start_media media_list, parse_location = {}
       end
 
-      def end_media media_list, parse_location
+      def end_media media_list, parse_location = {}
       end
     end
   end

@@ -3,7 +3,7 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM
+token IMPORTANT_SYM MEDIA_SYM
 
 rule
   document
@@ -42,8 +42,28 @@ rule
     | IDENT { result = Terms::Ident.new val.first }
     ;
   body
-    : rulesets
+    : rulesets medias
+    | medias
+    | rulesets
     |
+    ;
+  medias
+    : media medias
+    | media
+    ;
+  media
+    : start_media rulesets RBRACE { @document.end_media val.first }
+    | start_media RBRACE          { @document.end_media [] }
+    ;
+  start_media
+    : MEDIA_SYM media_list LBRACE {
+        result = [val[1]].flatten
+        @document.start_media result
+      }
+    ;
+  media_list
+    : medium  { result = val }
+    |         { result = [] }
     ;
   rulesets
     : ruleset rulesets
