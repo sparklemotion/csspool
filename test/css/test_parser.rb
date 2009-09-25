@@ -31,6 +31,7 @@ module CSSPool
       {
         'em'  => 'em',
         'per' => '%',
+        'ex'  => 'ex',
       }.each do |type, s|
         define_method(:"test_term_#{type}") do
           assert_term({
