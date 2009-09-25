@@ -46,6 +46,17 @@ module CSSPool
         end
       end
 
+      def test_term_function
+        assert_term({
+          :class  => Terms::Function,
+          :name   => "foo(",
+        }, "div { foo: foo(bar); }")
+        assert_term({
+          :class  => Terms::Function,
+          :name   => "foo(",
+        }, "div { foo: foo(bar) baz; }")
+      end
+
       def test_term_hexcolor
         assert_term({
           :class  => Terms::Hash,

@@ -6,7 +6,7 @@ module CSSPool
       attr_accessor :parse_location
       attr_accessor :operator
 
-      def initialize name, params, operator, parse_location
+      def initialize name, params, operator = nil, parse_location = nil
         @name   = name
         @params = params
         @operator = operator

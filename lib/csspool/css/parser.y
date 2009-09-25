@@ -153,25 +153,30 @@ rule
     | term
     ;
   term
-    : term_ident
-    | term_numeric
-    | term_string
-    | term_uri
-    | term_hexcolor
+    : ident
+    | numeric
+    | string
+    | uri
+    | hexcolor
+    | function
     ;
-  term_hexcolor
-    : term_hexcolor S { result = val.first }
+  function
+    : function S { result = val.first }
+    | FUNCTION expr RPAREN { result = Terms::Function.new val.first, val[1] }
+    ;
+  hexcolor
+    : hexcolor S { result = val.first }
     | HASH { result = Terms::Hash.new val.first }
     ;
-  term_uri
-    : term_uri S { result = val.first }
+  uri
+    : uri S { result = val.first }
     | URI { result = Terms::URI.new val.first }
-  term_string
-    : term_string S { result = val.first }
+  string
+    : string S { result = val.first }
     | STRING { result = Terms::String.new val.first }
     ;
-  term_numeric
-    : unary_operator term_numeric {
+  numeric
+    : unary_operator numeric {
         result = val[1]
         val[1].unary_operator = val.first
       }
@@ -208,8 +213,8 @@ rule
     : MINUS { result = :minus }
     | PLUS  { result = :plus }
     ;
-  term_ident
-    : term_ident S { result = val.first }
+  ident
+    : ident S { result = val.first }
     | IDENT { result = Terms::Ident.new val.first }
     ;
 
