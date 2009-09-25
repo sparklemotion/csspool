@@ -88,15 +88,15 @@ module CSSPool
         assert_tokens([[:INVALID, str]], @scanner)
       end
 
-      def test_comment
-        str = "/**** Hello World ***/"
-        @scanner.scan str
-        assert_tokens([[:COMMENT, str]], @scanner)
+      #def test_comment
+      #  str = "/**** Hello World ***/"
+      #  @scanner.scan str
+      #  assert_tokens([[:COMMENT, str]], @scanner)
 
-        str = "/* Hello World */"
-        @scanner.scan str
-        assert_tokens([[:COMMENT, str]], @scanner)
-      end
+      #  str = "/* Hello World */"
+      #  @scanner.scan str
+      #  assert_tokens([[:COMMENT, str]], @scanner)
+      #end
 
       def test_rbrace
         str = "  }  \n  "
