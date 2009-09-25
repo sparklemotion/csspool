@@ -137,11 +137,11 @@ module CSSPool
         assert_decl 'background',
                     %w{red green},
                     'div { background: red, green; }',
-                    [',', nil]
+                    [nil, ',']
         assert_decl 'background',
                     %w{red green},
                     'div { background: red / green; }',
-                    ['/', nil]
+                    [nil, '/']
       end
 
       def test_declaration_ident
@@ -160,7 +160,7 @@ module CSSPool
       def test_additional_selectors_id_pesuedoclass
         assert_additional_selector(
           [
-            [ Selectors::Id, '#foo' ],
+            [ Selectors::Id, 'foo' ],
             [ Selectors::PseudoClass, 'foo' ]
           ], '#foo:foo { }')
       end
@@ -216,7 +216,7 @@ module CSSPool
       end
 
       def test_additional_selectors_id
-        assert_additional_selector({ Selectors::Id => '#foo' }, '#foo { }')
+        assert_additional_selector({ Selectors::Id => 'foo' }, '#foo { }')
       end
 
       def test_additional_selectors_class
@@ -237,7 +237,7 @@ module CSSPool
       end
 
       def test_ruleset_id_no_name
-        assert_attribute '#foo { }'
+        assert_attribute 'foo { }'
       end
 
       def test_ruleset_div_pseudo_function_with_arg
