@@ -34,6 +34,8 @@ module CSSPool
         'ex'  => 'ex',
         'ex'  => 'ex',
         'deg' => 'deg',
+        'ms'  => 'ms',
+        'hz'  => 'hz',
       }.each do |type, s|
         define_method(:"test_term_#{type}") do
           assert_term({

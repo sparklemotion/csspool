@@ -12,7 +12,6 @@ Hoe.spec('csspool') do
   self.readme_file   = 'README.rdoc'
   self.history_file  = 'CHANGELOG.rdoc'
   self.extra_rdoc_files  = FileList['*.rdoc']
-  self.extra_deps = ['ffi']
 
   %w{ racc rexical }.each do |dep|
     self.extra_dev_deps << [dep, '>= 0']
