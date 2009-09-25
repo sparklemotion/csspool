@@ -173,7 +173,9 @@ rule
     ;
   function
     : function S { result = val.first }
-    | FUNCTION expr RPAREN { result = Terms::Function.new val.first, val[1] }
+    | FUNCTION expr RPAREN {
+        result = Terms::Function.new val.first, Array(val[1])
+      }
     ;
   hexcolor
     : hexcolor S { result = val.first }
