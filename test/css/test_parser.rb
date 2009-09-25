@@ -28,6 +28,26 @@ module CSSPool
         }.new(@doc)
       end
 
+      def test_term_number
+        assert_term({ :class => Terms::Number }, 'div { foo: 10; }')
+        assert_term({ :class => Terms::Number, :unary_operator => :minus },
+                    'div { foo: -10; }')
+        assert_term({ :class => Terms::Number, :unary_operator => :plus },
+                    'div { foo: +10; }')
+      end
+
+      def assert_term term, css
+        @parser.document = MethodCatcher.new
+        @parser.scan_str css
+        property = @parser.document.calls.find { |x|
+          x.first == :property
+        }[1][1].first
+
+        term.each do |k,v|
+          assert_equal v, property.send(k)
+        end
+      end
+
       def test_element_op
         assert_decl 'background',
                     %w{red green},

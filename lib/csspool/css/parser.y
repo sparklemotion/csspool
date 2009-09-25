@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
-token SLASH
+token SLASH NUMBER MINUS
 
 rule
   document
@@ -131,7 +131,9 @@ rule
       }
     ;
   declaration
-    : property ':' S expr SEMI
+    : property ':' expr SEMI
+      { @document.property val.first, Array(val[2]) }
+    | property ':' S expr SEMI
       { @document.property val.first, Array(val[3]) }
     |
     ;
@@ -147,11 +149,23 @@ rule
         result = [val.first, val.last].flatten
         result.first.operator = val[1]
       }
-    | term expr { result = val }
+    | term expr { result = val.flatten }
     | term
     ;
   term
     : term_ident { result = Terms::Ident.new(val.first, nil, {}) }
+    | term_numeric
+    ;
+  term_numeric
+    : unary_operator term_numeric {
+        result = val[1]
+        val[1].unary_operator = val.first
+      }
+    | NUMBER { result = Terms::Number.new(val.first) }
+    ;
+  unary_operator
+    : MINUS { result = :minus }
+    | PLUS  { result = :plus }
     ;
   term_ident
     : IDENT S { result = val.first }
