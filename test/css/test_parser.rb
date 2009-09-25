@@ -46,6 +46,17 @@ module CSSPool
         end
       end
 
+      def test_term_hexcolor
+        assert_term({
+          :class  => Terms::Hash,
+          :value  => "#666",
+        }, "div { foo: #666; }")
+        assert_term({
+          :class  => Terms::Hash,
+          :value  => "#666",
+        }, "div { foo: #666 foo; }")
+      end
+
       def test_term_string
         assert_term({
           :class  => Terms::String,

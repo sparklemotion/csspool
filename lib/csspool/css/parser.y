@@ -157,6 +157,11 @@ rule
     | term_numeric
     | term_string
     | term_uri
+    | term_hexcolor
+    ;
+  term_hexcolor
+    : term_hexcolor S { result = val.first }
+    | HASH { result = Terms::Hash.new val.first }
     ;
   term_uri
     : term_uri S { result = val.first }
