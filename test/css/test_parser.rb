@@ -46,6 +46,12 @@ module CSSPool
         end
       end
 
+      def test_term_rgb
+        assert_term({
+          :class  => Terms::Rgb,
+        }, "div { foo: rgb(255, 255, 255); }")
+      end
+
       def test_term_function
         assert_term({
           :class  => Terms::Function,

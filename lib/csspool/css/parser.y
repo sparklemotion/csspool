@@ -198,7 +198,12 @@ rule
   function
     : function S { result = val.first }
     | FUNCTION expr RPAREN {
-        result = Terms::Function.new val.first.sub(/\(/, ''), Array(val[1])
+        name = val.first.sub(/\(/, '')
+        if name == 'rgb'
+          result = Terms::Rgb.new(*Array(val[1]))
+        else
+          result = Terms::Function.new val.first.sub(/\(/, ''), Array(val[1])
+        end
       }
     ;
   hexcolor

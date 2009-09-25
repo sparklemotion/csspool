@@ -108,7 +108,7 @@ module CSSPool
           target.red,
           target.green,
           target.blue
-        ].map { |c| target.percentage? ? "#{c}%" : c }.join(',')
+        ].map { |c| [c.operator, c.accept(self)].compact.join(' ') }
 
         %{rgb(#{params})}
       end
