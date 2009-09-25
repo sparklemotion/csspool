@@ -48,7 +48,8 @@ rule
     |
     ;
   start_selector
-    : selectors LBRACE { @document.start_selector Array(val.first) }
+    : S start_selector
+    | selectors LBRACE { @document.start_selector Array(val.first) }
     ;
   selectors
     : selector COMMA selectors
@@ -174,12 +175,12 @@ rule
   function
     : function S { result = val.first }
     | FUNCTION expr RPAREN {
-        result = Terms::Function.new val.first, Array(val[1])
+        result = Terms::Function.new val.first.sub(/\(/, ''), Array(val[1])
       }
     ;
   hexcolor
     : hexcolor S { result = val.first }
-    | HASH { result = Terms::Hash.new val.first }
+    | HASH { result = Terms::Hash.new val.first.sub(/^#/, '') }
     ;
   uri
     : uri S { result = val.first }

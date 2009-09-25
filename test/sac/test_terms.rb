@@ -48,8 +48,8 @@ module CSSPool
         size = @doc.properties.first[1].first
         assert_equal :minus, size.unary_operator
         assert_equal 1, size.value
-        assert_equal '-1.0px', size.to_s
-        assert_equal '-1.0px', size.to_css
+        assert_equal '-1px', size.to_s
+        assert_equal '-1px', size.to_css
       end
 
       def test_positive_number
@@ -59,13 +59,12 @@ module CSSPool
         assert_equal 1, @doc.properties.length
         size = @doc.properties.first[1].first
         assert_equal 1, size.value
-        assert_equal '1.0px', size.to_s
+        assert_equal '1px', size.to_s
       end
 
       %w{
         1 1em 1ex 1px 1in 1cm 1mm 1pt 1pc 1% 1deg 1rad 1ms 1s 1Hz 1kHz
       }.each do |num|
-        expected = num.sub(/1/, '1.0')
         define_method(:"test_num_#{num}") do
           @parser.parse <<-eocss
             div { border: #{num}; }
@@ -73,8 +72,8 @@ module CSSPool
           assert_equal 1, @doc.properties.length
           size = @doc.properties.first[1].first
           assert_equal 1, size.value
-          assert_equal expected, size.to_s
-          assert_equal expected, size.to_css
+          assert_equal num, size.to_s
+          assert_equal num, size.to_css
         end
       end
 

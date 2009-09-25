@@ -64,7 +64,7 @@ rule
             {w}{num}(px|cm|mm|in|pt|pc){w}    { [:LENGTH, text] }
             {w}{num}(deg|rad|grad){w} { [:ANGLE, text] }
             {w}{num}(ms|s){w} { [:TIME, text] }
-            {w}{num}(hz|khz){w} { [:FREQ, text] }
+            {w}{num}[kK]?[hH][zZ]{w} { [:FREQ, text] }
 
             {w}{num}%{w}     { [:PERCENTAGE, text] }
             {w}{num}{w}      { [:NUMBER, text] }
