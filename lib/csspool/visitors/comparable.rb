@@ -76,7 +76,6 @@ module CSSPool
           :red,
           :green,
           :blue,
-          :percentage,
           :operator
         ].all? { |m| target.send(m) == @other.send(m) }
       end

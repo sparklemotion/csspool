@@ -21,23 +21,21 @@ module CSSPool
           div { border: rgb(1,2,3); }
         eocss
         color = @doc.properties.first[1].first
-        assert_equal 1, color.red
-        assert_equal 2, color.green
-        assert_equal 3, color.blue
-        assert !color.percentage?
-        assert_match('rgb(1,2,3)', color.to_css)
+        assert_equal 1, color.red.value
+        assert_equal 2, color.green.value
+        assert_equal 3, color.blue.value
+        assert_match('rgb(1, 2, 3)', color.to_css)
       end
 
       def test_rgb_with_percentage
         @parser.parse <<-eocss
-          div { border: rgb(100%,2%,3%); }
+          div { border: rgb(100%, 2%, 3%); }
         eocss
         color = @doc.properties.first[1].first
-        assert_equal 100, color.red
-        assert_equal 2, color.green
-        assert_equal 3, color.blue
-        assert color.percentage?
-        assert_match('rgb(100%,2%,3%)', color.to_css)
+        assert_equal 100, color.red.value
+        assert_equal 2, color.green.value
+        assert_equal 3, color.blue.value
+        assert_match('rgb(100%, 2%, 3%)', color.to_css)
       end
 
       def test_negative_number
