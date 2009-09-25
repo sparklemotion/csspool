@@ -85,7 +85,7 @@ module CSSPool
       doc = CSSPool.CSS <<-eocss
         div { border: foo(1, 2); }
       eocss
-      assert_match('foo(1.0, 2.0)', doc.to_css)
+      assert_match('foo(1, 2)', doc.to_css)
     end
   end
 end

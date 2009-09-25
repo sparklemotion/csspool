@@ -41,7 +41,7 @@ module CSSPool
         @charsets << [name, location]
       end
 
-      def import_style media_list, uri, default_ns, location
+      def import_style media_list, uri, default_ns = nil, location = {}
         @import_styles << [media_list, uri, default_ns, location]
       end
 

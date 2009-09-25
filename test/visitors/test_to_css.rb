@@ -11,7 +11,7 @@ module CSSPool
         doc = CSSPool.CSS(doc.to_css)
         assert_equal 3, doc.rule_sets.first.declarations[0].expressions.length
 
-        assert_equal 'font: 14.0px / 30.0px Tahoma;',
+        assert_equal 'font: 14px / 30px Tahoma;',
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 

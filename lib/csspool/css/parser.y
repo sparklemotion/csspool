@@ -77,7 +77,10 @@ rule
     | PLUS    { result = :+ }
     ;
   simple_selector
-    : element_name hcap { result = val.first }
+    : element_name hcap {
+        result = val.first
+        result.additional_selectors = Array(val.last).flatten
+      }
     | element_name
     | hcap
       {
