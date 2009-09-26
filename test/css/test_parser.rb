@@ -155,6 +155,10 @@ module CSSPool
         assert_decl 'background', %w{red green},'div { background: red green; }'
       end
 
+      def test_multi_decl
+        assert_decl 'background', ['red'], 'div { background: red; padding: 0; }'
+      end
+
       def test_ruleset_div_attribute_recurses
         assert_attribute 'div[a]:foo { }'
         assert_attribute 'div:foo[a] { }'

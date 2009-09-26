@@ -55,7 +55,10 @@ rule
     | MEDIA_SYM LBRACE { result = [] }
     ;
   ruleset
-    : start_selector declaration RBRACE {
+    : start_selector declarations RBRACE {
+        @document.end_selector Array(val.first)
+      }
+    | start_selector RBRACE {
         @document.end_selector Array(val.first)
       }
     ;
@@ -166,12 +169,15 @@ rule
         result = Selectors::PseudoClass.new val[1], val[2]
       }
     ;
+  declarations
+    : declaration declarations
+    | declaration
+    ;
   declaration
     : property ':' expr prio SEMI
       { @document.property val.first, Array(val[2]), val[3] }
     | property ':' S expr prio SEMI
       { @document.property val.first, Array(val[3]), val[4] }
-    |
     ;
   prio
     : IMPORTANT_SYM { result = true }
