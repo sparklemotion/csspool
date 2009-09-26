@@ -226,6 +226,11 @@ module CSSPool
         assert_tokens([ [:STAR, '*'], ], @scanner)
       end
 
+      def test_ident_with_minus
+        @scanner.scan('-book')
+        assert_tokens([ [:IDENT, '-book'], ], @scanner)
+      end
+
       def test_scan_class
         @scanner.scan('x.awesome')
         assert_tokens([ [:IDENT, 'x'],

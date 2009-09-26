@@ -73,7 +73,7 @@ rule
             {w}\/{w}         { [:SLASH, '/'] }
             <!--             { [:CDO, text] }
             -->              { [:CDC, text] }
-            {w}\-{w}         { [:MINUS, text] }
+            {w}\-(?!{ident}){w}   { [:MINUS, text] }
             {w}\+{w}         { [:PLUS, text] }
             
             
