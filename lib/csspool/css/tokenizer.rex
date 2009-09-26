@@ -56,7 +56,7 @@ rule
             {w}>{w}          { [:GREATER, text] }
             {w},{w}          { [:COMMA, ','] }
             {w};{w}          { [:SEMI, ';'] }
-            \*{w}            { [:STAR, text] }
+            \*               { [:STAR, text] }
             {w}~{w}          { [:TILDE, text] }
             \:not\({w}       { [:NOT, text]  }
             {w}{num}em{w}    { [:EMS, text] }

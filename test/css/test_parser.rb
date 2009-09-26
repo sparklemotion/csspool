@@ -166,6 +166,7 @@ module CSSPool
       def test_star_attribute
         assert_attribute '*:foo { }'
         assert_attribute 'a *.foo { }'
+        assert_attribute 'a * bar { }'
       end
 
       def test_ruleset_div_attribute_recurses
