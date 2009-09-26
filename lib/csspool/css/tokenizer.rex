@@ -13,6 +13,7 @@ macro
   nmchar    [_A-Za-z0-9-]|{nonascii}|{escape}
   nmstart   [_A-Za-z]|{nonascii}|{escape}
   ident     [-@]?({nmstart})({nmchar})*
+  func      [-@]?({nmstart})({nmchar}|[.])*
   name      ({nmchar})+
   string1   "([^\n\r\f"]|{nl}|{nonascii}|{escape})*"
   string2   '([^\n\r\f']|{nl}|{nonascii}|{escape})*'
@@ -31,7 +32,7 @@ rule
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, text] }
             {w}{comment}{w}  { next_token }
 
-            {ident}\(\s*     { [:FUNCTION, text] }
+            {func}\(\s*      { [:FUNCTION, text] }
             {w}@import{w}    { [:IMPORT_SYM, text] }
             {w}@page{w}      { [:PAGE_SYM, text] }
             {w}@charset{w}   { [:CHARSET_SYM, text] }
@@ -55,7 +56,7 @@ rule
             {w}>{w}          { [:GREATER, text] }
             {w},{w}          { [:COMMA, ','] }
             {w};{w}          { [:SEMI, ';'] }
-            {w}\*{w}         { [:STAR, text] }
+            \*{w}            { [:STAR, text] }
             {w}~{w}          { [:TILDE, text] }
             \:not\({w}       { [:NOT, text]  }
             {w}{num}em{w}    { [:EMS, text] }

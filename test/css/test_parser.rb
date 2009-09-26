@@ -163,6 +163,11 @@ module CSSPool
         assert_equal %w{ background padding }, names
       end
 
+      def test_star_attribute
+        assert_attribute '*:foo { }'
+        assert_attribute 'a *.foo { }'
+      end
+
       def test_ruleset_div_attribute_recurses
         assert_attribute 'div[a]:foo { }'
         assert_attribute 'div:foo[a] { }'
@@ -255,7 +260,7 @@ module CSSPool
       end
 
       def test_ruleset_div_pseudo_function_with_arg
-        assert_attribute 'div:foo(bar) { }'
+        assert_attribute 'div:foo.bar(bar) { }'
       end
 
       def test_ruleset_div_pseudo_function
