@@ -26,7 +26,7 @@ task :compile => [GENERATED_TOKENIZER, GENERATED_PARSER]
 
 file GENERATED_TOKENIZER => "lib/csspool/css/tokenizer.rex" do |t|
   begin
-    sh "rex --independent -o #{t.name} #{t.prerequisites.first}"
+    sh "rex -i --independent -o #{t.name} #{t.prerequisites.first}"
   rescue
     abort "need rexical, sudo gem install rexical"
   end
