@@ -156,7 +156,11 @@ module CSSPool
       end
 
       def test_multi_decl
-        assert_decl 'background', ['red'], 'div { background: red; padding: 0; }'
+        @parser.scan_str 'div { background: red; padding: 0; }'
+        names = @parser.document.calls.find_all { |x|
+          x.first == :property
+        }.map { |y| y[1].first }
+        assert_equal %w{ background padding }, names
       end
 
       def test_ruleset_div_attribute_recurses
