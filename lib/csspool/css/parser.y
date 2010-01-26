@@ -189,6 +189,7 @@ rule
   operator
     : COMMA
     | SLASH
+    | EQUAL
     ;
   expr
     : term operator expr {
