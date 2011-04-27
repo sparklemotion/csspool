@@ -68,7 +68,6 @@ module CSSPool
       %w{
         1 1em 1ex 1px 1in 1cm 1mm 1pt 1pc 1% 1deg 1rad 1ms 1s 1Hz 1kHz
       }.each do |num|
-        expected = num.sub(/1/, '1.0')
         define_method(:"test_num_#{num}") do
           equalitest "div { border: #{num}; }"
         end

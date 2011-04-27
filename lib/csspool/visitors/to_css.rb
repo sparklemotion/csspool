@@ -7,8 +7,6 @@ module CSSPool
       end
 
       visitor_for CSS::Document do |target|
-        media_hash = {}
-
         # Default media list is []
         current_media_type = []
 

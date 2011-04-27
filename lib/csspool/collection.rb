@@ -17,8 +17,8 @@ module CSSPool
       until import_tree.last.all? { |x| x.import_rules.length == 0 }
         level = import_tree.last
         import_tree << []
-        level.each do |doc|
-          doc.import_rules.each do |ir|
+        level.each do |l|
+          l.import_rules.each do |ir|
             next if imported_urls.key? ir.uri
 
             new_doc = ir.load(&@block)
