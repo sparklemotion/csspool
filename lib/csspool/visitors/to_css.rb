@@ -108,7 +108,9 @@ module CSSPool
           target.red,
           target.green,
           target.blue
-        ].map { |c| [c.operator, c.accept(self)].compact.join(' ') }
+        ].map { |c|
+          c.accept(self)
+        }.join ', '
 
         %{rgb(#{params})}
       end
