@@ -10,27 +10,13 @@ well as a document oriented interface for parsing CSS.
 
 == FEATURES/PROBLEMS:
 
-CSSPool now depends on libcroco[http://www.freespiders.org/projects/libcroco/]
-and interfaces with libcroco via FFI.  This means that if libcroco isn't
-installed in one of your default library paths, you'll need to tell CSSPool
-where to find the libcroco shared library.  This is typically the case for
-people using OS X and installing libcroco via macports.
+CSSPool no longer depends on libcroco! There is now a dependency on both the
+{racc}[http://github.com/tenderlove/racc] and
+{rexical}[http://github.com/tenderlove/rexical] gems, so make sure to install
+them first.
 
-You can tell CSSPool where to find the libcroco shared library in a couple ways.
-The first way is to set LD_LIBRARY_PATH to point at the correct directory.  Just
-do this:
-
-  $ export LD_LIBRARY_PATH=/opt/local/lib
-
-Then run your script.
-
-The second way is to tell CSSPool specifically where to find the dynamic
-library.  To do that, just set the LIBCROCO environment variable.  On OS X,
-I would do this:
-
-  $ export LIBCROCO=/opt/local/lib/libcroco-0.6.dylib
-
-Then run my script.
+$ sudo gem install racc
+$ sudo gem install rexical
 
 == SYNOPSIS:
 
@@ -43,7 +29,8 @@ Then run my script.
 
 == REQUIREMENTS:
 
-* libcroco (on OS X do "sudo port install libcroco")
+* racc ("sudo gem install racc")
+* rexical ("sudo gem install rexical")
 
 == INSTALL:
 
