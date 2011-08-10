@@ -3,10 +3,12 @@ require 'csspool/node'
 require 'csspool/selectors'
 require 'csspool/terms'
 require 'csspool/selector'
+old = $-w
+$-w = false
 require 'csspool/css/parser'
+$-w = old
 require 'csspool/css/tokenizer'
 require 'csspool/sac'
-#require 'csspool/lib_croco'
 require 'csspool/css'
 require 'csspool/visitors'
 require 'csspool/collection'
