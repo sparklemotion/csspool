@@ -39,7 +39,6 @@ lib/csspool/terms/number.rb
 lib/csspool/terms/rgb.rb
 lib/csspool/terms/string.rb
 lib/csspool/terms/uri.rb
-lib/csspool/visitable.rb
 lib/csspool/visitors.rb
 lib/csspool/visitors/children.rb
 lib/csspool/visitors/comparable.rb

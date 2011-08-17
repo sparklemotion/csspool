@@ -1,4 +1,3 @@
-require 'csspool/visitable'
 require 'csspool/node'
 require 'csspool/selectors'
 require 'csspool/terms'
