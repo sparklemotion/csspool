@@ -1,7 +1,8 @@
 module CSSPool
   module CSS
     class Charset < CSSPool::Node
-      attr_accessor :name, :parse_location
+      attr_accessor :name
+      attr_accessor :parse_location
 
       def initialize name, parse_location
         @name = name
