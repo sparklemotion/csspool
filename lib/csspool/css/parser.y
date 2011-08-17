@@ -7,9 +7,9 @@ token IMPORTANT_SYM MEDIA_SYM
 
 rule
   document
-    : { @document.start_document }
+    : { @handler.start_document }
       stylesheet
-      { @document.end_document }
+      { @handler.end_document }
     ;
   stylesheet
     : charset stylesheet
@@ -19,14 +19,14 @@ rule
     | body
     ;
   charset
-    : CHARSET_SYM STRING SEMI { @document.charset val[1][1..-2], {} }
+    : CHARSET_SYM STRING SEMI { @handler.charset val[1][1..-2], {} }
     ;
   import
     : IMPORT_SYM import_location medium SEMI {
-        @document.import_style [val[2]].flatten, val[1]
+        @handler.import_style [val[2]].flatten, val[1]
       }
     | IMPORT_SYM import_location SEMI {
-        @document.import_style [], val[1]
+        @handler.import_style [], val[1]
       }
     ;
   import_location
@@ -45,26 +45,26 @@ rule
     | media
     ;
   media
-    : start_media body RBRACE { @document.end_media val.first }
+    : start_media body RBRACE { @handler.end_media val.first }
     ;
   start_media
     : MEDIA_SYM medium LBRACE {
         result = [val[1]].flatten
-        @document.start_media result
+        @handler.start_media result
       }
     | MEDIA_SYM LBRACE { result = [] }
     ;
   ruleset
     : start_selector declarations RBRACE {
-        @document.end_selector Array(val.first)
+        @handler.end_selector Array(val.first)
       }
     | start_selector RBRACE {
-        @document.end_selector Array(val.first)
+        @handler.end_selector Array(val.first)
       }
     ;
   start_selector
     : S start_selector
-    | selectors LBRACE { @document.start_selector Array(val.first) }
+    | selectors LBRACE { @handler.start_selector Array(val.first) }
     ;
   selectors
     : selector COMMA selectors
@@ -175,9 +175,9 @@ rule
     ;
   declaration
     : property ':' expr prio SEMI
-      { @document.property val.first, Array(val[2]), val[3] }
+      { @handler.property val.first, Array(val[2]), val[3] }
     | property ':' S expr prio SEMI
-      { @document.property val.first, Array(val[3]), val[4] }
+      { @handler.property val.first, Array(val[3]), val[4] }
     ;
   prio
     : IMPORTANT_SYM { result = true }

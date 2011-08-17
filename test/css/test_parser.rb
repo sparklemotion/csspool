@@ -21,9 +21,9 @@ module CSSPool
         super
         @doc = MethodCatcher.new
         @parser = Class.new(CSSPool::CSS::Tokenizer) {
-          attr_accessor :document
+          attr_accessor :handler
           def initialize doc
-            @document = doc
+            @handler = doc
           end
         }.new(@doc)
       end
@@ -128,9 +128,9 @@ module CSSPool
       end
 
       def assert_term term, css
-        @parser.document = MethodCatcher.new
+        @parser.handler = MethodCatcher.new
         @parser.scan_str css
-        property = @parser.document.calls.find { |x|
+        property = @parser.handler.calls.find { |x|
           x.first == :property
         }[1][1].first
 
@@ -157,7 +157,7 @@ module CSSPool
 
       def test_multi_decl
         @parser.scan_str 'div { background: red; padding: 0; }'
-        names = @parser.document.calls.find_all { |x|
+        names = @parser.handler.calls.find_all { |x|
           x.first == :property
         }.map { |y| y[1].first }
         assert_equal %w{ background padding }, names
@@ -364,20 +364,20 @@ module CSSPool
       end
 
       def assert_attribute css
-        @parser.document = MethodCatcher.new
+        @parser.handler = MethodCatcher.new
         @parser.scan_str css
-        assert_equal :start_selector, @parser.document.calls[1].first
-        assert_equal :end_selector, @parser.document.calls[2].first
+        assert_equal :start_selector, @parser.handler.calls[1].first
+        assert_equal :end_selector, @parser.handler.calls[2].first
       end
 
       def assert_decl name, values, css, ops = nil
-        @parser.document = MethodCatcher.new
+        @parser.handler = MethodCatcher.new
         @parser.scan_str css
-        assert_equal :start_selector, @parser.document.calls[1].first
-        assert_equal :property, @parser.document.calls[2].first
-        assert_equal :end_selector, @parser.document.calls[3].first
+        assert_equal :start_selector, @parser.handler.calls[1].first
+        assert_equal :property, @parser.handler.calls[2].first
+        assert_equal :end_selector, @parser.handler.calls[3].first
 
-        property = @parser.document.calls[2][1]
+        property = @parser.handler.calls[2][1]
         assert_equal name, property.first
 
         assert_equal values, property[1].map { |x| x.value }
@@ -386,13 +386,13 @@ module CSSPool
         end
       end
 
-      def doc; @parser.document end
+      def doc; @parser.handler end
       def args_for s; doc.calls.find { |x| x.first == s }[1] end
 
       def assert_additional_selector things, css
-        @parser.document = MethodCatcher.new
+        @parser.handler = MethodCatcher.new
         @parser.scan_str css
-        args = @parser.document.calls.find { |x|
+        args = @parser.handler.calls.find { |x|
           x.first == :start_selector
         }[1]
 

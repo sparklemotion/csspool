@@ -9,7 +9,7 @@ module CSSPool
 
     ASSET_DIR = File.join(File.dirname(__FILE__), 'files')
 
-    class MyDoc < CSSPool::SAC::Document
+    class MyDoc < CSSPool::CSS::DocumentHandler
       attr_accessor :start_documents, :end_documents
       attr_accessor :charsets, :import_styles, :comments, :start_selectors
       attr_accessor :end_selectors, :properties

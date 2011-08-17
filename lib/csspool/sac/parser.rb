@@ -1,13 +1,16 @@
 module CSSPool
   module SAC
     class Parser < CSSPool::CSS::Tokenizer
-      attr_accessor :document
+      attr_accessor :handler
 
-      def initialize document = CSSPool::SAC::Document.new
-        @document = document
+      def initialize handler = CSSPool::CSS::DocumentHandler.new
+        @handler = handler
       end
 
-      alias :parse :scan_str
+      def parse string
+        scan_str string
+        @handler.document
+      end
     end
   end
 end
