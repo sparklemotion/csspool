@@ -1,7 +1,19 @@
 module CSSPool
   module CSS
-    class ImportRule < Struct.new(:uri, :namespace, :media, :document, :parse_location)
-      include CSSPool::Visitable
+    class ImportRule < CSSPool::Node
+      attr_accessor :uri
+      attr_accessor :namespace
+      attr_accessor :media
+      attr_accessor :document
+      attr_accessor :parse_location
+
+      def initialize uri, namespace, media, document, parse_location
+        @uri = uri
+        @namespace = namespace
+        @media = media
+        @document = document
+        @parse_location = parse_location
+      end
 
       def load
         new_doc = CSSPool.CSS(yield uri.value)
