@@ -72,12 +72,12 @@ rule
     : selector COMMA selectors
       {
         # FIXME: should always garantee array
-        sel = Selector.new(Array(val.first), {})
+        sel = Selector.new(val.first, {})
         result = [sel, val[2]].flatten
       }
     | selector
       {
-        result = [Selector.new(Array(val.first), {})]
+        result = [Selector.new(val.first, {})]
       }
     ;
   selector
@@ -96,14 +96,16 @@ rule
     ;
   simple_selector
     : element_name hcap {
-        result = val.first
-        result.additional_selectors = Array(val.last).flatten
+        selector = val.first
+        selector.additional_selectors = val.last
+        result = [selector]
       }
-    | element_name
+    | element_name { result = val }
     | hcap
       {
-        result = Selectors::Simple.new nil, nil
-        result.additional_selectors = val.flatten
+        ss = Selectors::Simple.new nil, nil
+        ss.additional_selectors = val.flatten
+        result = [ss]
       }
     ;
   element_name
@@ -111,10 +113,10 @@ rule
     | STAR  { result = Selectors::Universal.new val.first, nil }
     ;
   hcap
-    : hash
-    | class
-    | attrib
-    | pseudo
+    : hash        { result = val }
+    | class       { result = val }
+    | attrib      { result = val }
+    | pseudo      { result = val }
     | hash hcap   { result = val.flatten }
     | class hcap  { result = val.flatten }
     | attrib hcap { result = val.flatten }
