@@ -56,14 +56,14 @@ rule
     ;
   ruleset
     : start_selector declarations RBRACE {
-        @handler.end_selector Array(val.first)
+        @handler.end_selector val.first
       }
     | start_selector RBRACE {
-        @handler.end_selector Array(val.first)
+        @handler.end_selector val.first
       }
     ;
   start_selector
-    : S start_selector
+    : S start_selector { result = val.last }
     | selectors LBRACE {
         @handler.start_selector val.first
       }
@@ -180,9 +180,9 @@ rule
     ;
   declaration
     : property ':' expr prio SEMI
-      { @handler.property val.first, Array(val[2]), val[3] }
+      { @handler.property val.first, val[2], val[3] }
     | property ':' S expr prio SEMI
-      { @handler.property val.first, Array(val[3]), val[4] }
+      { @handler.property val.first, val[3], val[4] }
     ;
   prio
     : IMPORTANT_SYM { result = true }
@@ -199,10 +199,10 @@ rule
   expr
     : term operator expr {
         result = [val.first, val.last].flatten
-        Array(val.last).first.operator = val[1]
+        val.last.first.operator = val[1]
       }
     | term expr { result = val.flatten }
-    | term
+    | term      { result = val }
     ;
   term
     : ident
@@ -217,9 +217,9 @@ rule
     | FUNCTION expr RPAREN {
         name = val.first.sub(/\(/, '')
         if name == 'rgb'
-          result = Terms::Rgb.new(*Array(val[1]))
+          result = Terms::Rgb.new(*val[1])
         else
-          result = Terms::Function.new val.first.sub(/\(/, ''), Array(val[1])
+          result = Terms::Function.new val.first.sub(/\(/, ''), val[1]
         end
       }
     ;
