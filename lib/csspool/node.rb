@@ -1,6 +1,6 @@
 module CSSPool
   class Node
-    #include Enumerable
+    include Enumerable
 
     def accept target
       target.accept self
@@ -19,7 +19,7 @@ module CSSPool
     alias :eql? :==
 
     def each &block
-      accept Visitors::Iterator.new block
+      Visitors::Iterator.new(block).accept self
     end
 
     def children
