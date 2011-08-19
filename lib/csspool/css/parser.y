@@ -64,17 +64,20 @@ rule
     ;
   start_selector
     : S start_selector
-    | selectors LBRACE { @handler.start_selector Array(val.first) }
+    | selectors LBRACE {
+        @handler.start_selector val.first
+      }
     ;
   selectors
     : selector COMMA selectors
       {
+        # FIXME: should always garantee array
         sel = Selector.new(Array(val.first), {})
         result = [sel, val[2]].flatten
       }
     | selector
       {
-        result = Selector.new(Array(val.first), {})
+        result = [Selector.new(Array(val.first), {})]
       }
     ;
   selector

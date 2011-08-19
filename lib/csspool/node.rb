@@ -1,5 +1,7 @@
 module CSSPool
   class Node
+    #include Enumerable
+
     def accept target
       target.accept self
     end
