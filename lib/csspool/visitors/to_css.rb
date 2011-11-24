@@ -1,6 +1,15 @@
 module CSSPool
   module Visitors
     class ToCSS < Visitor
+
+      CSS_STRING_ESCAPE_MAP = {
+        "\\" => "\\\\",
+        "\"" => "\\\"",
+        "\n" => "\\a ", # CSS2 4.1.3 p3.2
+        "\r" => "\\\r",
+        "\f" => "\\\f"
+      }
+
       def initialize
         @indent_level = 0
         @indent_space = '  '
@@ -114,7 +123,7 @@ module CSSPool
       end
 
       visitor_for Terms::String do |target|
-        target.value.inspect
+        "\"#{escape_css_string target.value}\""
       end
 
       visitor_for Selector do |target|
@@ -180,6 +189,10 @@ module CSSPool
           return result
         end
         "#{@indent_space * @indent_level}"
+      end
+
+      def escape_css_string text
+        text.gsub(/[\\"\n\r\f]/) {CSS_STRING_ESCAPE_MAP[$&]}
       end
     end
   end

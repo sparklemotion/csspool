@@ -162,7 +162,10 @@ module CSSPool
 
       def test_string_term
         input_output = {
-          "basic" => "\"basic\""
+          "basic" => "\"basic\"",
+          "\"quotes\"" => "\"\\\"quotes\\\"\"",
+          "…" => "\"…\"",
+          "\n\r\f" => "\"\\a \\\r\\\f\""
         }
         input_output.each_pair do |input, output|
           node = Terms::String.new input
