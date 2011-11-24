@@ -82,7 +82,6 @@ module CSSPool
         assert_equal 1, @doc.properties.length
         string = @doc.properties.first[1].first
         assert_equal 'hello', string.value
-        assert_equal '"hello"', string.to_css
       end
 
       def test_inherit
@@ -124,7 +123,6 @@ module CSSPool
         assert_equal 1, @doc.properties.length
         url = @doc.properties.first[1].first
         assert_equal 'http://tenderlovemaking.com/', url.value
-        assert_match 'url(http://tenderlovemaking.com/)', url.to_css
       end
     end
   end

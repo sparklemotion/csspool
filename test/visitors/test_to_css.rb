@@ -149,6 +149,26 @@ module CSSPool
 
         assert_equal 1, doc.charsets.length
       end
+
+      def test_uri_term
+        input_output = {
+          "http://example.com" => "url(http://example.com)",
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::URI.new input
+          assert_equal output, node.to_css
+        end
+      end
+
+      def test_string_term
+        input_output = {
+          "basic" => "\"basic\""
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::String.new input
+          assert_equal output, node.to_css
+        end
+      end
     end
   end
 end
