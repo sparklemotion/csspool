@@ -156,14 +156,25 @@ module CSSPool
 
       def test_function
         @parser.parse <<-eocss
-          div { border: foo("hello"); }
+          div { content: attr(\"value\", ident); }
+          div { content: \\30(\"value\", ident); }
+          div { content: a\\ function(\"value\", ident); }
+          div { content: a\\((\"value\", ident); }
         eocss
-        assert_equal 1, @doc.properties.length
-        func = @doc.properties.first[1].first
-        assert_equal 'foo', func.name
-        assert_equal 1, func.params.length
-        assert_equal 'hello', func.params.first.value
-        assert_match 'foo("hello")', func.to_css
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 4, terms.length
+
+        assert_equal 'attr', terms.shift.name,
+            "Recognizes basic function."
+
+        assert_equal '0', terms.shift.name,
+            "Recognizes numeric function."
+
+        assert_equal 'a function', terms.shift.name,
+            "Recognizes function with escaped SPACE."
+
+        assert_equal 'a(', terms.shift.name,
+            "Recognizes function with escaped LPAREN."
       end
 
       def test_uri

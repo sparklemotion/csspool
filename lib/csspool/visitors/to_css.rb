@@ -103,7 +103,7 @@ module CSSPool
       end
 
       visitor_for Terms::Function do |target|
-        "#{target.name}(" +
+        "#{escape_css_identifier target.name}(" +
           target.params.map { |x|
             [
               x.operator,

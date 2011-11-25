@@ -166,6 +166,18 @@ module CSSPool
         }
         input_output.each_pair do |input, output|
           node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+        end
+      end
+
+      def test_function_term
+        input_output = {
+          "attr" => "attr(\"string\", ident)",
+          "0" => "\\000030(\"string\", ident)",
+          "a function" => "a\\ function(\"string\", ident)",
+          "a(" => "a\\((\"string\", ident)",
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::Function.new input, [Terms::String.new("string"), Terms::Ident.new("ident", ',')]
           assert_equal output, node.to_css
         end
       end

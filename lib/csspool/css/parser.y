@@ -238,11 +238,11 @@ rule
   function
     : function S { result = val.first }
     | FUNCTION expr RPAREN {
-        name = val.first.sub(/\(/, '')
+        name = interpret_identifier val.first.sub(/\($/, '')
         if name == 'rgb'
           result = Terms::Rgb.new(*val[1])
         else
-          result = Terms::Function.new val.first.sub(/\(/, ''), val[1]
+          result = Terms::Function.new name, val[1]
         end
       }
     ;
