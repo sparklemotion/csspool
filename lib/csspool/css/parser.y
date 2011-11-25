@@ -35,8 +35,12 @@ rule
     | URI { result = Terms::URI.new interpret_uri val.first }
     ;
   medium
-    : medium COMMA IDENT { result = [val.first, Terms::Ident.new(val.last)] }
-    | IDENT { result = Terms::Ident.new val.first }
+    : medium COMMA IDENT {
+        result = [val.first, Terms::Ident.new(interpret_identifier val.last)]
+      }
+    | IDENT {
+        result = Terms::Ident.new interpret_identifier val.first
+      }
     ;
   body
     : ruleset body
