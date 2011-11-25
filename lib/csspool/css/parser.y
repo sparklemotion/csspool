@@ -19,7 +19,7 @@ rule
     | body
     ;
   charset
-    : CHARSET_SYM STRING SEMI { @handler.charset val[1][1..-2], {} }
+    : CHARSET_SYM STRING SEMI { @handler.charset interpret_string(val[1]), {} }
     ;
   import
     : IMPORT_SYM import_location medium SEMI {

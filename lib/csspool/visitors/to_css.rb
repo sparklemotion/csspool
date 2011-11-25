@@ -52,7 +52,7 @@ module CSSPool
       end
 
       visitor_for CSS::Charset do |target|
-        "@charset \"#{target.name}\";"
+        "@charset \"#{escape_css_string target.name}\";"
       end
 
       visitor_for CSS::ImportRule do |target|
