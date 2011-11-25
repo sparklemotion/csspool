@@ -150,6 +150,16 @@ module CSSPool
         assert_equal 1, doc.charsets.length
       end
 
+      def test_selector_attribute
+        input_output = {
+          "\"quotes\"" => "[title=\"\\\"quotes\\\"\"]",
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new 'title', input, Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
+        end
+      end
+
       def test_uri_term
         input_output = {
           "http://example.com" => "url(\"http://example.com\")",

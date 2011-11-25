@@ -170,11 +170,11 @@ module CSSPool
         when Selectors::Attribute::SET
           "[#{target.name}]"
         when Selectors::Attribute::EQUALS
-          "[#{target.name}=\"#{target.value}\"]"
+          "[#{target.name}=\"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::INCLUDES
-          "[#{target.name} ~= \"#{target.value}\"]"
+          "[#{target.name} ~= \"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::DASHMATCH
-          "[#{target.name} |= \"#{target.value}\"]"
+          "[#{target.name} |= \"#{escape_css_string target.value}\"]"
         else
           raise "no matching matchway"
         end
