@@ -2,6 +2,8 @@ module CSSPool
   module Visitors
     class ToCSS < Visitor
 
+      CSS_IDENTIFIER_ILLEGAL_CHARACTERS =
+        (0..255).to_a.pack('U*').gsub(/[a-zA-Z0-9_-]/, '')
       CSS_STRING_ESCAPE_MAP = {
         "\\" => "\\\\",
         "\"" => "\\\"",
@@ -168,13 +170,13 @@ module CSSPool
       visitor_for Selectors::Attribute do |target|
         case target.match_way
         when Selectors::Attribute::SET
-          "[#{target.name}]"
+          "[#{escape_css_identifier target.name}]"
         when Selectors::Attribute::EQUALS
-          "[#{target.name}=\"#{escape_css_string target.value}\"]"
+          "[#{escape_css_identifier target.name}=\"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::INCLUDES
-          "[#{target.name} ~= \"#{escape_css_string target.value}\"]"
+          "[#{escape_css_identifier target.name} ~= \"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::DASHMATCH
-          "[#{target.name} |= \"#{escape_css_string target.value}\"]"
+          "[#{escape_css_identifier target.name} |= \"#{escape_css_string target.value}\"]"
         else
           raise "no matching matchway"
         end
@@ -189,6 +191,18 @@ module CSSPool
           return result
         end
         "#{@indent_space * @indent_level}"
+      end
+
+      def escape_css_identifier text
+        # CSS2 4.1.3 p2
+        unsafe_chars = /[#{Regexp.escape CSS_IDENTIFIER_ILLEGAL_CHARACTERS}]/
+        text.gsub(/^\d|^\-(?=\-|\d)|#{unsafe_chars}/um) do |char|
+          if '()-\\ ='.include? char
+            "\\#{char}"
+          else # I don't trust others to handle space termination well.
+            "\\#{char.unpack('U').first.to_s(16).rjust(6, '0')}"
+          end
+        end
       end
 
       def escape_css_string text

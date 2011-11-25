@@ -158,6 +158,16 @@ module CSSPool
           node = Selectors::Attribute.new 'title', input, Selectors::Attribute::EQUALS
           assert_equal output, node.to_css
         end
+
+        input_output = {
+          " space" => "[\\ space=\"value\"]",
+          "equal=" => "[equal\\==\"value\"]",
+          "new\nline" => "[new\\00000aline=\"value\"]"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
+        end
       end
 
       def test_uri_term
