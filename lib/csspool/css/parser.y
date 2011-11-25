@@ -129,41 +129,53 @@ rule
     ;
   attrib
     : LSQUARE IDENT EQUAL IDENT RSQUARE {
-        result =
-          Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::EQUALS
+        )
       }
     | LSQUARE IDENT EQUAL STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::EQUALS
         )
       }
     | LSQUARE IDENT INCLUDES STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::INCLUDES
         )
       }
     | LSQUARE IDENT INCLUDES IDENT RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::INCLUDES
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::INCLUDES
+        )
       }
     | LSQUARE IDENT DASHMATCH IDENT RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::DASHMATCH
+        )
       }
     | LSQUARE IDENT DASHMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::DASHMATCH
         )
       }
     | LSQUARE IDENT RSQUARE {
-        result =
-          Selectors::Attribute.new val[1], nil, Selectors::Attribute::SET
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          nil,
+          Selectors::Attribute::SET
+        )
       }
     ;
   pseudo
@@ -293,6 +305,10 @@ rule
 def numeric thing
   thing = thing.gsub(/[^\d.]/, '')
   Integer(thing) rescue Float(thing)
+end
+
+def interpret_identifier s
+  interpret_escapes s
 end
 
 def interpret_uri s

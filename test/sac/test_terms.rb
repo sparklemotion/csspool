@@ -75,6 +75,34 @@ module CSSPool
         end
       end
 
+      def test_selector_attribute
+        @parser.parse <<-eocss
+          div[attr = value] { }
+          div[attr\\== value] { }
+          div[attr="\\"quotes\\""] { }
+          div[attr = unicode\\ \\1D11E\\BF ] { }
+        eocss
+
+        attrs = @doc.end_selectors.flatten.map(&:simple_selectors).flatten.map(&:additional_selectors).flatten
+        assert_equal 4, attrs.length
+
+        attrs.shift.tap do |attr|
+          assert_equal "attr", attr.name,
+              "Interprets name."
+          assert_equal "value", attr.value,
+              "Interprets bare value."
+        end
+
+        assert_equal "attr=", attrs.shift.name,
+            "Interprets identifier escapes."
+
+        assert_equal "\"quotes\"", attrs.shift.value,
+            "Interprets quoted values."
+
+        assert_equal "unicode \360\235\204\236\302\277", attrs.shift.value,
+            "Interprets unicode escapes."
+      end
+
       def test_string_term
         @parser.parse <<-eocss
           div { content: "basic"; }

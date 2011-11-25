@@ -197,7 +197,7 @@ module CSSPool
         # CSS2 4.1.3 p2
         unsafe_chars = /[#{Regexp.escape CSS_IDENTIFIER_ILLEGAL_CHARACTERS}]/
         text.gsub(/^\d|^\-(?=\-|\d)|#{unsafe_chars}/um) do |char|
-          if '()-\\ ='.include? char
+          if ':()-\\ ='.include? char
             "\\#{char}"
           else # I don't trust others to handle space termination well.
             "\\#{char.unpack('U').first.to_s(16).rjust(6, '0')}"
