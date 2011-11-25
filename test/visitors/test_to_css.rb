@@ -152,7 +152,7 @@ module CSSPool
 
       def test_uri_term
         input_output = {
-          "http://example.com" => "url(http://example.com)",
+          "http://example.com" => "url(\"http://example.com\")",
         }
         input_output.each_pair do |input, output|
           node = Terms::URI.new input

@@ -97,7 +97,7 @@ module CSSPool
       end
 
       visitor_for Terms::URI do |target|
-        "url(#{target.value})"
+        "url(\"#{escape_css_string target.value}\")"
       end
 
       visitor_for Terms::Function do |target|
