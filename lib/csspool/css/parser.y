@@ -337,11 +337,3 @@ def interpret_escapes s
     end
   end.join ''
 end
-
-def strip_uri uri
-  strip_string uri.sub(/^url\(/, '').sub(/\)$/, '').strip
-end
-
-def strip_string s
-  s.match(/^(["']?)((?:\\.|.)*)\1$/um)[2]
-end
