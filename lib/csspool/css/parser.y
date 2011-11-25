@@ -31,8 +31,8 @@ rule
     ;
   import_location
     : import_location S
-    | STRING { result = Terms::String.new strip_string val.first }
-    | URI { result = Terms::URI.new strip_uri val.first }
+    | STRING { result = Terms::String.new interpret_string val.first }
+    | URI { result = Terms::URI.new interpret_uri val.first }
     ;
   medium
     : medium COMMA IDENT { result = [val.first, Terms::Ident.new(val.last)] }
