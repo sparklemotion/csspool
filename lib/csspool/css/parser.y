@@ -240,7 +240,7 @@ rule
     ;
   uri
     : uri S { result = val.first }
-    | URI { result = Terms::URI.new strip_uri val.first }
+    | URI { result = Terms::URI.new interpret_uri val.first }
   string
     : string S { result = val.first }
     | STRING { result = Terms::String.new interpret_string val.first }
@@ -295,6 +295,10 @@ def numeric thing
   Integer(thing) rescue Float(thing)
 end
 
+def interpret_uri s
+  interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+end
+
 def interpret_string s
   interpret_escapes s.match(/^(['"])((?:\\.|.)*)\1$/mu)[2]
 end
@@ -319,9 +323,9 @@ def interpret_escapes s
 end
 
 def strip_uri uri
-  strip_string uri.sub(/^url\(/, '').sub(/\)$/, '')
+  strip_string uri.sub(/^url\(/, '').sub(/\)$/, '').strip
 end
 
 def strip_string s
-  s.sub(/^["']/, '').sub(/["']$/, '')
+  s.match(/^(["']?)((?:\\.|.)*)\1$/um)[2]
 end

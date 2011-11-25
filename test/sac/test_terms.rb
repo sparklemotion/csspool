@@ -140,11 +140,29 @@ module CSSPool
 
       def test_uri
         @parser.parse <<-eocss
-          div { border: url(http://tenderlovemaking.com/); }
+          div { background: url(http://example.com/); }
+          div { background: url( http://example.com/ ); }
+          div { background: url("http://example.com/"); }
+          div { background: url( " http://example.com/ " ); }
+          div { background: url(http://example.com/\\"); }
         eocss
-        assert_equal 1, @doc.properties.length
-        url = @doc.properties.first[1].first
-        assert_equal 'http://tenderlovemaking.com/', url.value
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 5, terms.length
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognizes bare URI."
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognize URI with spaces"
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognize quoted URI"
+
+        assert_equal ' http://example.com/ ', terms.shift.value,
+            "Recognize quoted URI"
+
+        assert_equal 'http://example.com/"', terms.shift.value,
+            "Recognizes bare URI with quotes"
       end
     end
   end
