@@ -154,6 +154,25 @@ module CSSPool
         assert_equal 'inherit', string.to_css
       end
 
+      def test_declaration
+        @parser.parse <<-eocss
+          div { property: value; }
+          div { colon\\:: value; }
+          div { space\\ : value; }
+        eocss
+        properties = @doc.properties.map {|s| s[0]}
+        assert_equal 3, properties.length
+
+        assert_equal 'property', properties.shift,
+            "Recognizes basic function."
+
+        assert_equal 'colon:', properties.shift,
+            "Recognizes property with escaped COLON."
+
+        assert_equal 'space ', properties.shift,
+            "Recognizes property with escaped SPACE."
+      end
+
       def test_function
         @parser.parse <<-eocss
           div { content: attr(\"value\", ident); }

@@ -72,7 +72,7 @@ module CSSPool
         important = target.important? ? ' !important' : ''
 
         indent {
-          "#{indent}#{target.property}: " + target.expressions.map { |exp|
+          "#{indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
 
             op = '/' == exp.operator ? ' /' : exp.operator
 

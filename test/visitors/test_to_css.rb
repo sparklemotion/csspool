@@ -169,6 +169,18 @@ module CSSPool
         end
       end
 
+      def test_property
+        input_output = {
+          "property" => "  property: value;",
+          "colon:" => "  colon\\:: value;",
+          "space " => "  space\\ : value;"
+        }
+        input_output.each_pair do |input, output|
+          node = CSS::Declaration.new input, [Terms::Ident.new("value")], false, nil
+          assert_equal output, node.to_css
+        end
+      end
+
       def test_function_term
         input_output = {
           "attr" => "attr(\"string\", ident)",

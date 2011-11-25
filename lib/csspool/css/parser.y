@@ -212,7 +212,7 @@ rule
     |               { result = false }
     ;
   property
-    : IDENT
+    : IDENT { result = interpret_identifier val[0] }
     ;
   operator
     : COMMA
