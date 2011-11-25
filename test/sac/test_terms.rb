@@ -77,11 +77,33 @@ module CSSPool
 
       def test_string_term
         @parser.parse <<-eocss
-          div { border: "hello"; }
+          div { content: "basic"; }
+          div { content: "\\"quotes\\""; }
+          div { content: "unicode \\1D11E\\BF "; }
+          div { content: "contin\\\nuation"; }
+          div { content: "new\\aline"; }
+          div { content: "\\11FFFF "; }
         eocss
-        assert_equal 1, @doc.properties.length
-        string = @doc.properties.first[1].first
-        assert_equal 'hello', string.value
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 6, terms.length
+
+        assert_equal 'basic', terms.shift.value,
+            "Recognizes a basic string"
+
+        assert_equal "\"quotes\"", terms.shift.value,
+            "Recognizes strings containing quotes."
+
+        assert_equal "unicode \360\235\204\236\302\277", terms.shift.value,
+            "Interprets unicode escapes."
+
+        assert_equal "continuation", terms.shift.value,
+            "Supports line continuation."
+
+        assert_equal "new\nline", terms.shift.value,
+            "Interprets newline escape."
+
+        assert_equal "\357\277\275", terms.shift.value,
+            "Kills absurd characters."
       end
 
       def test_inherit

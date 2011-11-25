@@ -232,7 +232,7 @@ rule
     | URI { result = Terms::URI.new strip_uri val.first }
   string
     : string S { result = val.first }
-    | STRING { result = Terms::String.new strip_string val.first }
+    | STRING { result = Terms::String.new interpret_string val.first }
     ;
   numeric
     : unary_operator numeric {
@@ -282,6 +282,29 @@ rule
 def numeric thing
   thing = thing.gsub(/[^\d.]/, '')
   Integer(thing) rescue Float(thing)
+end
+
+def interpret_string s
+  interpret_escapes s.match(/^(['"])((?:\\.|.)*)\1$/mu)[2]
+end
+
+def interpret_escapes s
+  token_exp = /\\([0-9a-fA-F]{1,6}(?:\r\n|\s)?)|\\(.)|(.)/mu
+  characters = s.scan(token_exp).map do |u_escape, i_escape, ident|
+    if u_escape
+      code = u_escape.chomp.to_i 16
+      code = 0xFFFD if code > 0x10FFFF
+      [code].pack('U')
+    elsif i_escape
+      if i_escape == "\n"
+        ''
+      else
+        i_escape
+      end
+    else
+      ident
+    end
+  end.join ''
 end
 
 def strip_uri uri
