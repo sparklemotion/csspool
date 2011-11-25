@@ -88,7 +88,7 @@ module CSSPool
       end
 
       visitor_for Terms::Ident do |target|
-        target.value
+        escape_css_identifier target.value
       end
 
       visitor_for Terms::Hash do |target|

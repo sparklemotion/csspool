@@ -301,7 +301,7 @@ rule
     ;
   ident
     : ident S { result = val.first }
-    | IDENT { result = Terms::Ident.new val.first }
+    | IDENT { result = Terms::Ident.new interpret_identifier val.first }
     ;
 
 ---- inner
