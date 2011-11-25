@@ -185,19 +185,19 @@ rule
   pseudo
     : ':' IDENT {
         result = Selectors::PseudoClass.new(
-          val[1]
+          interpret_identifier(val[1])
         )
       }
     | ':' FUNCTION RPAREN {
         result = Selectors::PseudoClass.new(
-          val[1].sub(/\($/, ''),
+          interpret_identifier(val[1].sub(/\($/, '')),
           ''
         )
       }
     | ':' FUNCTION IDENT RPAREN {
         result = Selectors::PseudoClass.new(
-          val[1].sub(/\($/, ''),
-          val[2]
+          interpret_identifier(val[1].sub(/\($/, '')),
+          interpret_identifier(val[2])
         )
       }
     ;

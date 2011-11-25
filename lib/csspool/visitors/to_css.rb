@@ -164,9 +164,9 @@ module CSSPool
 
       visitor_for Selectors::PseudoClass do |target|
         if target.extra.nil?
-          ":#{target.name}"
+          ":#{escape_css_identifier target.name}"
         else
-          ":#{target.name}(#{target.extra})"
+          ":#{escape_css_identifier target.name}(#{escape_css_identifier target.extra})"
         end
       end
 

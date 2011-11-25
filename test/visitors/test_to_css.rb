@@ -169,6 +169,28 @@ module CSSPool
         end
       end
 
+      def test_selector_psuedo
+        input_output = {
+          "pseudo" => ":pseudo",
+          "\"quotes\"" => ":\\000022quotes\\000022",
+          "paren(" => ":paren\\(",
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::PseudoClass.new input
+          assert_equal output, node.to_css
+        end
+
+        input_output = {
+          "" => ":psuedo()",
+          "ident" => ":psuedo(ident)",
+          " " => ":psuedo(\\ )",
+          "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+        end
+      end
+
       def test_property
         input_output = {
           "property" => "  property: value;",
