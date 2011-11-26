@@ -142,7 +142,8 @@ module CSSPool
           :> => ' > '
         }[target.combinator]
 
-        [combo, target.name].compact.join +
+        name = target.name == '*' ? '*' : escape_css_identifier(target.name)
+        [combo, name].compact.join +
           target.additional_selectors.map { |as| as.accept self }.join
       end
 
@@ -155,11 +156,11 @@ module CSSPool
       end
 
       visitor_for Selectors::Id do |target|
-        "##{target.name}"
+        "##{escape_css_identifier target.name}"
       end
 
       visitor_for Selectors::Class do |target|
-        ".#{target.name}"
+        ".#{escape_css_identifier target.name}"
       end
 
       visitor_for Selectors::PseudoClass do |target|

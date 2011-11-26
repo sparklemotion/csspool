@@ -191,6 +191,27 @@ module CSSPool
         end
       end
 
+      def test_selector_other
+        input_output = {
+          "pseudo" => "pseudo",
+          "\"quotes\"" => "\\000022quotes\\000022",
+          "space " => "space\\ ",
+          "new\nline" => "new\\00000aline"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Type.new input
+          assert_equal "#{output}", node.to_css
+        end
+        input_output.each_pair do |input, output|
+          node = Selectors::Id.new input
+          assert_equal "##{output}", node.to_css
+        end
+        input_output.each_pair do |input, output|
+          node = Selectors::Class.new input
+          assert_equal ".#{output}", node.to_css
+        end
+      end
+
       def test_property
         input_output = {
           "property" => "  property: value;",

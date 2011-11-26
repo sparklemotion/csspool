@@ -113,8 +113,8 @@ rule
       }
     ;
   element_name
-    : IDENT { result = Selectors::Type.new val.first, nil }
-    | STAR  { result = Selectors::Universal.new val.first, nil }
+    : IDENT { result = Selectors::Type.new interpret_identifier val.first }
+    | STAR  { result = Selectors::Universal.new val.first }
     ;
   hcap
     : hash        { result = val }
@@ -127,9 +127,13 @@ rule
     | pseudo hcap { result = val.flatten }
     ;
   hash
-    : HASH { result = Selectors::Id.new val.first.sub(/^#/, '') }
+    : HASH {
+        result = Selectors::Id.new interpret_identifier val.first.sub(/^#/, '')
+      }
   class
-    : '.' IDENT { result = Selectors::Class.new val.last }
+    : '.' IDENT {
+        result = Selectors::Class.new interpret_identifier val.last
+      }
     ;
   attrib
     : LSQUARE IDENT EQUAL IDENT RSQUARE {
