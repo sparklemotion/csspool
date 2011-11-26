@@ -167,11 +167,22 @@ rule
       }
     ;
   pseudo
-    : ':' IDENT { result = Selectors::PseudoClass.new val[1], nil }
-    | ':' FUNCTION RPAREN { result = Selectors::PseudoClass.new val[1], nil }
-    | ':' FUNCTION IDENT RPAREN
-      {
-        result = Selectors::PseudoClass.new val[1], val[2]
+    : ':' IDENT {
+        result = Selectors::PseudoClass.new(
+          val[1]
+        )
+      }
+    | ':' FUNCTION RPAREN {
+        result = Selectors::PseudoClass.new(
+          val[1].sub(/\($/, ''),
+          ''
+        )
+      }
+    | ':' FUNCTION IDENT RPAREN {
+        result = Selectors::PseudoClass.new(
+          val[1].sub(/\($/, ''),
+          val[2]
+        )
       }
     ;
   declarations

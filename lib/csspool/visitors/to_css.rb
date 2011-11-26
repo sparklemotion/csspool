@@ -149,7 +149,11 @@ module CSSPool
       end
 
       visitor_for Selectors::PseudoClass do |target|
-        ":#{target.name}"
+        if target.extra.nil?
+          ":#{target.name}"
+        else
+          ":#{target.name}(#{target.extra})"
+        end
       end
 
       visitor_for Selectors::Attribute do |target|
