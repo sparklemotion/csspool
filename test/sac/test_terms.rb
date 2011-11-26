@@ -75,14 +75,63 @@ module CSSPool
         end
       end
 
+      def test_selector_attribute
+        @parser.parse <<-eocss
+          div[attr = value] { }
+          div[attr\\== value] { }
+          div[attr="\\"quotes\\""] { }
+          div[attr = unicode\\ \\1D11E\\BF ] { }
+        eocss
+
+        attrs = @doc.end_selectors.flatten.map(&:simple_selectors).flatten.map(&:additional_selectors).flatten
+        assert_equal 4, attrs.length
+
+        attrs.shift.tap do |attr|
+          assert_equal "attr", attr.name,
+              "Interprets name."
+          assert_equal "value", attr.value,
+              "Interprets bare value."
+        end
+
+        assert_equal "attr=", attrs.shift.name,
+            "Interprets identifier escapes."
+
+        assert_equal "\"quotes\"", attrs.shift.value,
+            "Interprets quoted values."
+
+        assert_equal "unicode \360\235\204\236\302\277", attrs.shift.value,
+            "Interprets unicode escapes."
+      end
+
       def test_string_term
         @parser.parse <<-eocss
-          div { border: "hello"; }
+          div { content: "basic"; }
+          div { content: "\\"quotes\\""; }
+          div { content: "unicode \\1D11E\\BF "; }
+          div { content: "contin\\\nuation"; }
+          div { content: "new\\aline"; }
+          div { content: "\\11FFFF "; }
         eocss
-        assert_equal 1, @doc.properties.length
-        string = @doc.properties.first[1].first
-        assert_equal 'hello', string.value
-        assert_equal '"hello"', string.to_css
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 6, terms.length
+
+        assert_equal 'basic', terms.shift.value,
+            "Recognizes a basic string"
+
+        assert_equal "\"quotes\"", terms.shift.value,
+            "Recognizes strings containing quotes."
+
+        assert_equal "unicode \360\235\204\236\302\277", terms.shift.value,
+            "Interprets unicode escapes."
+
+        assert_equal "continuation", terms.shift.value,
+            "Supports line continuation."
+
+        assert_equal "new\nline", terms.shift.value,
+            "Interprets newline escape."
+
+        assert_equal "\357\277\275", terms.shift.value,
+            "Kills absurd characters."
       end
 
       def test_inherit
@@ -105,26 +154,73 @@ module CSSPool
         assert_equal 'inherit', string.to_css
       end
 
+      def test_declaration
+        @parser.parse <<-eocss
+          div { property: value; }
+          div { colon\\:: value; }
+          div { space\\ : value; }
+        eocss
+        properties = @doc.properties.map {|s| s[0]}
+        assert_equal 3, properties.length
+
+        assert_equal 'property', properties.shift,
+            "Recognizes basic function."
+
+        assert_equal 'colon:', properties.shift,
+            "Recognizes property with escaped COLON."
+
+        assert_equal 'space ', properties.shift,
+            "Recognizes property with escaped SPACE."
+      end
+
       def test_function
         @parser.parse <<-eocss
-          div { border: foo("hello"); }
+          div { content: attr(\"value\", ident); }
+          div { content: \\30(\"value\", ident); }
+          div { content: a\\ function(\"value\", ident); }
+          div { content: a\\((\"value\", ident); }
         eocss
-        assert_equal 1, @doc.properties.length
-        func = @doc.properties.first[1].first
-        assert_equal 'foo', func.name
-        assert_equal 1, func.params.length
-        assert_equal 'hello', func.params.first.value
-        assert_match 'foo("hello")', func.to_css
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 4, terms.length
+
+        assert_equal 'attr', terms.shift.name,
+            "Recognizes basic function."
+
+        assert_equal '0', terms.shift.name,
+            "Recognizes numeric function."
+
+        assert_equal 'a function', terms.shift.name,
+            "Recognizes function with escaped SPACE."
+
+        assert_equal 'a(', terms.shift.name,
+            "Recognizes function with escaped LPAREN."
       end
 
       def test_uri
         @parser.parse <<-eocss
-          div { border: url(http://tenderlovemaking.com/); }
+          div { background: url(http://example.com/); }
+          div { background: url( http://example.com/ ); }
+          div { background: url("http://example.com/"); }
+          div { background: url( " http://example.com/ " ); }
+          div { background: url(http://example.com/\\"); }
         eocss
-        assert_equal 1, @doc.properties.length
-        url = @doc.properties.first[1].first
-        assert_equal 'http://tenderlovemaking.com/', url.value
-        assert_match 'url(http://tenderlovemaking.com/)', url.to_css
+        terms = @doc.properties.map {|s| s[1].first}
+        assert_equal 5, terms.length
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognizes bare URI."
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognize URI with spaces"
+
+        assert_equal 'http://example.com/', terms.shift.value,
+            "Recognize quoted URI"
+
+        assert_equal ' http://example.com/ ', terms.shift.value,
+            "Recognize quoted URI"
+
+        assert_equal 'http://example.com/"', terms.shift.value,
+            "Recognizes bare URI with quotes"
       end
     end
   end
