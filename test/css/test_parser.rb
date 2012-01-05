@@ -230,9 +230,9 @@ module CSSPool
         assert_additional_selector(
           { Selectors::PseudoClass => 'foo' }, ':foo { }')
         assert_additional_selector(
-          { Selectors::PseudoClass => 'foo(' }, ':foo() { }')
+          { Selectors::PseudoClass => 'foo' }, ':foo() { }')
         assert_additional_selector(
-          { Selectors::PseudoClass => 'foo(' }, ':foo(a) { }')
+          { Selectors::PseudoClass => 'foo' }, ':foo(a) { }')
       end
 
       def test_additional_selectors_id

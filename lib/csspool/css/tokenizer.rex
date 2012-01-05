@@ -15,11 +15,11 @@ macro
   ident     [-@]?({nmstart})({nmchar})*
   func      [-@]?({nmstart})({nmchar}|[.])*
   name      ({nmchar})+
-  string1   "([^\n\r\f"]|{nl}|{nonascii}|{escape})*"
-  string2   '([^\n\r\f']|{nl}|{nonascii}|{escape})*'
+  string1   "([^\n\r\f\\"]|\\{nl}|{nonascii}|{escape})*"
+  string2   '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*'
   string    ({string1}|{string2})
-  invalid1  "([^\n\r\f"]|{nl}|{nonascii}|{escape})*
-  invalid2  '([^\n\r\f']|{nl}|{nonascii}|{escape})*
+  invalid1  "([^\n\r\f\\"]|\\{nl}|{nonascii}|{escape})*
+  invalid2  '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*
   invalid   ({invalid1}|{invalid2})
   comment   \/\*(.|{w})*?\*\/
 

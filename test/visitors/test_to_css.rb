@@ -149,6 +149,116 @@ module CSSPool
 
         assert_equal 1, doc.charsets.length
       end
+
+      def test_selector_attribute
+        input_output = {
+          "\"quotes\"" => "[title=\"\\\"quotes\\\"\"]",
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new 'title', input, Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
+        end
+
+        input_output = {
+          " space" => "[\\ space=\"value\"]",
+          "equal=" => "[equal\\==\"value\"]",
+          "new\nline" => "[new\\00000aline=\"value\"]"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+        end
+      end
+
+      def test_selector_psuedo
+        input_output = {
+          "pseudo" => ":pseudo",
+          "\"quotes\"" => ":\\000022quotes\\000022",
+          "paren(" => ":paren\\(",
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::PseudoClass.new input
+          assert_equal output, node.to_css
+        end
+
+        input_output = {
+          "" => ":psuedo()",
+          "ident" => ":psuedo(ident)",
+          " " => ":psuedo(\\ )",
+          "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+        end
+      end
+
+      def test_selector_other
+        input_output = {
+          "pseudo" => "pseudo",
+          "\"quotes\"" => "\\000022quotes\\000022",
+          "space " => "space\\ ",
+          "new\nline" => "new\\00000aline"
+        }
+        input_output.each_pair do |input, output|
+          node = Selectors::Type.new input
+          assert_equal "#{output}", node.to_css
+        end
+        input_output.each_pair do |input, output|
+          node = Selectors::Id.new input
+          assert_equal "##{output}", node.to_css
+        end
+        input_output.each_pair do |input, output|
+          node = Selectors::Class.new input
+          assert_equal ".#{output}", node.to_css
+        end
+      end
+
+      def test_property
+        input_output = {
+          "property" => "  property: value;",
+          "colon:" => "  colon\\:: value;",
+          "space " => "  space\\ : value;"
+        }
+        input_output.each_pair do |input, output|
+          node = CSS::Declaration.new input, [Terms::Ident.new("value")], false, nil
+          assert_equal output, node.to_css
+        end
+      end
+
+      def test_function_term
+        input_output = {
+          "attr" => "attr(\"string\", ident)",
+          "0" => "\\000030(\"string\", ident)",
+          "a function" => "a\\ function(\"string\", ident)",
+          "a(" => "a\\((\"string\", ident)",
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::Function.new input, [Terms::String.new("string"), Terms::Ident.new("ident", ',')]
+          assert_equal output, node.to_css
+        end
+      end
+
+      def test_uri_term
+        input_output = {
+          "http://example.com" => "url(\"http://example.com\")",
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::URI.new input
+          assert_equal output, node.to_css
+        end
+      end
+
+      def test_string_term
+        input_output = {
+          "basic" => "\"basic\"",
+          "\"quotes\"" => "\"\\\"quotes\\\"\"",
+          "…" => "\"…\"",
+          "\n\r\f" => "\"\\a \\\r\\\f\""
+        }
+        input_output.each_pair do |input, output|
+          node = Terms::String.new input
+          assert_equal output, node.to_css
+        end
+      end
     end
   end
 end

@@ -1,6 +1,17 @@
 module CSSPool
   module Visitors
     class ToCSS < Visitor
+
+      CSS_IDENTIFIER_ILLEGAL_CHARACTERS =
+        (0..255).to_a.pack('U*').gsub(/[a-zA-Z0-9_-]/, '')
+      CSS_STRING_ESCAPE_MAP = {
+        "\\" => "\\\\",
+        "\"" => "\\\"",
+        "\n" => "\\a ", # CSS2 4.1.3 p3.2
+        "\r" => "\\\r",
+        "\f" => "\\\f"
+      }
+
       def initialize
         @indent_level = 0
         @indent_space = '  '
@@ -22,7 +33,10 @@ module CSSPool
 
         target.rule_sets.each { |rs|
           if rs.media != current_media_type
-            tokens << "#{indent}@media #{rs.media.map { |x| x.name }.join(", ")} {"
+            media = " " + rs.media.map do |medium|
+              escape_css_identifier medium.name.value
+            end.join(', ')
+            tokens << "#{indent}@media#{media} {"
             @indent_level += 1
           end
 
@@ -38,14 +52,14 @@ module CSSPool
       end
 
       visitor_for CSS::Charset do |target|
-        "@charset \"#{target.name}\";"
+        "@charset \"#{escape_css_string target.name}\";"
       end
 
       visitor_for CSS::ImportRule do |target|
         media = ''
-        media = " " + target.media.map { |x|
-          x.name
-        }.join(', ') if target.media.length > 0
+        media = " " + target.media.map do |medium|
+          escape_css_identifier medium.name.value
+        end.join(', ') if target.media.length > 0
 
         "#{indent}@import #{target.uri.accept(self)}#{media};"
       end
@@ -61,7 +75,7 @@ module CSSPool
         important = target.important? ? ' !important' : ''
 
         indent {
-          "#{indent}#{target.property}: " + target.expressions.map { |exp|
+          "#{indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
 
             op = '/' == exp.operator ? ' /' : exp.operator
 
@@ -74,7 +88,7 @@ module CSSPool
       end
 
       visitor_for Terms::Ident do |target|
-        target.value
+        escape_css_identifier target.value
       end
 
       visitor_for Terms::Hash do |target|
@@ -88,11 +102,11 @@ module CSSPool
       end
 
       visitor_for Terms::URI do |target|
-        "url(#{target.value})"
+        "url(\"#{escape_css_string target.value}\")"
       end
 
       visitor_for Terms::Function do |target|
-        "#{target.name}(" +
+        "#{escape_css_identifier target.name}(" +
           target.params.map { |x|
             [
               x.operator,
@@ -114,7 +128,7 @@ module CSSPool
       end
 
       visitor_for Terms::String do |target|
-        target.value.inspect
+        "\"#{escape_css_string target.value}\""
       end
 
       visitor_for Selector do |target|
@@ -128,7 +142,8 @@ module CSSPool
           :> => ' > '
         }[target.combinator]
 
-        [combo, target.name].compact.join +
+        name = target.name == '*' ? '*' : escape_css_identifier(target.name)
+        [combo, name].compact.join +
           target.additional_selectors.map { |as| as.accept self }.join
       end
 
@@ -141,27 +156,31 @@ module CSSPool
       end
 
       visitor_for Selectors::Id do |target|
-        "##{target.name}"
+        "##{escape_css_identifier target.name}"
       end
 
       visitor_for Selectors::Class do |target|
-        ".#{target.name}"
+        ".#{escape_css_identifier target.name}"
       end
 
       visitor_for Selectors::PseudoClass do |target|
-        ":#{target.name}"
+        if target.extra.nil?
+          ":#{escape_css_identifier target.name}"
+        else
+          ":#{escape_css_identifier target.name}(#{escape_css_identifier target.extra})"
+        end
       end
 
       visitor_for Selectors::Attribute do |target|
         case target.match_way
         when Selectors::Attribute::SET
-          "[#{target.name}]"
+          "[#{escape_css_identifier target.name}]"
         when Selectors::Attribute::EQUALS
-          "[#{target.name}=\"#{target.value}\"]"
+          "[#{escape_css_identifier target.name}=\"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::INCLUDES
-          "[#{target.name} ~= \"#{target.value}\"]"
+          "[#{escape_css_identifier target.name} ~= \"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::DASHMATCH
-          "[#{target.name} |= \"#{target.value}\"]"
+          "[#{escape_css_identifier target.name} |= \"#{escape_css_string target.value}\"]"
         else
           raise "no matching matchway"
         end
@@ -176,6 +195,22 @@ module CSSPool
           return result
         end
         "#{@indent_space * @indent_level}"
+      end
+
+      def escape_css_identifier text
+        # CSS2 4.1.3 p2
+        unsafe_chars = /[#{Regexp.escape CSS_IDENTIFIER_ILLEGAL_CHARACTERS}]/
+        text.gsub(/^\d|^\-(?=\-|\d)|#{unsafe_chars}/um) do |char|
+          if ':()-\\ ='.include? char
+            "\\#{char}"
+          else # I don't trust others to handle space termination well.
+            "\\#{char.unpack('U').first.to_s(16).rjust(6, '0')}"
+          end
+        end
+      end
+
+      def escape_css_string text
+        text.gsub(/[\\"\n\r\f]/) {CSS_STRING_ESCAPE_MAP[$&]}
       end
     end
   end

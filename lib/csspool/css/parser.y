@@ -19,7 +19,7 @@ rule
     | body
     ;
   charset
-    : CHARSET_SYM STRING SEMI { @handler.charset val[1][1..-2], {} }
+    : CHARSET_SYM STRING SEMI { @handler.charset interpret_string(val[1]), {} }
     ;
   import
     : IMPORT_SYM import_location medium SEMI {
@@ -31,12 +31,16 @@ rule
     ;
   import_location
     : import_location S
-    | STRING { result = Terms::String.new strip_string val.first }
-    | URI { result = Terms::URI.new strip_uri val.first }
+    | STRING { result = Terms::String.new interpret_string val.first }
+    | URI { result = Terms::URI.new interpret_uri val.first }
     ;
   medium
-    : medium COMMA IDENT { result = [val.first, Terms::Ident.new(val.last)] }
-    | IDENT { result = Terms::Ident.new val.first }
+    : medium COMMA IDENT {
+        result = [val.first, Terms::Ident.new(interpret_identifier val.last)]
+      }
+    | IDENT {
+        result = Terms::Ident.new interpret_identifier val.first
+      }
     ;
   body
     : ruleset body
@@ -109,8 +113,8 @@ rule
       }
     ;
   element_name
-    : IDENT { result = Selectors::Type.new val.first, nil }
-    | STAR  { result = Selectors::Universal.new val.first, nil }
+    : IDENT { result = Selectors::Type.new interpret_identifier val.first }
+    | STAR  { result = Selectors::Universal.new val.first }
     ;
   hcap
     : hash        { result = val }
@@ -123,55 +127,82 @@ rule
     | pseudo hcap { result = val.flatten }
     ;
   hash
-    : HASH { result = Selectors::Id.new val.first.sub(/^#/, '') }
+    : HASH {
+        result = Selectors::Id.new interpret_identifier val.first.sub(/^#/, '')
+      }
   class
-    : '.' IDENT { result = Selectors::Class.new val.last }
+    : '.' IDENT {
+        result = Selectors::Class.new interpret_identifier val.last
+      }
     ;
   attrib
     : LSQUARE IDENT EQUAL IDENT RSQUARE {
-        result =
-          Selectors::Attribute.new val[1], val[3], Selectors::Attribute::EQUALS
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::EQUALS
+        )
       }
     | LSQUARE IDENT EQUAL STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::EQUALS
         )
       }
     | LSQUARE IDENT INCLUDES STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::INCLUDES
         )
       }
     | LSQUARE IDENT INCLUDES IDENT RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::INCLUDES
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::INCLUDES
+        )
       }
     | LSQUARE IDENT DASHMATCH IDENT RSQUARE {
-        result =
-        Selectors::Attribute.new val[1], val[3], Selectors::Attribute::DASHMATCH
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::DASHMATCH
+        )
       }
     | LSQUARE IDENT DASHMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          val[1],
-          strip_string(val[3]),
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
           Selectors::Attribute::DASHMATCH
         )
       }
     | LSQUARE IDENT RSQUARE {
-        result =
-          Selectors::Attribute.new val[1], nil, Selectors::Attribute::SET
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          nil,
+          Selectors::Attribute::SET
+        )
       }
     ;
   pseudo
-    : ':' IDENT { result = Selectors::PseudoClass.new val[1], nil }
-    | ':' FUNCTION RPAREN { result = Selectors::PseudoClass.new val[1], nil }
-    | ':' FUNCTION IDENT RPAREN
-      {
-        result = Selectors::PseudoClass.new val[1], val[2]
+    : ':' IDENT {
+        result = Selectors::PseudoClass.new(
+          interpret_identifier(val[1])
+        )
+      }
+    | ':' FUNCTION RPAREN {
+        result = Selectors::PseudoClass.new(
+          interpret_identifier(val[1].sub(/\($/, '')),
+          ''
+        )
+      }
+    | ':' FUNCTION IDENT RPAREN {
+        result = Selectors::PseudoClass.new(
+          interpret_identifier(val[1].sub(/\($/, '')),
+          interpret_identifier(val[2])
+        )
       }
     ;
   declarations
@@ -189,7 +220,7 @@ rule
     |               { result = false }
     ;
   property
-    : IDENT
+    : IDENT { result = interpret_identifier val[0] }
     ;
   operator
     : COMMA
@@ -215,11 +246,11 @@ rule
   function
     : function S { result = val.first }
     | FUNCTION expr RPAREN {
-        name = val.first.sub(/\(/, '')
+        name = interpret_identifier val.first.sub(/\($/, '')
         if name == 'rgb'
           result = Terms::Rgb.new(*val[1])
         else
-          result = Terms::Function.new val.first.sub(/\(/, ''), val[1]
+          result = Terms::Function.new name, val[1]
         end
       }
     ;
@@ -229,10 +260,10 @@ rule
     ;
   uri
     : uri S { result = val.first }
-    | URI { result = Terms::URI.new strip_uri val.first }
+    | URI { result = Terms::URI.new interpret_uri val.first }
   string
     : string S { result = val.first }
-    | STRING { result = Terms::String.new strip_string val.first }
+    | STRING { result = Terms::String.new interpret_string val.first }
     ;
   numeric
     : unary_operator numeric {
@@ -274,7 +305,7 @@ rule
     ;
   ident
     : ident S { result = val.first }
-    | IDENT { result = Terms::Ident.new val.first }
+    | IDENT { result = Terms::Ident.new interpret_identifier val.first }
     ;
 
 ---- inner
@@ -284,10 +315,33 @@ def numeric thing
   Integer(thing) rescue Float(thing)
 end
 
-def strip_uri uri
-  strip_string uri.sub(/^url\(/, '').sub(/\)$/, '')
+def interpret_identifier s
+  interpret_escapes s
 end
 
-def strip_string s
-  s.sub(/^["']/, '').sub(/["']$/, '')
+def interpret_uri s
+  interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+end
+
+def interpret_string s
+  interpret_escapes s.match(/^(['"])((?:\\.|.)*)\1$/mu)[2]
+end
+
+def interpret_escapes s
+  token_exp = /\\([0-9a-fA-F]{1,6}(?:\r\n|\s)?)|\\(.)|(.)/mu
+  characters = s.scan(token_exp).map do |u_escape, i_escape, ident|
+    if u_escape
+      code = u_escape.chomp.to_i 16
+      code = 0xFFFD if code > 0x10FFFF
+      [code].pack('U')
+    elsif i_escape
+      if i_escape == "\n"
+        ''
+      else
+        i_escape
+      end
+    else
+      ident
+    end
+  end.join ''
 end
