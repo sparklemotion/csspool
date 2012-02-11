@@ -1,5 +1,6 @@
-/doc
-/pkg
+pkg/*
+doc/*
 
-/lib/csspool/css/tokenizer.rb
-/lib/csspool/css/parser.rb
+*.gem
+.bundle
+Gemfile.lock

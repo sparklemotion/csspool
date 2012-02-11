@@ -1,3 +1,4 @@
+require 'csspool/version'
 require 'csspool/node'
 require 'csspool/selectors'
 require 'csspool/terms'
