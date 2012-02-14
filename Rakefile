@@ -6,6 +6,8 @@ require 'hoe'
 GENERATED_TOKENIZER = "lib/csspool/css/tokenizer.rb"
 GENERATED_PARSER    = "lib/csspool/css/parser.rb"
 
+Hoe.plugin :git
+
 Hoe.spec('csspool') do
   developer('Aaron Patterson', 'aaronp@rubyforge.org')
   developer('John Barnette', 'jbarnette@rubyforge.org')
