@@ -166,7 +166,7 @@ module CSSPool
           "new\nline" => "[new\\00000aline=\"value\"]"
         }
         input_output.each_pair do |input, output|
-          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
         end
       end
 
@@ -188,7 +188,7 @@ module CSSPool
           "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
         }
         input_output.each_pair do |input, output|
-          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
         end
       end
 
