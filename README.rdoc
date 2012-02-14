@@ -40,7 +40,7 @@ $ sudo gem install rexical
 
 (The MIT License)
 
-Copyright (c) 2007-2009
+Copyright (c) 2007-2012
 
 * {Aaron Patterson}[http://tenderlovemaking.com]
 * {John Barnette}[http://www.jbarnette.com/]
