@@ -206,13 +206,14 @@ rule
       }
     ;
   declarations
-    : declaration declarations
+    : declaration SEMI declarations
+    | declaration SEMI
     | declaration
     ;
   declaration
-    : property ':' expr prio SEMI
+    : property ':' expr prio
       { @handler.property val.first, val[2], val[3] }
-    | property ':' S expr prio SEMI
+    | property ':' S expr prio
       { @handler.property val.first, val[3], val[4] }
     ;
   prio
