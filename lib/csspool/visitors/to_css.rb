@@ -14,7 +14,7 @@ module CSSPool
 
       def initialize
         @indent_level = 0
-        @indent_space = '  '
+        @indent_space = indent_space
       end
 
       visitor_for CSS::Document do |target|
@@ -48,7 +48,7 @@ module CSSPool
             tokens << "#{indent}}"
           end
         }
-        tokens.join("\n")
+        tokens.join(line_break)
       end
 
       visitor_for CSS::Charset do |target|
@@ -66,9 +66,9 @@ module CSSPool
 
       visitor_for CSS::RuleSet do |target|
         "#{indent}" +
-          target.selectors.map { |sel| sel.accept self }.join(", ") + " {\n" +
-          target.declarations.map { |decl| decl.accept self }.join("\n") +
-          "\n#{indent}}"
+          target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
+          target.declarations.map { |decl| decl.accept self }.join(line_break) +
+          "#{line_break}#{indent}}"
       end
 
       visitor_for CSS::Declaration do |target|
@@ -197,6 +197,14 @@ module CSSPool
         "#{@indent_space * @indent_level}"
       end
 
+      def line_break
+        "\n"
+      end
+
+      def indent_space
+        '  '
+      end
+
       def escape_css_identifier text
         # CSS2 4.1.3 p2
         unsafe_chars = /[#{Regexp.escape CSS_IDENTIFIER_ILLEGAL_CHARACTERS}]/
@@ -211,6 +219,22 @@ module CSSPool
 
       def escape_css_string text
         text.gsub(/[\\"\n\r\f]/) {CSS_STRING_ESCAPE_MAP[$&]}
+      end
+    end
+
+    class ToMinifiedCSS < ToCSS
+      def line_break
+        ""
+      end
+
+      def indent_space
+        ' '
+      end
+
+      visitor_for CSS::RuleSet do |target|
+          target.selectors.map { |sel| sel.accept self }.join(", ") + " {" +
+          target.declarations.map { |decl| decl.accept self }.join +
+          " }"
       end
     end
   end

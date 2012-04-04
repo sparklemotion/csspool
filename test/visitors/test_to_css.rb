@@ -260,6 +260,35 @@ module CSSPool
           assert_equal output, node.to_css
         end
       end
+
+      def test_minification
+        rawCSS = <<-eocss
+          p {
+            font: foo;
+            color: #f00;
+          }
+        eocss
+
+        doc = CSSPool.CSS rawCSS
+        parsed_doc = doc.to_minified_css
+
+        assert_equal "p { font: foo; color: #f00; }", parsed_doc
+      end
+
+      def test_minification_alt
+        rawCSS = <<-eocss
+          p {
+            font: foo;
+            color: #f00;
+          }
+        eocss
+
+        doc = CSSPool.CSS rawCSS
+        parsed_doc = doc.to_css :minify => true
+
+        assert_equal "p { font: foo; color: #f00; }", parsed_doc
+      end
+
     end
   end
 end
