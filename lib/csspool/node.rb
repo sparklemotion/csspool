@@ -6,10 +6,18 @@ module CSSPool
       target.accept self
     end
 
-    def to_css
-      accept Visitors::ToCSS.new
+    def to_css options={}
+      if options[:minify]
+        to_minified_css
+      else
+        accept Visitors::ToCSS.new
+      end
     end
     alias :to_s :to_css
+
+    def to_minified_css
+      accept Visitors::ToMinifiedCSS.new
+    end
 
     def == other
       return false unless self.class == other.class
