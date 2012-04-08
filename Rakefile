@@ -22,7 +22,7 @@ Hoe.spec('csspool') do
   end
 end
 
-[:test, :check_manifest].each do |task_name|
+[:test, :check_manifest, "gem:spec"].each do |task_name|
   Rake::Task[task_name].prerequisites << :compile
 end
 
