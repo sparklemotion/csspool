@@ -215,6 +215,10 @@ rule
       { @handler.property val.first, val[2], val[3] }
     | property ':' S expr prio
       { @handler.property val.first, val[3], val[4] }
+    | property S ':' expr prio
+      { @handler.property val.first, val[3], val[4] }
+    | property S ':' S expr prio
+      { @handler.property val.first, val[4], val[5] }
     ;
   prio
     : IMPORTANT_SYM { result = true }
