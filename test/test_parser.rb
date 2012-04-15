@@ -99,5 +99,13 @@ module CSSPool
       assert_match('none', doc.to_css)
       assert_match('#fff', doc.to_css)
     end
+
+    def test_whitespaces
+      doc = CSSPool.CSS <<-eocss
+        div { border : none; }
+      eocss
+      assert_match('none', doc.to_css)
+      assert_match('border:', doc.to_css)
+    end
   end
 end
