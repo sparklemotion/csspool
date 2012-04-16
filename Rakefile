@@ -26,13 +26,15 @@ end
   Rake::Task[task_name].prerequisites << :compile
 end
 
+task :default => :test
+
 task :compile => [GENERATED_TOKENIZER, GENERATED_PARSER]
 
 file GENERATED_TOKENIZER => "lib/csspool/css/tokenizer.rex" do |t|
   begin
     sh "bundle exec rex -i --independent -o #{t.name} #{t.prerequisites.first}"
   rescue
-    abort "need rexical, sudo gem install rexical"
+    abort "need rexical, sudo bundle instal"
   end
 end
 
@@ -42,7 +44,7 @@ file GENERATED_PARSER => "lib/csspool/css/parser.y" do |t|
     #sh "#{racc} -l -o #{t.name} #{t.prerequisites.first}"
     sh "#{racc} -o #{t.name} #{t.prerequisites.first}"
   rescue
-    abort "need racc, sudo gem install racc"
+    abort "need racc, sudo bundle instal"
   end
 end
 
