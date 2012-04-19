@@ -163,6 +163,25 @@ module CSSPool
         assert_equal %w{ background padding }, names
       end
 
+      def test_ie_safe_hack
+        # http://mathiasbynens.be/notes/safe-css-hacks
+        @parser.scan_str <<-eocss
+          .foo {
+            color: black;
+            color: green\\9; /* IE8 and older, but there's more... */
+            *color: blue; /* IE7 and older */
+            _color: red; /* IE6 and older */
+          }
+        eocss
+        declarations = @parser.handler.calls.find_all { |x|
+          x.first == :property
+        }
+        names = declarations.map { |y| y[1].first }
+        assert_equal %w{color color *color _color}, names
+        # values = declarations.map { |y| y[1][1].first.to_s }
+        # assert_equal %w{black green\\9 blue red}, values
+      end
+
       def test_star_attribute
         assert_attribute '*:foo { }'
         assert_attribute 'a *.foo { }'
