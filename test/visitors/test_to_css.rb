@@ -16,18 +16,32 @@ module CSSPool
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 
-      # FIXME: this is a bug in libcroco
-      #def test_ident_followed_by_id
-      #  doc = CSSPool.CSS 'p#div { font: foo, #666; }'
-      #  assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
+      # FIXME: this is a bug
+      def test_ident_followed_by_not_ident
+        doc = CSSPool.CSS 'p#div { color: #666; }'
+        assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
 
-      #  p doc.rule_sets.first.selectors
+        # doc = CSSPool.CSS 'p #div { color: #666; }'
+        # assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
 
-      #  doc = CSSPool.CSS 'p #div { font: foo, #666; }'
+        doc = CSSPool.CSS 'p.c { color: #666; }'
+        assert_equal 'p.c', doc.rule_sets.first.selectors.first.to_css
 
-      #  p doc.rule_sets.first.selectors
-      #  assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
-      #end
+        # doc = CSSPool.CSS 'p .c { color: #666; }'
+        # assert_equal 'p .c', doc.rule_sets.first.selectors.first.to_css
+
+        doc = CSSPool.CSS 'a:hover { color: #666; }'
+        assert_equal 'a:hover', doc.rule_sets.first.selectors.first.to_css
+
+        # doc = CSSPool.CSS 'a :hover { color: #666; }'
+        # assert_equal 'a :hover', doc.rule_sets.first.selectors.first.to_css
+
+        doc = CSSPool.CSS 'p::selection { color: #666; }'
+        assert_equal 'p::selection', doc.rule_sets.first.selectors.first.to_css
+
+        # doc = CSSPool.CSS 'p ::selection { color: #666; }'
+        # assert_equal 'p ::selection', doc.rule_sets.first.selectors.first.to_css
+      end
 
       def test_hash_operator
         doc = CSSPool.CSS 'p { font: foo, #666; }'
@@ -166,7 +180,8 @@ module CSSPool
           "new\nline" => "[new\\00000aline=\"value\"]"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
         end
       end
 
