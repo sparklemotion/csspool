@@ -360,6 +360,20 @@ module CSSPool
         assert_equal :import_style, doc.calls[1].first
       end
 
+      def test_missing_semicolon
+        @parser.scan_str 'div { border: none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0]
+        assert_equal 'none', doc.calls[2][1][1].join
+      end
+
+      def test_whitespaces
+        @parser.scan_str 'div { border : none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0]
+        assert_equal 'none', doc.calls[2][1][1].join
+      end
+
       def test_import_medium
         @parser.scan_str '@import "foo" page;'
         assert_equal :import_style, doc.calls[1].first
