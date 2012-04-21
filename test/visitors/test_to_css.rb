@@ -182,14 +182,21 @@ module CSSPool
         end
 
         input_output = {
-          "" => ":psuedo()",
-          "ident" => ":psuedo(ident)",
-          " " => ":psuedo(\\ )",
-          "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
+          "" => ":pseudo()",
+          "ident" => ":pseudo(ident)",
+          " " => ":pseudo(\\ )",
+          "\"quoted\"" => ":pseudo(\\000022quoted\\000022)"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::PseudoClass.new "pseudo", input
+          assert_equal output, node.to_css
         end
+
+        assert_equal Selectors::pseudo("hover").class, Selectors::PseudoClass
+        assert_equal Selectors::pseudo("before").class, Selectors::PseudoElement
+
+        assert_equal "::before", Selectors::PseudoElement.new("before").to_css
+        assert_equal ":before", Selectors::PseudoElement.new("before", true).to_css
       end
 
       def test_selector_other

@@ -21,6 +21,8 @@ module CSSPool
         s.additional_selectors.each do |additional_selector|
           if Selectors::Id === additional_selector
             a += 1
+          elsif Selectors::PseudoElement === additional_selector
+            c += 1
           else
             b += 1
           end
