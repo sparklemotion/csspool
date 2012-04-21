@@ -21,26 +21,26 @@ module CSSPool
         doc = CSSPool.CSS 'p#div { color: #666; }'
         assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
 
-        # doc = CSSPool.CSS 'p #div { color: #666; }'
-        # assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
+        doc = CSSPool.CSS 'p #div { color: #666; }'
+        assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
 
         doc = CSSPool.CSS 'p.c { color: #666; }'
         assert_equal 'p.c', doc.rule_sets.first.selectors.first.to_css
 
-        # doc = CSSPool.CSS 'p .c { color: #666; }'
-        # assert_equal 'p .c', doc.rule_sets.first.selectors.first.to_css
+        doc = CSSPool.CSS 'p .c { color: #666; }'
+        assert_equal 'p .c', doc.rule_sets.first.selectors.first.to_css
 
         doc = CSSPool.CSS 'a:hover { color: #666; }'
         assert_equal 'a:hover', doc.rule_sets.first.selectors.first.to_css
 
-        # doc = CSSPool.CSS 'a :hover { color: #666; }'
-        # assert_equal 'a :hover', doc.rule_sets.first.selectors.first.to_css
+        doc = CSSPool.CSS 'a :hover { color: #666; }'
+        assert_equal 'a :hover', doc.rule_sets.first.selectors.first.to_css
 
         doc = CSSPool.CSS 'p::selection { color: #666; }'
         assert_equal 'p::selection', doc.rule_sets.first.selectors.first.to_css
 
-        # doc = CSSPool.CSS 'p ::selection { color: #666; }'
-        # assert_equal 'p ::selection', doc.rule_sets.first.selectors.first.to_css
+        doc = CSSPool.CSS 'p ::selection { color: #666; }'
+        assert_equal 'p ::selection', doc.rule_sets.first.selectors.first.to_css
       end
 
       def test_hash_operator
