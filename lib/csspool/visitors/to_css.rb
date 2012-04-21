@@ -171,6 +171,14 @@ module CSSPool
         end
       end
 
+      visitor_for Selectors::PseudoElement do |target|
+        if target.css2.nil?
+          "::#{escape_css_identifier target.name}"
+        else
+          ":#{escape_css_identifier target.name}"
+        end
+      end
+
       visitor_for Selectors::Attribute do |target|
         case target.match_way
         when Selectors::Attribute::SET

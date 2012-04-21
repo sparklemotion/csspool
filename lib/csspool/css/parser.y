@@ -188,8 +188,11 @@ rule
     ;
   pseudo
     : ':' IDENT {
-        result = Selectors::PseudoClass.new(
-          interpret_identifier(val[1])
+        result = Selectors::pseudo interpret_identifier(val[1])
+      }
+    | ':' ':' IDENT {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[2])
         )
       }
     | ':' FUNCTION RPAREN {
