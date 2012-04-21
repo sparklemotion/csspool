@@ -193,7 +193,7 @@ module CSSPool
         assert_attribute 'div:foo[a] { }'
         assert_attribute 'div#foo[a] { }'
         assert_attribute 'div.foo[a] { }'
-        assert_attribute 'div.foo[a] { }'
+        assert_attribute 'div[a]::foo { }'
       end
 
       def test_additional_selectors_id_pesuedoclass
@@ -252,6 +252,10 @@ module CSSPool
           { Selectors::PseudoClass => 'foo' }, ':foo() { }')
         assert_additional_selector(
           { Selectors::PseudoClass => 'foo' }, ':foo(a) { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'foo' }, '::foo { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'before' }, ':before { }')
       end
 
       def test_additional_selectors_id

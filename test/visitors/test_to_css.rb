@@ -192,9 +192,6 @@ module CSSPool
           assert_equal output, node.to_css
         end
 
-        assert_equal Selectors::pseudo("hover").class, Selectors::PseudoClass
-        assert_equal Selectors::pseudo("before").class, Selectors::PseudoElement
-
         assert_equal "::before", Selectors::PseudoElement.new("before").to_css
         assert_equal ":before", Selectors::PseudoElement.new("before", true).to_css
       end
