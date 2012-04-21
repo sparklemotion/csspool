@@ -95,12 +95,6 @@ module CSSPool
         "##{target.value}"
       end
 
-      visitor_for Selectors::Simple, Selectors::Universal do |target|
-        ([target.name] + target.additional_selectors.map { |x|
-          x.accept self
-        }).join
-      end
-
       visitor_for Terms::URI do |target|
         "url(\"#{escape_css_string target.value}\")"
       end
@@ -135,14 +129,20 @@ module CSSPool
         target.simple_selectors.map { |ss| ss.accept self }.join
       end
 
-      visitor_for Selectors::Type do |target|
+      visitor_for Selectors::Simple, Selectors::Universal, Selectors::Type do |target|
         combo = {
           :s => ' ',
           :+ => ' + ',
           :> => ' > '
         }[target.combinator]
 
-        name = target.name == '*' ? '*' : escape_css_identifier(target.name)
+        if target.name == nil
+          name = ''
+        elsif target.name == '*'
+          name = '*'
+        else
+          name = escape_css_identifier(target.name)
+        end
         [combo, name].compact.join +
           target.additional_selectors.map { |as| as.accept self }.join
       end
