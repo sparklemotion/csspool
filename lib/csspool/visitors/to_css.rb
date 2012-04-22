@@ -125,6 +125,14 @@ module CSSPool
         "\"#{escape_css_string target.value}\""
       end
 
+      visitor_for Terms::Number do |target|
+        [
+          target.unary_operator == :minus ? '-' : nil,
+          target.value,
+          target.type
+        ].compact.join
+      end
+
       visitor_for Selector do |target|
         target.simple_selectors.map { |ss| ss.accept self }.join
       end
@@ -136,23 +144,9 @@ module CSSPool
           :> => ' > '
         }[target.combinator]
 
-        if target.name == nil
-          name = ''
-        elsif target.name == '*'
-          name = '*'
-        else
-          name = escape_css_identifier(target.name)
-        end
+        name = [nil, '*'].include?(target.name) ? target.name : escape_css_identifier(target.name)
         [combo, name].compact.join +
           target.additional_selectors.map { |as| as.accept self }.join
-      end
-
-      visitor_for Terms::Number do |target|
-        [
-          target.unary_operator == :minus ? '-' : nil,
-          target.value,
-          target.type
-        ].compact.join
       end
 
       visitor_for Selectors::Id do |target|

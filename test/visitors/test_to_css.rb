@@ -16,31 +16,23 @@ module CSSPool
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 
-      # FIXME: this is a bug
-      def test_ident_followed_by_not_ident
-        doc = CSSPool.CSS 'p#div { color: #666; }'
-        assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
+      def test_combinators
 
-        doc = CSSPool.CSS 'p #div { color: #666; }'
-        assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
+        selectors = %w{* p #id .cl :hover ::selection [href]}
+        combinators = ['', ' ', ' > ', ' + ']
 
-        doc = CSSPool.CSS 'p.c { color: #666; }'
-        assert_equal 'p.c', doc.rule_sets.first.selectors.first.to_css
+        combinations = selectors.product(combinators).map do |s,c| 
+          if s != '*' && c != '' then
+            s + c
+          end
+        end.compact
+        combinations = combinations.product(selectors).map { |s,c| s + c}
 
-        doc = CSSPool.CSS 'p .c { color: #666; }'
-        assert_equal 'p .c', doc.rule_sets.first.selectors.first.to_css
+        combinations.each do |s|
+          doc = CSSPool.CSS s + ' { }'
+          assert_equal s, doc.rule_sets.first.selectors.first.to_css
+        end
 
-        doc = CSSPool.CSS 'a:hover { color: #666; }'
-        assert_equal 'a:hover', doc.rule_sets.first.selectors.first.to_css
-
-        doc = CSSPool.CSS 'a :hover { color: #666; }'
-        assert_equal 'a :hover', doc.rule_sets.first.selectors.first.to_css
-
-        doc = CSSPool.CSS 'p::selection { color: #666; }'
-        assert_equal 'p::selection', doc.rule_sets.first.selectors.first.to_css
-
-        doc = CSSPool.CSS 'p ::selection { color: #666; }'
-        assert_equal 'p ::selection', doc.rule_sets.first.selectors.first.to_css
       end
 
       def test_hash_operator
