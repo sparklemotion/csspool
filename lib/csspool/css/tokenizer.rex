@@ -48,7 +48,7 @@ rule
             {w}!={w}         { [:NOT_EQUAL, st(text)] }
             {w}={w}          { [:EQUAL, st(text)] }
             {w}\)            { [:RPAREN, st(text)] }
-            {w}\[{w}         { [:LSQUARE, st(text)] }
+            \[{w}            { [:LSQUARE, st(text)] }
             {w}\]            { [:RSQUARE, st(text)] }
             {w}\+{w}         { [:PLUS, st(text)] }
             {w}\{{w}         { [:LBRACE, st(text)] }
