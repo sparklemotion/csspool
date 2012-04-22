@@ -360,15 +360,28 @@ module CSSPool
         @parser.scan_str '@import "foo" page;'
         assert_equal :import_style, doc.calls[1].first
         assert_equal 'foo', doc.calls[1][1][1].value
-        assert_equal 'page', doc.calls[1][1].first.first.value
+        assert_equal 'page', doc.calls[1][1].first.first.first.value
       end
 
       def test_import_medium_multi
         @parser.scan_str '@import "foo" page, print;'
         assert_equal :import_style, doc.calls[1].first
         assert_equal 'foo', doc.calls[1][1][1].value
-        assert_equal 'page', doc.calls[1][1].first.first.value
-        assert_equal 'print', doc.calls[1][1].first[1].value
+        assert_equal 'page', doc.calls[1][1].first.first.first.value
+        assert_equal 'print', doc.calls[1][1].first[1].first.value
+      end
+
+      def test_media_query
+        # @parser.scan_str '@media screen and(min-width:480px){ a{} }'
+        @parser.scan_str '@media only screen and ( min-width: 480px ), print { a{} }'
+        assert_equal :start_media, doc.calls[1].first
+        assert_equal 'only', doc.calls[1][1][0][0][0].value
+        assert_equal 'screen', doc.calls[1][1][0][0][1].value
+        assert_equal 'and', doc.calls[1][1][0][0][2].value
+        assert_equal Selectors::MediaExpression, doc.calls[1][1][0][0][3].class
+        assert_equal 'min-width', doc.calls[1][1][0][0][3].name
+        assert_equal '480px', doc.calls[1][1][0][0][3].value.join
+        assert_equal 'print', doc.calls[1][1][0][1][0].value
       end
 
       def test_start_stop

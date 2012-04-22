@@ -94,11 +94,13 @@ module CSSPool
       end
 
       def test_media
-        doc = CSSPool.CSS <<-eocss
-          @media print {
+        css = <<-eocss
+          @media only screen and (min-width: 480px) {
             div { background: red, blue; }
           }
         eocss
+        doc = CSSPool.CSS css
+        assert_equal css.lines.first.strip, doc.to_css.lines.first.strip
         assert_equal 1, doc.rule_sets.first.media.length
 
         doc = CSSPool.CSS(doc.to_css)
@@ -106,8 +108,8 @@ module CSSPool
       end
 
       def test_multiple_media
-        doc = CSSPool.CSS <<-eocss
-          @media print, screen {
+        css = <<-eocss
+          @media only screen and (min-width: 480px), print {
             div { background: red, blue; }
           }
 
@@ -115,6 +117,8 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
+        doc = CSSPool.CSS css
+        assert_equal css.lines.first.strip, doc.to_css.lines.first.strip
         assert_equal 2, doc.rule_sets.first.media.length
         assert_equal 1, doc.rule_sets[1].media.length
 
