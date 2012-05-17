@@ -1,3 +1,17 @@
+== 3.0.1
+
+* New Features
+
+  * 'Minified' CSS output: passing :minify => true to a to_css call will omit
+  line breaks
+  * Added Gemfile
+
+* Bugfixes
+
+  * Parse properties without semi-colons at the end of a declaration.
+  [stereobooster]
+  * Handle whitespaces after properties [stereobooster]
+
 == 3.0.0
 
 * New Features

@@ -13,7 +13,7 @@ require 'csspool/visitors'
 require 'csspool/collection'
 
 module CSSPool
-  VERSION = "3.0.0"
+  VERSION = "3.0.1"
 
   def self.CSS doc
     CSSPool::CSS::Document.parse doc
