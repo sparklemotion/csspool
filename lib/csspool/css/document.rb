@@ -2,9 +2,16 @@ module CSSPool
   module CSS
     class Document < Node
       def self.parse string
+        # If a File object gets passed in, via functions like File.open
+        # or Kernel::open
+        if string.respond_to? :read
+          string = string.read
+        end
+
         unless string && string.length > 0
           return CSSPool::CSS::Document.new
         end
+
         handler = CSSPool::CSS::DocumentHandler.new
         parser = CSSPool::SAC::Parser.new(handler)
         parser.parse(string)
