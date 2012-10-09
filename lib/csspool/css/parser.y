@@ -226,6 +226,7 @@ rule
     ;
   property
     : IDENT { result = interpret_identifier val[0] }
+    | STAR IDENT { result = interpret_identifier val.join }
     ;
   operator
     : COMMA
