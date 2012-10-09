@@ -1,5 +1,7 @@
 .autotest
 CHANGELOG.rdoc
+Gemfile
+Gemfile.lock
 Manifest.txt
 README.rdoc
 Rakefile
@@ -49,6 +51,7 @@ test/css/test_document.rb
 test/css/test_import_rule.rb
 test/css/test_parser.rb
 test/css/test_tokenizer.rb
+test/files/test.css
 test/helper.rb
 test/sac/test_parser.rb
 test/sac/test_properties.rb
