@@ -1,3 +1,13 @@
+== 3.0.2
+
+* New Features
+
+  * Support IE Safe Hacks [stereobooster]
+
+* Bugfixes
+
+  * Fix #23 - set up CSSPool.CSS so it can read files. [Mike Tierney]
+
 == 3.0.1
 
 * New Features
