@@ -13,6 +13,7 @@ lib/csspool/css/document.rb
 lib/csspool/css/document_handler.rb
 lib/csspool/css/import_rule.rb
 lib/csspool/css/media.rb
+lib/csspool/css/namespace_rule.rb
 lib/csspool/css/parser.rb
 lib/csspool/css/parser.y
 lib/csspool/css/rule_set.rb
@@ -50,6 +51,7 @@ lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
 test/css/test_document.rb
 test/css/test_import_rule.rb
+test/css/test_namespace_rule.rb
 test/css/test_parser.rb
 test/css/test_tokenizer.rb
 test/files/test.css

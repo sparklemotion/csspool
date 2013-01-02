@@ -4,6 +4,7 @@ token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM
+token NAMESPACE_SYM
 
 rule
   document
@@ -14,8 +15,10 @@ rule
   stylesheet
     : charset stylesheet
     | import stylesheet
+    | namespace stylesheet
     | charset
     | import
+    | namespace
     | body
     ;
   charset
@@ -33,6 +36,14 @@ rule
     : import_location S
     | STRING { result = Terms::String.new interpret_string val.first }
     | URI { result = Terms::URI.new interpret_uri val.first }
+    ;
+  namespace
+    : NAMESPACE_SYM ident import_location SEMI {
+        @handler.namespace val[1], val[2]
+      }
+    | NAMESPACE_SYM import_location SEMI {
+        @handler.namespace nil, val[1]
+      }
     ;
   medium
     : medium COMMA IDENT {
