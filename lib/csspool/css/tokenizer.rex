@@ -32,6 +32,9 @@ rule
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, st(text)] }
             {w}{comment}{w}  { next_token }
 
+            # this one takes a selector as a parameter
+            not\(\s*         { [:NOT_PSEUDO_CLASS, st(text)] }
+
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
@@ -58,7 +61,6 @@ rule
             {w};{w}          { [:SEMI, st(';')] }
             \*               { [:STAR, st(text)] }
             {w}~{w}          { [:TILDE, st(text)] }
-            \:not\({w}       { [:NOT, st(text)]  }
             {w}{num}em{w}    { [:EMS, st(text)] }
             {w}{num}ex{w}    { [:EXS, st(text)] }
 

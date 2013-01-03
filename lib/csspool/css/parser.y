@@ -3,7 +3,7 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM MEDIA_SYM
+token IMPORTANT_SYM MEDIA_SYM NOT_PSEUDO_CLASS
 
 rule
   document
@@ -205,6 +205,12 @@ rule
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\($/, '')),
           interpret_identifier(val[2])
+        )
+      }
+    | ':' NOT_PSEUDO_CLASS simple_selector RPAREN {
+        result = Selectors::PseudoClass.new(
+          'not',
+          val[2].first.to_s
         )
       }
     ;

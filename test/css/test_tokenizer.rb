@@ -162,16 +162,6 @@ module CSSPool
         ], @scanner)
       end
 
-      def test_negation
-        @scanner.scan("p:not(.a)")
-        assert_tokens([ [:IDENT, 'p'],
-                        [:NOT, ':not('],
-                        ['.', '.'],
-                        [:IDENT, 'a'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-      end
-
       def test_function
         @scanner.scan("script comment()")
         assert_tokens([ [:IDENT, 'script'],
