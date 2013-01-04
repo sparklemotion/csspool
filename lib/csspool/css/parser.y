@@ -3,7 +3,7 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM MEDIA_SYM
+token IMPORTANT_SYM MEDIA_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 
 rule
   document
@@ -176,6 +176,48 @@ rule
           interpret_identifier(val[1]),
           interpret_string(val[3]),
           Selectors::Attribute::DASHMATCH
+        )
+      }
+    | LSQUARE IDENT PREFIXMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::PREFIXMATCH
+        )
+      }
+    | LSQUARE IDENT PREFIXMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
+          Selectors::Attribute::PREFIXMATCH
+        )
+      }
+    | LSQUARE IDENT SUFFIXMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::SUFFIXMATCH
+        )
+      }
+    | LSQUARE IDENT SUFFIXMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
+          Selectors::Attribute::SUFFIXMATCH
+        )
+      }
+    | LSQUARE IDENT SUBSTRINGMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_identifier(val[3]),
+          Selectors::Attribute::SUBSTRINGMATCH
+        )
+      }
+    | LSQUARE IDENT SUBSTRINGMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          interpret_identifier(val[1]),
+          interpret_string(val[3]),
+          Selectors::Attribute::SUBSTRINGMATCH
         )
       }
     | LSQUARE IDENT RSQUARE {
