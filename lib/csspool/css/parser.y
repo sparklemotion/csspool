@@ -71,7 +71,7 @@ rule
       }
     ;
   url_match_fns
-    : url_match_fn COMMA url_match_fn {
+    : url_match_fn COMMA url_match_fns {
         result = [val[0], val[2]].flatten
       }
     | url_match_fn {
