@@ -208,10 +208,17 @@ rule
         )
       }
     ;
+  # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
+  one_or_more_semis
+    : SEMI
+    | SEMI one_or_more_semis
+    ;
   declarations
-    : declaration SEMI declarations
-    | declaration SEMI
+    : declaration one_or_more_semis declarations
+    | one_or_more_semis declarations
+    | declaration one_or_more_semis
     | declaration
+    | one_or_more_semis
     ;
   declaration
     : property ':' expr prio
