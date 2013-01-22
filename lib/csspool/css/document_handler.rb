@@ -20,18 +20,20 @@ module CSSPool
         @document.import_rules << CSS::ImportRule.new(
           uri,
           ns,
-          media_list.map { |x| CSS::Media.new(x, loc) },
+          media_list,
           @document,
           loc
         )
       end
 
       def start_selector selector_list
-        @document.rule_sets << RuleSet.new(
+        rs = RuleSet.new(
           selector_list,
           [],
           @conditional_stack.last || []
         )
+        @document.rule_sets << rs
+        @conditional_stack.last.rule_sets << rs unless @conditional_stack.empty?
       end
 
       def property name, exp, important
@@ -40,7 +42,7 @@ module CSSPool
       end
 
       def start_media media_list, parse_location = {}
-        @conditional_stack << media_list.map { |x| CSS::Media.new(x, parse_location) }
+        @conditional_stack << CSS::Media.new(media_list, parse_location)
       end
 
       def end_media media_list, parse_location = {}

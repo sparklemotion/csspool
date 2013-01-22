@@ -26,7 +26,7 @@ module CSSPool
       end
 
       visitor_for CSS::ImportRule do |target|
-        target.media.each do |node|
+        target.media_list.each do |node|
           node.accept self
         end
         @block.call target

@@ -15,6 +15,7 @@ module CSSPool
 				assert_equal CSSPool::Terms::Function, doc.document_queries[0].url_functions[0].class
 				assert_equal 'domain', doc.document_queries[0].url_functions[0].name
 				assert_equal 'example.com', doc.document_queries[0].url_functions[0].params[0].value
+				assert_equal 1, doc.document_queries[0].rule_sets.size
       end
 
       def test_function_no_quote
@@ -28,6 +29,7 @@ module CSSPool
 				assert_equal CSSPool::Terms::Function, doc.document_queries[0].url_functions[0].class
 				assert_equal 'domain', doc.document_queries[0].url_functions[0].name
 				assert_equal 'example.com', doc.document_queries[0].url_functions[0].params[0].value
+				assert_equal 1, doc.document_queries[0].rule_sets.size
       end
 
       def test_multiple
@@ -44,6 +46,7 @@ module CSSPool
 				assert_equal CSSPool::Terms::Function, doc.document_queries[0].url_functions[1].class
 				assert_equal 'url-prefix', doc.document_queries[0].url_functions[1].name
 				assert_equal 'http://example.com', doc.document_queries[0].url_functions[1].params[0].value
+				assert_equal 1, doc.document_queries[0].rule_sets.size
       end
 
       def test_url
@@ -56,6 +59,16 @@ module CSSPool
 				assert_equal 1, doc.document_queries[0].url_functions.size
 				assert_equal CSSPool::Terms::URI, doc.document_queries[0].url_functions[0].class
 				assert_equal 'http://www.example.com', doc.document_queries[0].url_functions[0].value
+				assert_equal 1, doc.document_queries[0].rule_sets.size
+      end
+
+      def test_empty
+        doc = CSSPool.CSS <<-eocss
+					@document url("http://www.example.com") {
+					}
+        eocss
+        assert_equal 1, doc.document_queries.size
+				assert_equal true, doc.document_queries[0].rule_sets.empty?
       end
 
     end

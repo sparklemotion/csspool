@@ -64,6 +64,7 @@ rule
     ;
   document_query
     : start_document_query body RBRACE { @handler.end_document_query }
+    | start_document_query RBRACE { @handler.end_document_query }
     ;
   start_document_query
     : DOCUMENT_QUERY_SYM url_match_fns LBRACE {
