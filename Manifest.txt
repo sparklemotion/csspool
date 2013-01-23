@@ -12,6 +12,7 @@ lib/csspool/css/charset.rb
 lib/csspool/css/declaration.rb
 lib/csspool/css/document.rb
 lib/csspool/css/document_handler.rb
+lib/csspool/css/document_query.rb
 lib/csspool/css/import_rule.rb
 lib/csspool/css/media.rb
 lib/csspool/css/parser.rb
@@ -48,6 +49,7 @@ lib/csspool/visitors/iterator.rb
 lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
 test/css/test_document.rb
+test/css/test_document_query.rb
 test/css/test_import_rule.rb
 test/css/test_parser.rb
 test/css/test_tokenizer.rb

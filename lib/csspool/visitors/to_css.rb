@@ -64,6 +64,10 @@ module CSSPool
         "#{indent}@import #{target.uri.accept(self)}#{media};"
       end
 
+      visitor_for CSS::DocumentQuery do |target|
+        "#{indent}@document #{target.url_functions.join(', ')} {}"
+      end
+
       visitor_for CSS::RuleSet do |target|
         "#{indent}" +
           target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +

@@ -371,6 +371,33 @@ module CSSPool
         assert_equal 'print', doc.calls[1][1].first[1].value
       end
 
+      def test_document_query_url
+        @parser.scan_str '@document url("http://example.com") { div {} }'
+        assert_equal :start_document_query, doc.calls[1].first
+        assert_equal 1, doc.calls[1][1][0].size
+        assert_equal CSSPool::Terms::URI, doc.calls[1][1][0][0].class
+      end
+
+      def test_document_query_function
+        @parser.scan_str '@document domain("example.com") { div {} }'
+        assert_equal :start_document_query, doc.calls[1].first
+        assert_equal 1, doc.calls[1][1][0].size
+        assert_equal CSSPool::Terms::Function, doc.calls[1][1][0][0].class
+      end
+
+      def test_document_query_function_no_quotes
+        @parser.scan_str '@document domain(example.com) { div {} }'
+        assert_equal :start_document_query, doc.calls[1].first
+        assert_equal 1, doc.calls[1][1][0].size
+        assert_equal CSSPool::Terms::Function, doc.calls[1][1][0][0].class
+      end
+
+      def test_document_query_multiple
+        @parser.scan_str '@document url("http://example.com"), domain("example.com") { div {} }'
+        assert_equal :start_document_query, doc.calls[1].first
+        assert_equal 2, doc.calls[1][1][0].size
+      end
+
       def test_start_stop
         @parser.scan_str "@import 'foo';"
         assert_equal [:start_document, []], @doc.calls.first
