@@ -95,12 +95,6 @@ module CSSPool
         "##{target.value}"
       end
 
-      visitor_for Selectors::Simple, Selectors::Universal do |target|
-        ([target.name] + target.additional_selectors.map { |x|
-          x.accept self
-        }).join
-      end
-
       visitor_for Terms::URI do |target|
         "url(\"#{escape_css_string target.value}\")"
       end
@@ -131,28 +125,28 @@ module CSSPool
         "\"#{escape_css_string target.value}\""
       end
 
-      visitor_for Selector do |target|
-        target.simple_selectors.map { |ss| ss.accept self }.join
-      end
-
-      visitor_for Selectors::Type do |target|
-        combo = {
-          :s => ' ',
-          :+ => ' + ',
-          :> => ' > '
-        }[target.combinator]
-
-        name = target.name == '*' ? '*' : escape_css_identifier(target.name)
-        [combo, name].compact.join +
-          target.additional_selectors.map { |as| as.accept self }.join
-      end
-
       visitor_for Terms::Number do |target|
         [
           target.unary_operator == :minus ? '-' : nil,
           target.value,
           target.type
         ].compact.join
+      end
+
+      visitor_for Selector do |target|
+        target.simple_selectors.map { |ss| ss.accept self }.join
+      end
+
+      visitor_for Selectors::Simple, Selectors::Universal, Selectors::Type do |target|
+        combo = {
+          :s => ' ',
+          :+ => ' + ',
+          :> => ' > '
+        }[target.combinator]
+
+        name = [nil, '*'].include?(target.name) ? target.name : escape_css_identifier(target.name)
+        [combo, name].compact.join +
+          target.additional_selectors.map { |as| as.accept self }.join
       end
 
       visitor_for Selectors::Id do |target|
@@ -168,6 +162,14 @@ module CSSPool
           ":#{escape_css_identifier target.name}"
         else
           ":#{escape_css_identifier target.name}(#{escape_css_identifier target.extra})"
+        end
+      end
+
+      visitor_for Selectors::PseudoElement do |target|
+        if target.css2.nil?
+          "::#{escape_css_identifier target.name}"
+        else
+          ":#{escape_css_identifier target.name}"
         end
       end
 

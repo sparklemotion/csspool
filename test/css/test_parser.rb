@@ -193,7 +193,7 @@ module CSSPool
         assert_attribute 'div:foo[a] { }'
         assert_attribute 'div#foo[a] { }'
         assert_attribute 'div.foo[a] { }'
-        assert_attribute 'div.foo[a] { }'
+        assert_attribute 'div[a]::foo { }'
       end
 
       def test_additional_selectors_id_pesuedoclass
@@ -252,6 +252,10 @@ module CSSPool
           { Selectors::PseudoClass => 'foo' }, ':foo() { }')
         assert_additional_selector(
           { Selectors::PseudoClass => 'foo' }, ':foo(a) { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'foo' }, '::foo { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'before' }, ':before { }')
       end
 
       def test_additional_selectors_id
@@ -354,6 +358,20 @@ module CSSPool
         @parser.scan_str '@import "foo";'
         assert_equal 'foo', doc.calls[1][1][1].value
         assert_equal :import_style, doc.calls[1].first
+      end
+
+      def test_missing_semicolon
+        @parser.scan_str 'div { border: none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0]
+        assert_equal 'none', doc.calls[2][1][1].join
+      end
+
+      def test_whitespaces
+        @parser.scan_str 'div { border : none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0]
+        assert_equal 'none', doc.calls[2][1][1].join
       end
 
       def test_import_medium
