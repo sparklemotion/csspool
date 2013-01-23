@@ -34,7 +34,7 @@ module CSSPool
         target.rule_sets.each { |rs|
           if rs.media != current_media_type
             media = " " + rs.media.map do |medium|
-              escape_css_identifier medium.name.value
+              medium.name.map{ |i| i.accept(self) }.join(' ')
             end.join(', ')
             tokens << "#{indent}@media#{media} {"
             @indent_level += 1
@@ -58,7 +58,7 @@ module CSSPool
       visitor_for CSS::ImportRule do |target|
         media = ''
         media = " " + target.media.map do |medium|
-          escape_css_identifier medium.name.value
+          medium.name.map{ |i| i.accept(self) }.join(' ')
         end.join(', ') if target.media.length > 0
 
         "#{indent}@import #{target.uri.accept(self)}#{media};"
@@ -99,6 +99,11 @@ module CSSPool
         ([target.name] + target.additional_selectors.map { |x|
           x.accept self
         }).join
+      end
+
+      visitor_for Selectors::MediaExpression do |target|
+        '(' + escape_css_string(target.name) + ': ' + 
+          target.value.map { |x| x.accept self }.join + ')'
       end
 
       visitor_for Terms::URI do |target|

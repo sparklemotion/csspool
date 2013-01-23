@@ -3,7 +3,7 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM MEDIA_SYM
+token IMPORTANT_SYM MEDIA_SYM LPAREN
 
 rule
   document
@@ -23,7 +23,7 @@ rule
     ;
   import
     : IMPORT_SYM import_location medium SEMI {
-        @handler.import_style [val[2]].flatten, val[1]
+        @handler.import_style val[2], val[1]
       }
     | IMPORT_SYM import_location SEMI {
         @handler.import_style [], val[1]
@@ -35,11 +35,54 @@ rule
     | URI { result = Terms::URI.new interpret_uri val.first }
     ;
   medium
-    : medium COMMA IDENT {
-        result = [val.first, Terms::Ident.new(interpret_identifier val.last)]
+    : medium COMMA media_query {
+        result = val.first + [val.last]
+      }
+    | media_query {
+        result = [val.first]
+      }
+    ;
+  media_query
+    : IDENT S IDENT media_expression {
+        result = [Terms::Ident.new(interpret_identifier val[0]), Terms::Ident.new(interpret_identifier val[2])] + val.last
+      }
+    | IDENT S IDENT {
+        result = [Terms::Ident.new(interpret_identifier val[0]), Terms::Ident.new(interpret_identifier val.last)]
+      }
+    | IDENT media_expression {
+        result = [Terms::Ident.new(interpret_identifier val.first)] + val.last
       }
     | IDENT {
-        result = Terms::Ident.new interpret_identifier val.first
+        result = [Terms::Ident.new(interpret_identifier val.first)]
+      }
+    | expression media_expression {
+        result = [val.first] + val.last
+      }
+    | expression {
+        result = [val.first]
+      }
+    ;
+  media_expression
+    : S IDENT expression media_expression {
+        result = [Terms::Ident.new(interpret_identifier val[1]), val[2]] + val.last
+      }
+    | S IDENT expression {
+        result = [Terms::Ident.new(interpret_identifier val[1]), val.last]
+      }
+    ;
+  expression_internal
+    : property ':' expr
+      { result = Selectors::MediaExpression.new val.first, val[2] }
+    | property ':' S expr
+      { result = Selectors::MediaExpression.new val.first, val[3] }
+    | property S ':' expr
+      { result = Selectors::MediaExpression.new val.first, val[3] }
+    | property S ':' S expr
+      { result = Selectors::MediaExpression.new val.first, val[4] }
+    ;
+  expression
+    : LPAREN expression_internal RPAREN {
+        result = val[1]
       }
     ;
   body
@@ -53,8 +96,7 @@ rule
     ;
   start_media
     : MEDIA_SYM medium LBRACE {
-        result = [val[1]].flatten
-        @handler.start_media result
+        @handler.start_media val[1]
       }
     | MEDIA_SYM LBRACE { result = [] }
     ;

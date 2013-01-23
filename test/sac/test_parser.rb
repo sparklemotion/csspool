@@ -40,7 +40,7 @@ module CSSPool
 
       def test_import_style
         styles = @doc.import_styles.first
-        assert_equal "screen", styles.first.first.value
+        assert_equal "screen", styles.first.first.first.value
         assert_equal "foo.css", styles[1].value
         assert_nil styles[2]
       end
