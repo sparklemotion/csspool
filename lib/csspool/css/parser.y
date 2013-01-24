@@ -204,54 +204,6 @@ rule
           val[1][1]
         )
       }
-    | LSQUARE ident_with_namespace PREFIXMATCH IDENT RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_identifier(val[3]),
-          Selectors::Attribute::PREFIXMATCH,
-          val[1][1]
-        )
-      }
-    | LSQUARE ident_with_namespace PREFIXMATCH STRING RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_string(val[3]),
-          Selectors::Attribute::PREFIXMATCH,
-          val[1][1]
-        )
-      }
-    | LSQUARE ident_with_namespace SUFFIXMATCH IDENT RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_identifier(val[3]),
-          Selectors::Attribute::SUFFIXMATCH,
-          val[1][1]
-        )
-      }
-    | LSQUARE ident_with_namespace SUFFIXMATCH STRING RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_string(val[3]),
-          Selectors::Attribute::SUFFIXMATCH,
-          val[1][1]
-        )
-      }
-    | LSQUARE ident_with_namespace SUBSTRINGMATCH IDENT RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_identifier(val[3]),
-          Selectors::Attribute::SUBSTRINGMATCH,
-          val[1][1]
-        )
-      }
-    | LSQUARE ident_with_namespace SUBSTRINGMATCH STRING RSQUARE {
-        result = Selectors::Attribute.new(
-          val[1][0],
-          interpret_string(val[3]),
-          Selectors::Attribute::SUBSTRINGMATCH,
-          val[1][1]
-        )
-      }
     | LSQUARE ident_with_namespace RSQUARE {
         result = Selectors::Attribute.new(
           val[1][0],
