@@ -37,6 +37,7 @@ rule
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@media{w}     { [:MEDIA_SYM, st(text)] }
+            {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }
