@@ -35,7 +35,7 @@ module CSSPool
           div { background: red, blue; }
         }
       eocss
-      assert_equal 1, doc.rule_sets.first.media.length
+      assert_equal 1, doc.rule_sets.first.media.media_list.length
     end
 
     def test_universal_to_css

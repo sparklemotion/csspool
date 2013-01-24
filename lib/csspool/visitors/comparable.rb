@@ -27,7 +27,7 @@ module CSSPool
       end
 
       visitor_for CSS::ImportRule do |target|
-        [:uri, :namespace, :media].all? { |m|
+        [:uri, :namespace, :media_list].all? { |m|
           target.send(m) == @other.send(m)
         }
       end
@@ -38,7 +38,13 @@ module CSSPool
         }
       end
 
-      visitor_for CSS::Media, Selectors::Id, Selectors::Class do |target|
+      visitor_for CSS::Media do |target|
+        [:media_list].all? { |m|
+          target.send(m) == @other.send(m)
+        }
+      end
+
+      visitor_for Selectors::Id, Selectors::Class do |target|
         target.name == @other.name
       end
 
