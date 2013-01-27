@@ -16,18 +16,24 @@ module CSSPool
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 
-      # FIXME: this is a bug in libcroco
-      #def test_ident_followed_by_id
-      #  doc = CSSPool.CSS 'p#div { font: foo, #666; }'
-      #  assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
+      def test_combinators
 
-      #  p doc.rule_sets.first.selectors
+        selectors = %w{* p #id .cl :hover ::selection [href]}
+        combinators = ['', ' ', ' > ', ' + ']
 
-      #  doc = CSSPool.CSS 'p #div { font: foo, #666; }'
+        combinations = selectors.product(combinators).map do |s,c| 
+          if s != '*' && c != '' then
+            s + c
+          end
+        end.compact
+        combinations = combinations.product(selectors).map { |s,c| s + c}
 
-      #  p doc.rule_sets.first.selectors
-      #  assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
-      #end
+        combinations.each do |s|
+          doc = CSSPool.CSS s + ' { }'
+          assert_equal s, doc.rule_sets.first.selectors.first.to_css
+        end
+
+      end
 
       def test_hash_operator
         doc = CSSPool.CSS 'p { font: foo, #666; }'
@@ -166,7 +172,8 @@ module CSSPool
           "new\nline" => "[new\\00000aline=\"value\"]"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
         end
       end
 
@@ -182,14 +189,18 @@ module CSSPool
         end
 
         input_output = {
-          "" => ":psuedo()",
-          "ident" => ":psuedo(ident)",
-          " " => ":psuedo(\\ )",
-          "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
+          "" => ":pseudo()",
+          "ident" => ":pseudo(ident)",
+          " " => ":pseudo(\\ )",
+          "\"quoted\"" => ":pseudo(\\000022quoted\\000022)"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::PseudoClass.new "pseudo", input
+          assert_equal output, node.to_css
         end
+
+        assert_equal "::before", Selectors::PseudoElement.new("before").to_css
+        assert_equal ":before", Selectors::PseudoElement.new("before", true).to_css
       end
 
       def test_selector_other
