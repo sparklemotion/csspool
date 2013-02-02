@@ -58,6 +58,7 @@ test/sac/test_parser.rb
 test/sac/test_properties.rb
 test/sac/test_terms.rb
 test/test_collection.rb
+test/test_declaration.rb
 test/test_parser.rb
 test/test_selector.rb
 test/visitors/test_children.rb
