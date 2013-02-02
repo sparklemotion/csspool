@@ -47,5 +47,60 @@ module CSSPool
       rs = doc.rule_sets.first
       rs.declarations.each { |del| assert_equal rs, del.rule_set }
     end
+
+    def test_nth_integer
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_negative_integer
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(-1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '-1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_n_syntax
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(-2n-1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '-2n-1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_n_syntax_with_whitespace
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child( -2n - 1 ) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal ' -2n - 1 ', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_odd
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(odd) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal 'odd', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_even
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(even) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal 'even', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
   end
 end
