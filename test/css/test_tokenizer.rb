@@ -273,41 +273,6 @@ module CSSPool
         ], @scanner)
       end
 
-      def test_scan_an_plus_b
-        @scanner.scan('x:nth-child(5n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:NUMBER, '5'],
-                        [:IDENT, 'n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-
-        @scanner.scan('x:nth-child(-1n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:MINUS, '-'],
-                        [:NUMBER, '1'],
-                        [:IDENT, 'n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-
-        @scanner.scan('x:nth-child(-n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:IDENT, '-n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-      end
-
       def assert_tokens(tokens, scanner)
         toks = []
         while tok = @scanner.next_token
