@@ -4,6 +4,9 @@ require 'csspool/selectors/pseudo_element'
 module CSSPool
   module Selectors
     def Selectors.pseudo name
+      # FIXME: This is a bit of an ugly solution. Should be able to handle it
+      # more elegantly, and without calling out css2
+      css2_pseudo_elements = 
       if %w{after before first-letter first-line}.include? name
         PseudoElement.new name, true
       else

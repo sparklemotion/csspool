@@ -75,5 +75,140 @@ module CSSPool
       assert_equal Selectors::Attribute::SUBSTRINGMATCH, rs.selectors.first.simple_selectors.first.additional_selectors.first.match_way
     end
 
+    def test_nth_integer
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_negative_integer
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(-1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '-1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_n_syntax
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(-2n-1) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal '-2n-1', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_n_syntax_with_whitespace
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child( -2n - 1 ) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal ' -2n - 1 ', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_odd
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(odd) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal 'odd', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_nth_even
+      doc = CSSPool.CSS <<-eocss
+        a:nth-child(even) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+      assert_equal 'even', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_element_with_namespace
+      doc = CSSPool.CSS <<-eocss
+        a|b { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'b', rs.selectors.first.simple_selectors.first.name
+      assert_equal 'a', rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_element_with_no_namespace
+      doc = CSSPool.CSS <<-eocss
+        |b { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'b', rs.selectors.first.simple_selectors.first.name
+      assert_equal nil, rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_element_with_any_namespace
+      doc = CSSPool.CSS <<-eocss
+        *|b { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'b', rs.selectors.first.simple_selectors.first.name
+      assert_equal '*', rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_universal_with_namespace
+      doc = CSSPool.CSS <<-eocss
+        a|* { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Universal, rs.selectors.first.simple_selectors.first.class
+      assert_equal 'a', rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_universal_with_no_namespace
+      doc = CSSPool.CSS <<-eocss
+        |* { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Universal, rs.selectors.first.simple_selectors.first.class
+      assert_equal nil, rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_universal_with_any_namespace
+      doc = CSSPool.CSS <<-eocss
+        *|* { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Universal, rs.selectors.first.simple_selectors.first.class
+      assert_equal '*', rs.selectors.first.simple_selectors.first.namespace
+    end
+
+    def test_attribute_with_namespace
+      doc = CSSPool.CSS <<-eocss
+        a[b|c] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'b', rs.selectors.first.simple_selectors.first.additional_selectors.first.namespace
+      assert_equal 'c', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_attribute_with_no_namespace
+      doc = CSSPool.CSS <<-eocss
+        a[|c] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal nil, rs.selectors.first.simple_selectors.first.additional_selectors.first.namespace
+      assert_equal 'c', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_attribute_with_any_namespace
+      doc = CSSPool.CSS <<-eocss
+        a[*|c] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '*', rs.selectors.first.simple_selectors.first.additional_selectors.first.namespace
+      assert_equal 'c', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
   end
 end

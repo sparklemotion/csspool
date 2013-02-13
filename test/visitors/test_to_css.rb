@@ -105,10 +105,10 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media.length
+        assert_equal 1, doc.rule_sets.first.media.media_list.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 1, doc.rule_sets.first.media.length
+        assert_equal 1, doc.rule_sets.first.media.media_list.length
       end
 
       def test_multiple_media
@@ -121,12 +121,12 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 2, doc.rule_sets.first.media.length
-        assert_equal 1, doc.rule_sets[1].media.length
+        assert_equal 2, doc.rule_sets.first.media.media_list.length
+        assert_equal 1, doc.rule_sets[1].media.media_list.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 2, doc.rule_sets.first.media.length
-        assert_equal 1, doc.rule_sets[1].media.length
+        assert_equal 2, doc.rule_sets.first.media.media_list.length
+        assert_equal 1, doc.rule_sets[1].media.media_list.length
       end
 
       def test_import
@@ -137,12 +137,12 @@ module CSSPool
         eocss
 
         assert_equal 3, doc.import_rules.length
-        assert_equal 2, doc.import_rules.last.media.length
+        assert_equal 2, doc.import_rules.last.media_list.length
 
         doc = CSSPool.CSS(doc.to_css)
 
         assert_equal 3, doc.import_rules.length
-        assert_equal 2, doc.import_rules.last.media.length
+        assert_equal 2, doc.import_rules.last.media_list.length
       end
 
       def test_charsets

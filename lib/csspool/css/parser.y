@@ -3,7 +3,10 @@ class CSSPool::CSS::Parser
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM MEDIA_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
+token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
+token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
+token IMPORTANT_SYM MEDIA_SYM
+token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 
 rule
   document
@@ -14,8 +17,10 @@ rule
   stylesheet
     : charset stylesheet
     | import stylesheet
+    | namespace stylesheet
     | charset
     | import
+    | namespace
     | body
     ;
   charset
@@ -34,6 +39,14 @@ rule
     | STRING { result = Terms::String.new interpret_string val.first }
     | URI { result = Terms::URI.new interpret_uri val.first }
     ;
+  namespace
+    : NAMESPACE_SYM ident import_location SEMI {
+        @handler.namespace val[1], val[2]
+      }
+    | NAMESPACE_SYM import_location SEMI {
+        @handler.namespace nil, val[1]
+      }
+    ;
   medium
     : medium COMMA IDENT {
         result = [val.first, Terms::Ident.new(interpret_identifier val.last)]
@@ -44,9 +57,13 @@ rule
     ;
   body
     : ruleset body
-    | media body
+    | conditional_rule body
     | ruleset
-    | media
+    | conditional_rule
+    ;
+  conditional_rule
+    : media
+    | document_query
     ;
   media
     : start_media body RBRACE { @handler.end_media val.first }
@@ -57,6 +74,28 @@ rule
         @handler.start_media result
       }
     | MEDIA_SYM LBRACE { result = [] }
+    ;
+  document_query
+    : start_document_query body RBRACE { @handler.end_document_query }
+    | start_document_query RBRACE { @handler.end_document_query }
+    ;
+  start_document_query
+    : DOCUMENT_QUERY_SYM url_match_fns LBRACE {
+        @handler.start_document_query val[1]
+      }
+    ;
+  url_match_fns
+    : url_match_fn COMMA url_match_fns {
+        result = [val[0], val[2]].flatten
+      }
+    | url_match_fn {
+        result = val
+      }
+    ;
+  url_match_fn
+    : function_no_quote
+    | function
+    | uri
     ;
   ruleset
     : start_selector declarations RBRACE {
@@ -112,9 +151,18 @@ rule
         result = [ss]
       }
     ;
+  ident_with_namespace
+    : IDENT { result = [interpret_identifier(val[0]), nil] }
+    | IDENT '|' IDENT { result = [interpret_identifier(val[2]), interpret_identifier(val[0])] }
+    | '|' IDENT { result = [interpret_identifier(val[1]), nil] }
+    | STAR '|' IDENT { result = [interpret_identifier(val[2]), '*'] }
+    ;
   element_name
-    : IDENT { result = Selectors::Type.new interpret_identifier val.first }
-    | STAR  { result = Selectors::Universal.new val.first }
+    : ident_with_namespace { result = Selectors::Type.new val.first[0], nil, val.first[1] }
+    | STAR { result = Selectors::Universal.new val.first }
+    | '|' STAR { result = Selectors::Universal.new val[1] }
+    | STAR '|' STAR { result = Selectors::Universal.new val[2], nil, val[0] }
+    | IDENT '|' STAR { result = Selectors::Universal.new val[2], nil, interpret_identifier(val[0]) }
     ;
   hcap
     : hash        { result = val }
@@ -136,95 +184,108 @@ rule
       }
     ;
   attrib
-    : LSQUARE IDENT EQUAL IDENT RSQUARE {
+    : LSQUARE ident_with_namespace EQUAL IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::EQUALS
+          Selectors::Attribute::EQUALS,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT EQUAL STRING RSQUARE {
+    | LSQUARE ident_with_namespace EQUAL STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::EQUALS
+          Selectors::Attribute::EQUALS,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT INCLUDES STRING RSQUARE {
+    | LSQUARE ident_with_namespace INCLUDES STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::INCLUDES
+          Selectors::Attribute::INCLUDES,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT INCLUDES IDENT RSQUARE {
+    | LSQUARE ident_with_namespace INCLUDES IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::INCLUDES
+          Selectors::Attribute::INCLUDES,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT DASHMATCH IDENT RSQUARE {
+    | LSQUARE ident_with_namespace DASHMATCH IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::DASHMATCH
+          Selectors::Attribute::DASHMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT DASHMATCH STRING RSQUARE {
+    | LSQUARE ident_with_namespace DASHMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::DASHMATCH
+          Selectors::Attribute::DASHMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT PREFIXMATCH IDENT RSQUARE {
+    | LSQUARE ident_with_namespace PREFIXMATCH IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::PREFIXMATCH
+          Selectors::Attribute::PREFIXMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT PREFIXMATCH STRING RSQUARE {
+    | LSQUARE ident_with_namespace PREFIXMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::PREFIXMATCH
+          Selectors::Attribute::PREFIXMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT SUFFIXMATCH IDENT RSQUARE {
+    | LSQUARE ident_with_namespace SUFFIXMATCH IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::SUFFIXMATCH
+          Selectors::Attribute::SUFFIXMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT SUFFIXMATCH STRING RSQUARE {
+    | LSQUARE ident_with_namespace SUFFIXMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::SUFFIXMATCH
+          Selectors::Attribute::SUFFIXMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT SUBSTRINGMATCH IDENT RSQUARE {
+    | LSQUARE ident_with_namespace SUBSTRINGMATCH IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::SUBSTRINGMATCH
+          Selectors::Attribute::SUBSTRINGMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT SUBSTRINGMATCH STRING RSQUARE {
+    | LSQUARE ident_with_namespace SUBSTRINGMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::SUBSTRINGMATCH
+          Selectors::Attribute::SUBSTRINGMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT RSQUARE {
+    | LSQUARE ident_with_namespace RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           nil,
-          Selectors::Attribute::SET
+          Selectors::Attribute::SET,
+          val[1][1]
         )
       }
     ;
@@ -249,11 +310,24 @@ rule
           interpret_identifier(val[2])
         )
       }
+    | ':' NTH_PSEUDO_CLASS {
+        result = Selectors::PseudoClass.new(
+          interpret_identifier(val[1].sub(/\(.*/, '')),
+          interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
+        )
+      }
+    ;
+  # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
+  one_or_more_semis
+    : SEMI
+    | SEMI one_or_more_semis
     ;
   declarations
-    : declaration SEMI declarations
-    | declaration SEMI
+    : declaration one_or_more_semis declarations
+    | one_or_more_semis declarations
+    | declaration one_or_more_semis
     | declaration
+    | one_or_more_semis
     ;
   declaration
     : property ':' expr prio
@@ -305,6 +379,14 @@ rule
         end
       }
     ;
+  function_no_quote
+    : function_no_quote S { result = val.first }
+    | FUNCTION_NO_QUOTE {
+        parts = val.first.split('(')
+        name = interpret_identifier parts.first
+        result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
+      }
+    ;
   hexcolor
     : hexcolor S { result = val.first }
     | HASH { result = Terms::Hash.new val.first.sub(/^#/, '') }
@@ -312,6 +394,7 @@ rule
   uri
     : uri S { result = val.first }
     | URI { result = Terms::URI.new interpret_uri val.first }
+    ;
   string
     : string S { result = val.first }
     | STRING { result = Terms::String.new interpret_string val.first }
@@ -372,6 +455,10 @@ end
 
 def interpret_uri s
   interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+end
+
+def interpret_string_no_quote s
+  interpret_escapes s.match(/^(.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
 end
 
 def interpret_string s

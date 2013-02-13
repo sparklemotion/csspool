@@ -8,6 +8,7 @@ macro
   nonascii  [^\0-\177]
   num       ([0-9]*\.[0-9]+|[0-9]+)
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
+  nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
 
   escape    {unicode}|\\[^\n\r\f0-9A-Fa-f]
   nmchar    [_A-Za-z0-9-]|{nonascii}|{escape}
@@ -32,11 +33,20 @@ rule
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, st(text)] }
             {w}{comment}{w}  { next_token }
 
+            # this one takes an "nth" value
+            (nth\-child|nth\-last\-child|nth\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
+
+            # functions that can take an unquoted string parameter
+            (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
+            (domain|url\-prefix)\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
+
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@media{w}     { [:MEDIA_SYM, st(text)] }
+            {w}@document{w}  { [:DOCUMENT_QUERY_SYM, st(text)] }
+            {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }

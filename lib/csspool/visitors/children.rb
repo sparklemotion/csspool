@@ -10,7 +10,7 @@ module CSSPool
       end
 
       visitor_for CSS::ImportRule do |target|
-        target.media
+        target.media_list
       end
 
       visitor_for CSS::Media,
