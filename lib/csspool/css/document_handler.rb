@@ -5,7 +5,7 @@ module CSSPool
 
       def initialize
         @document     = nil
-        @media_stack  = []
+        @conditional_stack  = []
       end
 
       def start_document
@@ -20,18 +20,27 @@ module CSSPool
         @document.import_rules << CSS::ImportRule.new(
           uri,
           ns,
-          media_list.map { |x| CSS::Media.new(x, loc) },
+          media_list,
           @document,
           loc
         )
       end
 
+      def namespace prefix, uri
+        @document.namespaces << CSS::NamespaceRule.new(
+          prefix,
+          uri
+        )
+      end
+
       def start_selector selector_list
-        @document.rule_sets << RuleSet.new(
+        rs = RuleSet.new(
           selector_list,
           [],
-          @media_stack.last || []
+          @conditional_stack.last || []
         )
+        @document.rule_sets << rs
+        @conditional_stack.last.rule_sets << rs unless @conditional_stack.empty?
       end
 
       def property name, exp, important
@@ -40,12 +49,23 @@ module CSSPool
       end
 
       def start_media media_list, parse_location = {}
-        @media_stack << media_list.map { |x| CSS::Media.new(x, parse_location) }
+        @conditional_stack << CSS::Media.new(media_list, parse_location)
       end
 
       def end_media media_list, parse_location = {}
-        @media_stack.pop
+        @conditional_stack.pop
       end
+
+      def start_document_query url_functions
+        dq = CSS::DocumentQuery.new(url_functions)
+        @document.document_queries << dq
+        @conditional_stack << dq
+      end
+
+      def end_document_query
+        @conditional_stack.pop
+      end
+
     end
   end
 end
