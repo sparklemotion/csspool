@@ -48,6 +48,14 @@ module CSSPool
       rs.declarations.each { |del| assert_equal rs, del.rule_set }
     end
 
+    def test_general_sibling_selector
+      doc = CSSPool.CSS <<-eocss
+        a ~ b { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal :~, rs.selectors.first.simple_selectors[1].combinator
+    end
+
     def test_nth_integer
       doc = CSSPool.CSS <<-eocss
         a:nth-child(1) { background: red; }

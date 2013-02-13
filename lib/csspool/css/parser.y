@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM TILDE
 
 rule
   document
@@ -136,6 +136,7 @@ rule
     : S       { result = :s }
     | GREATER { result = :> }
     | PLUS    { result = :+ }
+    | TILDE   { result = :~ }
     ;
   simple_selector
     : element_name hcap {
