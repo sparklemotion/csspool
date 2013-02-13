@@ -33,7 +33,7 @@ module CSSPool
             "div { background: red; }"
           end
           new_doc.rule_sets.each do |rs|
-            assert_equal ir.media, rs.media
+            assert_equal ir.media_list, rs.media.media_list
           end
         end
       end
