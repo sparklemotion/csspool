@@ -36,11 +36,16 @@ rule
             # this one takes an "nth" value
             (nth\-child|nth\-last\-child|nth\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
 
+            # functions that can take an unquoted string parameter
+            (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
+            (domain|url\-prefix)\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
+
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@media{w}     { [:MEDIA_SYM, st(text)] }
+            {w}@document{w}  { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }

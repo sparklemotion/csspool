@@ -4,6 +4,7 @@ token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
+token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 
 rule
   document
@@ -44,9 +45,13 @@ rule
     ;
   body
     : ruleset body
-    | media body
+    | conditional_rule body
     | ruleset
-    | media
+    | conditional_rule
+    ;
+  conditional_rule
+    : media
+    | document_query
     ;
   media
     : start_media body RBRACE { @handler.end_media val.first }
@@ -57,6 +62,28 @@ rule
         @handler.start_media result
       }
     | MEDIA_SYM LBRACE { result = [] }
+    ;
+  document_query
+    : start_document_query body RBRACE { @handler.end_document_query }
+    | start_document_query RBRACE { @handler.end_document_query }
+    ;
+  start_document_query
+    : DOCUMENT_QUERY_SYM url_match_fns LBRACE {
+        @handler.start_document_query val[1]
+      }
+    ;
+  url_match_fns
+    : url_match_fn COMMA url_match_fns {
+        result = [val[0], val[2]].flatten
+      }
+    | url_match_fn {
+        result = val
+      }
+    ;
+  url_match_fn
+    : function_no_quote
+    | function
+    | uri
     ;
   ruleset
     : start_selector declarations RBRACE {
@@ -276,6 +303,14 @@ rule
         end
       }
     ;
+  function_no_quote
+    : function_no_quote S { result = val.first }
+    | FUNCTION_NO_QUOTE {
+        parts = val.first.split('(')
+        name = interpret_identifier parts.first
+        result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
+      }
+    ;
   hexcolor
     : hexcolor S { result = val.first }
     | HASH { result = Terms::Hash.new val.first.sub(/^#/, '') }
@@ -283,6 +318,7 @@ rule
   uri
     : uri S { result = val.first }
     | URI { result = Terms::URI.new interpret_uri val.first }
+    ;
   string
     : string S { result = val.first }
     | STRING { result = Terms::String.new interpret_string val.first }
@@ -343,6 +379,10 @@ end
 
 def interpret_uri s
   interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+end
+
+def interpret_string_no_quote s
+  interpret_escapes s.match(/^(.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
 end
 
 def interpret_string s
