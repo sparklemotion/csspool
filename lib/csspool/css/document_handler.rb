@@ -26,6 +26,13 @@ module CSSPool
         )
       end
 
+      def namespace prefix, uri
+        @document.namespaces << CSS::NamespaceRule.new(
+          prefix,
+          uri
+        )
+      end
+
       def start_selector selector_list
         rs = RuleSet.new(
           selector_list,

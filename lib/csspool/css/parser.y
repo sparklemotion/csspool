@@ -5,6 +5,8 @@ token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
+token IMPORTANT_SYM MEDIA_SYM
+token NAMESPACE_SYM
 
 rule
   document
@@ -15,8 +17,10 @@ rule
   stylesheet
     : charset stylesheet
     | import stylesheet
+    | namespace stylesheet
     | charset
     | import
+    | namespace
     | body
     ;
   charset
@@ -34,6 +38,14 @@ rule
     : import_location S
     | STRING { result = Terms::String.new interpret_string val.first }
     | URI { result = Terms::URI.new interpret_uri val.first }
+    ;
+  namespace
+    : NAMESPACE_SYM ident import_location SEMI {
+        @handler.namespace val[1], val[2]
+      }
+    | NAMESPACE_SYM import_location SEMI {
+        @handler.namespace nil, val[1]
+      }
     ;
   medium
     : medium COMMA IDENT {
@@ -139,9 +151,18 @@ rule
         result = [ss]
       }
     ;
+  ident_with_namespace
+    : IDENT { result = [interpret_identifier(val[0]), nil] }
+    | IDENT '|' IDENT { result = [interpret_identifier(val[2]), interpret_identifier(val[0])] }
+    | '|' IDENT { result = [interpret_identifier(val[1]), nil] }
+    | STAR '|' IDENT { result = [interpret_identifier(val[2]), '*'] }
+    ;
   element_name
-    : IDENT { result = Selectors::Type.new interpret_identifier val.first }
-    | STAR  { result = Selectors::Universal.new val.first }
+    : ident_with_namespace { result = Selectors::Type.new val.first[0], nil, val.first[1] }
+    | STAR { result = Selectors::Universal.new val.first }
+    | '|' STAR { result = Selectors::Universal.new val[1] }
+    | STAR '|' STAR { result = Selectors::Universal.new val[2], nil, val[0] }
+    | IDENT '|' STAR { result = Selectors::Universal.new val[2], nil, interpret_identifier(val[0]) }
     ;
   hcap
     : hash        { result = val }
@@ -163,53 +184,60 @@ rule
       }
     ;
   attrib
-    : LSQUARE IDENT EQUAL IDENT RSQUARE {
+    : LSQUARE ident_with_namespace EQUAL IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::EQUALS
+          Selectors::Attribute::EQUALS,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT EQUAL STRING RSQUARE {
+    | LSQUARE ident_with_namespace EQUAL STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::EQUALS
+          Selectors::Attribute::EQUALS,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT INCLUDES STRING RSQUARE {
+    | LSQUARE ident_with_namespace INCLUDES STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::INCLUDES
+          Selectors::Attribute::INCLUDES,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT INCLUDES IDENT RSQUARE {
+    | LSQUARE ident_with_namespace INCLUDES IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::INCLUDES
+          Selectors::Attribute::INCLUDES,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT DASHMATCH IDENT RSQUARE {
+    | LSQUARE ident_with_namespace DASHMATCH IDENT RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_identifier(val[3]),
-          Selectors::Attribute::DASHMATCH
+          Selectors::Attribute::DASHMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT DASHMATCH STRING RSQUARE {
+    | LSQUARE ident_with_namespace DASHMATCH STRING RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           interpret_string(val[3]),
-          Selectors::Attribute::DASHMATCH
+          Selectors::Attribute::DASHMATCH,
+          val[1][1]
         )
       }
-    | LSQUARE IDENT RSQUARE {
+    | LSQUARE ident_with_namespace RSQUARE {
         result = Selectors::Attribute.new(
-          interpret_identifier(val[1]),
+          val[1][0],
           nil,
-          Selectors::Attribute::SET
+          Selectors::Attribute::SET,
+          val[1][1]
         )
       }
     ;

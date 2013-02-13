@@ -68,6 +68,14 @@ module CSSPool
         "#{indent}@document #{target.url_functions.join(', ')} {}"
       end
 
+      visitor_for CSS::NamespaceRule do |target|
+        if target.prefix.nil?
+          "#{indent}@namespace #{target.uri.accept(self)}"
+        else
+          "#{indent}@namespace #{target.prefix.value} #{target.uri.accept(self)}"
+        end
+      end
+
       visitor_for CSS::RuleSet do |target|
         "#{indent}" +
           target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
