@@ -275,7 +275,7 @@ rule
     | ':' MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
         result = Selectors::PseudoClass.new(
           val[1].split('(').first.strip,
-          val[2]
+          val[2].join(', ')
         )
       }
     ;

@@ -188,7 +188,7 @@ module CSSPool
         :matches(section, article, aside, nav) { background: red; }
       eocss
       rs = doc.rule_sets.first
-      assert_equal 4, rs.selectors.first.simple_selectors.first.additional_selectors.first.extra.size
+      assert_equal 'section, article, aside, nav', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
     end
 
     def test_matches_pseudoclass_complex
@@ -196,7 +196,7 @@ module CSSPool
         :matches(#id[attribute="selector"], #main-id[another="attribute"]) { background: red; }
       eocss
       rs = doc.rule_sets.first
-      assert_equal 2, rs.selectors.first.simple_selectors.first.additional_selectors.first.extra.size
+      assert_equal '#id[attribute="selector"], #main-id[another="attribute"]', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
     end
 
   end
