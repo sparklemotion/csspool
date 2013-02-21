@@ -9,6 +9,7 @@ macro
   num       ([0-9]*\.[0-9]+|[0-9]+)
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
   nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
+  vendorprefix \-[A-Za-z]+\-
 
   escape    {unicode}|\\[^\n\r\f0-9A-Fa-f]
   nmchar    [_A-Za-z0-9-]|{nonascii}|{escape}
@@ -45,8 +46,9 @@ rule
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@media{w}     { [:MEDIA_SYM, st(text)] }
-            {w}@document{w}  { [:DOCUMENT_QUERY_SYM, st(text)] }
+            {w}@({vendorprefix})?document{w} { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
+            {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }

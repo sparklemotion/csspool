@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM KEYFRAMES_SYM
 
 rule
   document
@@ -58,8 +58,10 @@ rule
   body
     : ruleset body
     | conditional_rule body
+    | keyframes_rule body
     | ruleset
     | conditional_rule
+    | keyframes_rule
     ;
   conditional_rule
     : media
@@ -96,6 +98,38 @@ rule
     : function_no_quote
     | function
     | uri
+    ;
+  keyframes_rule
+    : start_keyframes_rule keyframes_blocks RBRACE
+    | start_keyframes_rule RBRACE
+    ;
+  start_keyframes_rule
+    : KEYFRAMES_SYM IDENT LBRACE {
+        @handler.start_keyframes_rule val[1]
+      }
+    ;
+  keyframes_blocks
+    : keyframes_block keyframes_blocks
+    | keyframes_block
+    ;
+  keyframes_block
+    : start_keyframes_block declarations RBRACE { @handler.end_keyframes_block }
+    | start_keyframes_block RBRACE { @handler.end_keyframes_block }
+    ;
+  start_keyframes_block
+    : keyframes_selectors LBRACE {
+        @handler.start_keyframes_block val[0]
+      }
+    ;
+  keyframes_selectors
+    | keyframes_selector COMMA keyframes_selectors {
+         result = val[0] + ', ' + val[2]
+      }
+    | keyframes_selector
+    ;
+  keyframes_selector
+    : IDENT
+    | PERCENTAGE { result = val[0].strip }
     ;
   ruleset
     : start_selector declarations RBRACE {
