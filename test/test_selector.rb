@@ -183,5 +183,21 @@ module CSSPool
       assert_equal 'c', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
     end
 
+    def test_matches_pseudoclass
+      doc = CSSPool.CSS <<-eocss
+        :matches(section, article, aside, nav) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'section, article, aside, nav', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_matches_pseudoclass_complex
+      doc = CSSPool.CSS <<-eocss
+        :matches(#id[attribute="selector"], #main-id[another="attribute"]) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '#id[attribute="selector"], #main-id[another="attribute"]', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
   end
 end

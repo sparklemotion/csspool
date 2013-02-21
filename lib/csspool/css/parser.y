@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
 
 rule
   document
@@ -151,6 +151,10 @@ rule
         result = [ss]
       }
     ;
+  simple_selectors
+    : simple_selector COMMA simple_selectors { result = [val[0], val[2]].flatten }
+    | simple_selector
+    ;
   ident_with_namespace
     : IDENT { result = [interpret_identifier(val[0]), nil] }
     | IDENT '|' IDENT { result = [interpret_identifier(val[2]), interpret_identifier(val[0])] }
@@ -266,6 +270,12 @@ rule
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\(.*/, '')),
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
+        )
+      }
+    | ':' MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
+        result = Selectors::PseudoClass.new(
+          val[1].split('(').first.strip,
+          val[2].join(', ')
         )
       }
     ;

@@ -9,6 +9,7 @@ macro
   num       ([0-9]*\.[0-9]+|[0-9]+)
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
   nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
+  vendorprefix \-[A-Za-z]+\-
 
   escape    {unicode}|\\[^\n\r\f0-9A-Fa-f]
   nmchar    [_A-Za-z0-9-]|{nonascii}|{escape}
@@ -35,6 +36,9 @@ rule
 
             # this one takes an "nth" value
             (nth\-child|nth\-last\-child|nth\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
+
+            # this one takes a comma-separated list of simple selectors as a parameter
+            ({vendorprefix})?(matches|any)\(\s* { [:MATCHES_PSEUDO_CLASS, st(text)] }
 
             # functions that can take an unquoted string parameter
             (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
