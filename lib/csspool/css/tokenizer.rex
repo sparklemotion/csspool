@@ -34,7 +34,7 @@ rule
             {w}{comment}{w}  { next_token }
 
             # this one takes an "nth" value
-            (nth\-child|nth\-last\-child|nth\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
+            (nth\-child|nth\-last\-child|nth\-of\-type|nth\-last\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
 
             # functions that can take an unquoted string parameter
             (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
