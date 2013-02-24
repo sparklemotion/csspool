@@ -87,5 +87,19 @@ module CSSPool
       eocss
       assert_match('foo(1, 2)', doc.to_css)
     end
+
+    def test_url
+      doc = CSSPool.CSS <<-eocss
+        div { background: url(http://example.com); }
+      eocss
+      assert_match 'http://example.com', doc.to_css
+    end
+
+    def test_url_capitalized
+      doc = CSSPool.CSS <<-eocss
+        div { background: URL(http://example.com); }
+      eocss
+      assert_match 'http://example.com', doc.to_css
+    end
   end
 end
