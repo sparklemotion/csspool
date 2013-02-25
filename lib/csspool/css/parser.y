@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM MATH
 
 rule
   document
@@ -318,6 +318,7 @@ rule
     | string
     | uri
     | hexcolor
+    | math
     | function
     ;
   function
@@ -337,6 +338,14 @@ rule
         parts = val.first.split('(')
         name = interpret_identifier parts.first
         result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
+      }
+    ;
+  math
+    : MATH {
+        parts = val.first.split('(', 2)
+        name = parts[0].strip
+        expression = parts[1][0..parts[1].rindex(')')-1].strip
+        result = Terms::Math.new(name, expression)
       }
     ;
   hexcolor

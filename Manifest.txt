@@ -40,6 +40,7 @@ lib/csspool/terms.rb
 lib/csspool/terms/function.rb
 lib/csspool/terms/hash.rb
 lib/csspool/terms/ident.rb
+lib/csspool/terms/math.rb
 lib/csspool/terms/number.rb
 lib/csspool/terms/rgb.rb
 lib/csspool/terms/string.rb
@@ -65,6 +66,7 @@ test/test_collection.rb
 test/test_declaration.rb
 test/test_parser.rb
 test/test_selector.rb
+test/test_term.rb
 test/visitors/test_children.rb
 test/visitors/test_comparable.rb
 test/visitors/test_each.rb
