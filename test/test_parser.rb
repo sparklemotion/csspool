@@ -87,5 +87,21 @@ module CSSPool
       eocss
       assert_match('foo(1, 2)', doc.to_css)
     end
+
+    def test_uri_linefeed_n
+      doc = CSSPool.CSS "div { background: url('http://\\\nexample.com/image.png') }"
+      #assert_equal "http://\\\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_r
+      doc = CSSPool.CSS "div { background: url('http://\\\rexample.com/image.png') }"
+      #assert_equal "http://\\\rexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_rn
+      doc = CSSPool.CSS "div { background: url('http://\\\r\nexample.com/image.png') }"
+      #assert_equal "http://\\\r\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
   end
 end
