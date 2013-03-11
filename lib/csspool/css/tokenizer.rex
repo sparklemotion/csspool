@@ -3,7 +3,7 @@ module CSS
 class Tokenizer < Parser
 
 macro
-  nl        \n|\r\n|\r|\f
+  nl        (\n|\r\n|\r|\f)
   w         [\s]*
   nonascii  [^\0-\177]
   num       ([0-9]*\.[0-9]+|[0-9]+)
