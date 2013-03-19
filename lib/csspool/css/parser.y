@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM SUPPORTS_SYM QUERY_NOT QUERY_OR QUERY_AND
 
 rule
   document
@@ -64,6 +64,7 @@ rule
   conditional_rule
     : media
     | document_query
+    | supports
     ;
   media
     : start_media body RBRACE { @handler.end_media val.first }
@@ -96,6 +97,41 @@ rule
     : function_no_quote
     | function
     | uri
+    ;
+  supports
+    : start_supports body RBRACE { @handler.end_supports }
+    | start_supports RBRACE { @handler.end_supports }
+    ;
+  start_supports
+    : SUPPORTS_SYM supports_condition LBRACE {
+        @handler.start_supports val[1]
+      }
+    ;
+  supports_condition
+    : supports_negation
+    | supports_conjunction
+    | supports_disjunction
+    | supports_condition_in_parens
+    ;
+  supports_condition_in_parens
+    : '(' supports_condition RPAREN { result = val.join('') }
+    | '(' S supports_condition RPAREN { result = val.join('') }
+    | supports_declaration_condition { result = val.join('') }
+    ;
+  supports_negation
+    : QUERY_NOT supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_conjunction
+    : supports_condition_in_parens QUERY_AND supports_condition_in_parens { result = val.join('') }
+    | supports_conjunction QUERY_AND supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_disjunction
+    : supports_condition_in_parens QUERY_OR supports_condition_in_parens { result = val.join('') }
+    | supports_disjunction QUERY_OR supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_declaration_condition
+    : '(' declaration_internal RPAREN { result = val.join('') }
+    | '(' S declaration_internal RPAREN { result = val.join('') }
     ;
   ruleset
     : start_selector declarations RBRACE {
@@ -282,14 +318,18 @@ rule
     | one_or_more_semis
     ;
   declaration
+    : declaration_internal
+      { @handler.property val.first }
+    ;
+  declaration_internal
     : property ':' expr prio
-      { @handler.property val.first, val[2], val[3] }
+      { result = Declaration.new(val.first, val[2], val[3]) }
     | property ':' S expr prio
-      { @handler.property val.first, val[3], val[4] }
+      { result = Declaration.new(val.first, val[3], val[4]) }
     | property S ':' expr prio
-      { @handler.property val.first, val[3], val[4] }
+      { result = Declaration.new(val.first, val[3], val[4]) }
     | property S ':' S expr prio
-      { @handler.property val.first, val[4], val[5] }
+      { result = Declaration.new(val.first, val[4], val[5]) }
     ;
   prio
     : IMPORTANT_SYM { result = true }

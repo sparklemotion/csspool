@@ -43,9 +43,10 @@ module CSSPool
         @conditional_stack.last.rule_sets << rs unless @conditional_stack.empty?
       end
 
-      def property name, exp, important
+      def property declaration
         rs = @document.rule_sets.last
-        rs.declarations << Declaration.new(name, exp, important, rs)
+        declaration.rule_set = rs
+        rs.declarations << declaration
       end
 
       def start_media media_list, parse_location = {}
@@ -63,6 +64,16 @@ module CSSPool
       end
 
       def end_document_query
+        @conditional_stack.pop
+      end
+
+      def start_supports conditions
+        sr = CSS::SupportsRule.new(conditions)
+        @document.supports_rules << sr
+        @conditional_stack << sr
+      end
+
+      def end_supports
         @conditional_stack.pop
       end
 

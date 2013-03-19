@@ -18,6 +18,7 @@ lib/csspool/css/namespace_rule.rb
 lib/csspool/css/parser.rb
 lib/csspool/css/parser.y
 lib/csspool/css/rule_set.rb
+lib/csspool/css/supports_rule.rb
 lib/csspool/css/tokenizer.rb
 lib/csspool/css/tokenizer.rex
 lib/csspool/node.rb
@@ -55,6 +56,7 @@ test/css/test_document_query.rb
 test/css/test_import_rule.rb
 test/css/test_namespace_rule.rb
 test/css/test_parser.rb
+test/css/test_supports_rule.rb
 test/css/test_tokenizer.rb
 test/files/test.css
 test/helper.rb
