@@ -103,15 +103,22 @@ rule
     | start_supports RBRACE { @handler.end_supports }
     ;
   start_supports
-    : SUPPORTS_SYM supports_condition LBRACE {
+    : SUPPORTS_SYM supports_condition_root LBRACE {
         @handler.start_supports val[1]
       }
     ;
+  # don't eat the whitespace QUERY_NOT needs
+  supports_condition_root
+    : supports_negation { result = val.join('') }
+    | S supports_conjunction { result = val.join('') }
+    | S supports_disjunction { result = val.join('') }
+    | S supports_condition_in_parens { result = val.join('') }
+    ;
   supports_condition
-    : supports_negation
-    | supports_conjunction
-    | supports_disjunction
-    | supports_condition_in_parens
+    : supports_negation { result = val.join('') }
+    | supports_conjunction { result = val.join('') }
+    | supports_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
     ;
   supports_condition_in_parens
     : '(' supports_condition RPAREN { result = val.join('') }

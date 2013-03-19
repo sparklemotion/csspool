@@ -81,6 +81,14 @@ module CSSPool
 				assert_equal 1, doc.supports_rules[0].rule_sets.size
       end
 
+      # with this feature, "and" is a reserved word. you can't use it as an ident, but you can as anything else
+      def test_other_use_of_keyword
+        doc = CSSPool.CSS <<-eocss
+          /* and */
+          .and { display: flexbox; content: " and ";}
+        eocss
+      end
+
     end
   end
 end
