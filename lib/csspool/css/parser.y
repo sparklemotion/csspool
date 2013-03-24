@@ -268,24 +268,14 @@ rule
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
         )
       }
-    | ':' MOZ_PSEUDO_ELEMENT {
+    | ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
-          interpret_identifier(val[1])
+          interpret_identifier(val[1].sub(/\($/, ''))
         )
       }
-    | ':' ':' MOZ_PSEUDO_ELEMENT {
+    | ':' ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
-          interpret_identifier(val[2])
-        )
-      }
-    | ':' MOZ_PSEUDO_ELEMENT '(' any_number_of_idents RPAREN {
-        result = Selectors::PseudoElement.new(
-          interpret_identifier(val[1])
-        )
-      }
-    | ':' ':' MOZ_PSEUDO_ELEMENT '(' any_number_of_idents RPAREN {
-        result = Selectors::PseudoElement.new(
-          interpret_identifier(val[2])
+          interpret_identifier(val[2].sub(/\($/, ''))
         )
       }
     ;
