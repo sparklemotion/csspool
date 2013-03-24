@@ -6,7 +6,7 @@ token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM
+token NAMESPACE_SYM MOZ_PSEUDO_ELEMENT
 
 rule
   document
@@ -268,6 +268,34 @@ rule
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
         )
       }
+    | ':' MOZ_PSEUDO_ELEMENT {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[1])
+        )
+      }
+    | ':' ':' MOZ_PSEUDO_ELEMENT {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[2])
+        )
+      }
+    | ':' MOZ_PSEUDO_ELEMENT '(' any_number_of_idents RPAREN {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[1])
+        )
+      }
+    | ':' ':' MOZ_PSEUDO_ELEMENT '(' any_number_of_idents RPAREN {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[2])
+        )
+      }
+    ;
+  any_number_of_idents
+    :
+    | multiple_idents
+    ;
+  multiple_idents
+    : IDENT
+    | IDENT COMMA multiple_idents
     ;
   # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
   one_or_more_semis

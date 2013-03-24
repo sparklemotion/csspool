@@ -102,6 +102,38 @@ module CSSPool
       assert_equal 'even', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
     end
 
+    def test_mozilla_pseudo_element
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_brackets_without_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line() { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_single_parameter
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_multiple_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one, two, three) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
     def test_element_with_namespace
       doc = CSSPool.CSS <<-eocss
         a|b { background: red; }
