@@ -83,6 +83,15 @@ module CSSPool
       assert_equal Selectors::Attribute::SUBSTRINGMATCH, rs.selectors.first.simple_selectors.first.additional_selectors.first.match_way
     end
 
+    def test_not_pseudo_class
+      doc = CSSPool.CSS <<-eocss
+        a:not(b) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'a', rs.selectors.first.simple_selectors.first.name
+      assert_equal ':not(b)', rs.selectors.first.simple_selectors.first.additional_selectors.first.to_s
+    end
+
     def test_nth_integer
       doc = CSSPool.CSS <<-eocss
         a:nth-child(1) { background: red; }

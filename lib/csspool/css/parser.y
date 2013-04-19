@@ -8,6 +8,7 @@ token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token IMPORTANT_SYM MEDIA_SYM
 token NAMESPACE_SYM TILDE
 token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
+token NAMESPACE_SYM NOT_PSEUDO_CLASS
 
 rule
   document
@@ -310,6 +311,12 @@ rule
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\($/, '')),
           interpret_identifier(val[2])
+        )
+      }
+    | ':' NOT_PSEUDO_CLASS simple_selector RPAREN {
+        result = Selectors::PseudoClass.new(
+          'not',
+          val[2].first.to_s
         )
       }
     | ':' NTH_PSEUDO_CLASS {
