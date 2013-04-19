@@ -10,6 +10,7 @@ token NAMESPACE_SYM TILDE
 token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 token NAMESPACE_SYM NOT_PSEUDO_CLASS
 token NAMESPACE_SYM KEYFRAMES_SYM
+token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
 
 rule
   document
@@ -189,6 +190,10 @@ rule
         result = [ss]
       }
     ;
+  simple_selectors
+    : simple_selector COMMA simple_selectors { result = [val[0], val[2]].flatten }
+    | simple_selector
+    ;
   ident_with_namespace
     : IDENT { result = [interpret_identifier(val[0]), nil] }
     | IDENT '|' IDENT { result = [interpret_identifier(val[2]), interpret_identifier(val[0])] }
@@ -358,6 +363,12 @@ rule
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\(.*/, '')),
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
+        )
+      }
+    | ':' MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
+        result = Selectors::PseudoClass.new(
+          val[1].split('(').first.strip,
+          val[2].join(', ')
         )
       }
     ;

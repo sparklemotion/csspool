@@ -40,6 +40,9 @@ rule
             # this one takes an "nth" value
             (nth\-child|nth\-last\-child|nth\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
 
+            # this one takes a comma-separated list of simple selectors as a parameter
+            ({vendorprefix})?(matches|any)\(\s* { [:MATCHES_PSEUDO_CLASS, st(text)] }
+
             # functions that can take an unquoted string parameter
             (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
             (domain|url\-prefix)\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
