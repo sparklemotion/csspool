@@ -195,6 +195,12 @@ module CSSPool
           "[#{escape_css_identifier target.name} ~= \"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::DASHMATCH
           "[#{escape_css_identifier target.name} |= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::PREFIXMATCH
+          "[#{escape_css_identifier target.name} ^= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::SUFFIXMATCH
+          "[#{escape_css_identifier target.name} $= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::SUBSTRINGMATCH
+          "[#{escape_css_identifier target.name} *= \"#{escape_css_string target.value}\"]"
         else
           raise "no matching matchway"
         end
