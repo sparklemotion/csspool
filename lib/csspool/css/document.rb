@@ -25,6 +25,7 @@ module CSSPool
       attr_accessor :namespaces
       attr_accessor :parent
       attr_accessor :parent_import_rule
+      attr_accessor :keyframes_rules
 
       def initialize
         @rule_sets    = []
@@ -34,6 +35,7 @@ module CSSPool
         @namespaces   = []
         @parent       = nil
         @parent_import_rule = nil
+        @keyframes_rules = []
       end
 
       def [] selector
