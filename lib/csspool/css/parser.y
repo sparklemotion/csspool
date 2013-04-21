@@ -509,7 +509,7 @@ def interpret_identifier s
 end
 
 def interpret_uri s
-  interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+  interpret_escapes s.match(/^url\((.*)\)$/mui)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
 end
 
 def interpret_string_no_quote s
