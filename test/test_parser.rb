@@ -101,5 +101,24 @@ module CSSPool
       eocss
       assert_match 'http://example.com', doc.to_css
     end
+
+    def test_uri_linefeed_n
+      doc = CSSPool.CSS "div { background: url('http://\\\nexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_r
+      doc = CSSPool.CSS "div { background: url('http://\\\rexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\rexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_rn
+      doc = CSSPool.CSS "div { background: url('http://\\\r\nexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\r\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
   end
 end
