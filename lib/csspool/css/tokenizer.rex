@@ -7,6 +7,10 @@ macro
   w         [\s]*
   nonascii  [^\0-\177]
   num       ([0-9]*\.[0-9]+|[0-9]+)
+  length    {num}(px|cm|mm|in|pt|pc)
+  percentage {num}%
+  ems       {num}em
+  exs       {num}ex
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
   nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
   vendorprefix \-[A-Za-z]+\-
@@ -24,6 +28,12 @@ macro
   invalid2  '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*
   invalid   ({invalid1}|{invalid2})
   comment   \/\*(.|{w})*?\*\/
+
+  unit      ({num}|{length}|{percentage}|{ems}|{exs})
+  product   {unit}({w}(\*{w}{unit}|\/{w}{num}))*
+  sum       {product}([\s]+[\+\-][\s]+{product})*
+  calc      ({vendorprefix})?calc\({w}{sum}{w}\)
+  math      {calc}{w}
 
 rule
 
@@ -46,6 +56,8 @@ rule
             # functions that can take an unquoted string parameter
             (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
             (domain|url\-prefix)\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
+
+            {w}{math}{w}     { [:MATH, st(text)] }
 
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
@@ -76,15 +88,15 @@ rule
             {w};{w}          { [:SEMI, st(';')] }
             \*               { [:STAR, st(text)] }
             {w}~{w}          { [:TILDE, st(text)] }
-            {w}{num}em{w}    { [:EMS, st(text)] }
-            {w}{num}ex{w}    { [:EXS, st(text)] }
+            {w}{ems}{w}      { [:EMS, st(text)] }
+            {w}{exs}{w}      { [:EXS, st(text)] }
 
-            {w}{num}(px|cm|mm|in|pt|pc){w}    { [:LENGTH, st(text)] }
+            {w}{length}{w}   { [:LENGTH, st(text)] }
             {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }
             {w}{num}(ms|s){w} { [:TIME, st(text)] }
             {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
 
-            {w}{num}%{w}     { [:PERCENTAGE, st(text)] }
+            {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
             {w}{num}{w}      { [:NUMBER, st(text)] }
             {w}\/\/{w}       { [:DOUBLESLASH, st(text)] }
             {w}\/{w}         { [:SLASH, st('/')] }

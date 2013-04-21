@@ -11,6 +11,7 @@ token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 token NAMESPACE_SYM NOT_PSEUDO_CLASS
 token NAMESPACE_SYM KEYFRAMES_SYM
 token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
+token NAMESPACE_SYM MATH
 
 rule
   document
@@ -421,6 +422,7 @@ rule
     | string
     | uri
     | hexcolor
+    | math
     | function
     ;
   function
@@ -440,6 +442,14 @@ rule
         parts = val.first.split('(')
         name = interpret_identifier parts.first
         result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
+      }
+    ;
+  math
+    : MATH {
+        parts = val.first.split('(', 2)
+        name = parts[0].strip
+        expression = parts[1][0..parts[1].rindex(')')-1].strip
+        result = Terms::Math.new(name, expression)
       }
     ;
   hexcolor
