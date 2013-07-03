@@ -35,7 +35,20 @@ module CSSPool
           div { background: red, blue; }
         }
       eocss
-      assert_equal 1, doc.rule_sets.first.media.media_list.length
+      assert_equal 1, doc.rule_sets.first.media_query_list.length
+    end
+
+    def test_invalid_media_query_list
+      # needs to have space after 'and'
+      css = <<-eocss
+        @media all and(color) {
+          div { background: red, blue; }
+        }
+      eocss
+      skip
+      assert_raises Racc::ParseError do
+        CSSPool::CSS(css)
+      end
     end
 
     def test_universal_to_css

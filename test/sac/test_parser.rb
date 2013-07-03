@@ -90,6 +90,7 @@ module CSSPool
         assert_nil simple_selector.additional_selectors.first.extra
       end
 
+      # div#a, a.foo, a::hover, a[href][int="10"]{ background: red; }
       def test_attribute_selector
         selectors_for_rule = @doc.start_selectors[1]
         selector = selectors_for_rule[3] # => a[href][int="10"]

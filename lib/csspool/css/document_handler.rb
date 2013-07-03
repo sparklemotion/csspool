@@ -17,11 +17,11 @@ module CSSPool
         @document.charsets << CSS::Charset.new(name, location)
       end
 
-      def import_style media_list, uri, ns = nil, loc = {}
+      def import_style media, uri, ns = nil, loc = {}
         @document.import_rules << CSS::ImportRule.new(
           uri,
           ns,
-          media_list,
+          media,
           @document,
           loc
         )
@@ -49,11 +49,11 @@ module CSSPool
         rs.declarations << Declaration.new(name, exp, important, rs)
       end
 
-      def start_media media_list, parse_location = {}
-        @conditional_stack << CSS::Media.new(media_list, parse_location)
+      def start_media media_query_list, parse_location = {}
+        @conditional_stack << media_query_list
       end
 
-      def end_media media_list, parse_location = {}
+      def end_media media_query_list, parse_location = {}
         @conditional_stack.pop
       end
 

@@ -1,17 +1,17 @@
 class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
-token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
+token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH LPAREN RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
-token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
-token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
-token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM TILDE
-token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
-token NAMESPACE_SYM NOT_PSEUDO_CLASS
-token NAMESPACE_SYM KEYFRAMES_SYM
-token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
+token IMPORTANT_SYM MEDIA_SYM NOT ONLY AND NTH_PSEUDO_CLASS
+token DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
+token TILDE
+token PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
+token NOT_PSEUDO_CLASS
+token KEYFRAMES_SYM
+token MATCHES_PSEUDO_CLASS
 token NAMESPACE_SYM MATH
+token RESOLUTION
 
 rule
   document
@@ -33,7 +33,7 @@ rule
     ;
   import
     : IMPORT_SYM import_location medium SEMI {
-        @handler.import_style [val[2]].flatten, val[1]
+        @handler.import_style val[2], val[1]
       }
     | IMPORT_SYM import_location SEMI {
         @handler.import_style [], val[1]
@@ -54,10 +54,46 @@ rule
     ;
   medium
     : medium COMMA IDENT {
-        result = [val.first, Terms::Ident.new(interpret_identifier val.last)]
+        result = val[0] << MediaType.new(val[2])
       }
     | IDENT {
-        result = Terms::Ident.new interpret_identifier val.first
+        result = [MediaType.new(val[0])]
+      }
+    ;
+  media_query_list
+    : media_query                           { result = MediaQueryList.new([ val[0] ]) }
+    | media_query_list COMMA media_query    { result = val[0] << val[2] }
+    |                                       { result = MediaQueryList.new }
+    ;
+  media_query
+    : optional_only_or_not media_type optional_and_exprs   { result = MediaQuery.new(val[0], val[1], val[2]) }
+    | media_expr optional_and_exprs                        { result = MediaQuery.new(nil, val[0], val[1]) }
+    ;
+  optional_only_or_not
+    : ONLY S              { result = :only }
+    | NOT S               { result = :not }
+    |                     { result = nil }
+    ;
+  media_type
+    : IDENT               { result = MediaType.new(val[0]) }
+    ;
+  media_expr
+    : LPAREN optional_space IDENT optional_space RPAREN                            { result = MediaType.new(val[2]) }
+    | LPAREN optional_space IDENT optional_space ':' optional_space expr RPAREN    { result = MediaFeature.new(val[2], val[6][0]) }
+    ;
+  optional_space
+    : S                 { result = val[0] }
+    |                   { result = nil }
+    ;
+  optional_and_exprs
+    : optional_and_exprs S AND media_expr  { result = val[0] << val[3] }
+    |                                      { result = [] }
+    ;
+  resolution
+    : RESOLUTION {
+        unit = val.first.gsub(/[\s\d.]/, '')
+        number = numeric(val.first)
+        result = Terms::Resolution.new(number, unit)
       }
     ;
   body
@@ -72,15 +108,19 @@ rule
     : media
     | document_query
     ;
+  body_in_media
+    : body
+    | empty_ruleset
+    ;
   media
-    : start_media body RBRACE { @handler.end_media val.first }
+    : start_media body_in_media RBRACE { @handler.end_media val.first }
     ;
   start_media
-    : MEDIA_SYM medium LBRACE {
-        result = [val[1]].flatten
+    : MEDIA_SYM media_query_list LBRACE {
+        result = val[1]
         @handler.start_media result
       }
-    | MEDIA_SYM LBRACE { result = [] }
+    | MEDIA_SYM LBRACE { result = MediaQueryList.new }
     ;
   document_query
     : start_document_query body RBRACE { @handler.end_document_query }
@@ -144,6 +184,12 @@ rule
         @handler.end_selector val.first
       }
     ;
+  empty_ruleset
+    : optional_space {
+        start = @handler.start_selector([])
+        @handler.end_selector(start)
+      }
+    ;
   start_selector
     : S start_selector { result = val.last }
     | selectors LBRACE {
@@ -153,9 +199,8 @@ rule
   selectors
     : selector COMMA selectors
       {
-        # FIXME: should always garantee array
         sel = Selector.new(val.first, {})
-        result = [sel, val[2]].flatten
+        result = [sel].concat(val[2])
       }
     | selector
       {
@@ -165,7 +210,7 @@ rule
   selector
     : simple_selector combinator selector
       {
-        val = val.flatten
+        val.flatten!
         val[2].combinator = val.delete_at 1
         result = val
       }
@@ -424,6 +469,7 @@ rule
     | hexcolor
     | math
     | function
+    | resolution
     ;
   function
     : function S { result = val.first }

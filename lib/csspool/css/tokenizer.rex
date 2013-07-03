@@ -45,7 +45,8 @@ rule
             {w}{comment}{w}  { next_token }
 
             # this one takes a selector as a parameter
-            not\(\s*         { [:NOT_PSEUDO_CLASS, st(text)] }
+            not\({w}            { [:NOT_PSEUDO_CLASS, st(text)] }
+            and|only|not        { [text.upcase.intern, st(text)] }
 
             # this one takes an "nth" value
             (nth\-child|nth\-last\-child|nth\-of\-type|nth\-last\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
@@ -57,7 +58,7 @@ rule
             (domain|url\-prefix)\({w}{string}{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
             (domain|url\-prefix)\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:FUNCTION_NO_QUOTE, st(text)] }
 
-            {w}{math}{w}     { [:MATH, st(text)] }
+            {w}{math}        { [:MATH, st(text)] }
 
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
@@ -78,6 +79,7 @@ rule
             {w}!={w}         { [:NOT_EQUAL, st(text)] }
             {w}={w}          { [:EQUAL, st(text)] }
             {w}\)            { [:RPAREN, st(text)] }
+            {w}\(            { [:LPAREN, st(text)] }
             \[{w}            { [:LSQUARE, st(text)] }
             {w}\]            { [:RSQUARE, st(text)] }
             {w}\+{w}         { [:PLUS, st(text)] }
@@ -95,6 +97,7 @@ rule
             {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }
             {w}{num}(ms|s){w} { [:TIME, st(text)] }
             {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
+            {w}{num}(dpi|dpcm) { [:RESOLUTION, st(text)]}
 
             {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
             {w}{num}{w}      { [:NUMBER, st(text)] }
@@ -104,8 +107,8 @@ rule
             -->              { [:CDC, st(text)] }
             {w}\-(?!{ident}){w}   { [:MINUS, st(text)] }
             {w}\+{w}         { [:PLUS, st(text)] }
-            
-            
+
+
             [\s]+            { [:S, st(text)] }
             {string}         { [:STRING, st(text)] }
             {invalid}        { [:INVALID, st(text)] }

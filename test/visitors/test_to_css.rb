@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'helper'
 
 module CSSPool
@@ -21,15 +22,15 @@ module CSSPool
         selectors = %w{* p #id .cl :hover ::selection [href]}
         combinators = ['', ' ', ' > ', ' + ']
 
-        combinations = selectors.product(combinators).map do |s,c| 
-          if s != '*' && c != '' then
+        combinations = selectors.product(combinators).map do |s,c|
+          if s != '*' && c != ''
             s + c
           end
         end.compact
         combinations = combinations.product(selectors).map { |s,c| s + c}
 
         combinations.each do |s|
-          doc = CSSPool.CSS s + ' { }'
+          doc = CSSPool.CSS(s + ' { }')
           assert_equal s, doc.rule_sets.first.selectors.first.to_css
         end
 
@@ -105,10 +106,10 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media.media_list.length
+        assert_equal 1, doc.rule_sets.first.media_query_list.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 1, doc.rule_sets.first.media.media_list.length
+        assert_equal 1, doc.rule_sets.first.media_query_list.length
       end
 
       def test_multiple_media
@@ -121,12 +122,100 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 2, doc.rule_sets.first.media.media_list.length
-        assert_equal 1, doc.rule_sets[1].media.media_list.length
+        assert_equal 2, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets[1].media_query_list.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 2, doc.rule_sets.first.media.media_list.length
-        assert_equal 1, doc.rule_sets[1].media.media_list.length
+        assert_equal 2, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets[1].media_query_list.length
+      end
+
+      def test_media_feature_space_after_colon
+        css = <<eocss.chomp
+@media (orientation: portrait) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub(' portrait', 'portrait'), doc.to_css
+      end
+
+      def test_media_feature_space_before_colon
+        css = <<eocss.chomp
+@media (orientation :portrait) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub(' :portrait', ':portrait'), doc.to_css
+      end
+
+      def test_media_features_with_and
+        css = <<eocss.chomp
+@media screen and (min-width:400px) AND (max-width:600px) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub('AND', 'and'), doc.to_css
+        assert_equal 1, doc.rule_sets.first.media.size
+      end
+
+      def test_media_query_with_only_and_not
+        css = <<eocss.chomp
+@media print and (min-width:200pt) and (max-color:16), not screen and (max-width:400px) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal 2, doc.rule_sets.first.media.size
+        assert_equal css, doc.to_css
+      end
+
+      def test_media_query_with_resolution
+        css = <<eocss.chomp
+@media screen and (min-resolution:800dpi) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css, doc.to_css
+      end
+
+      def test_media_query_list_with_empty_ruleset
+        css = <<eocss.chomp
+@media screen and ( min-width: 800px ) {
+
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal 1, doc.rule_sets.size
+        assert doc.rule_sets.first.selectors.empty?
+        assert doc.rule_sets.first.declarations.empty?
+        assert_equal css.sub('( min-width: 800px )', '(min-width:800px)'), doc.to_css
+      end
+
+      def test_empty_media_query_list
+        css = <<eocss.chomp
+@media {
+  div {
+    background: red;
+  }
+}
+eocss
+        expected = "div {\n  background: red;\n}"
+        doc = CSSPool.CSS(css)
+        assert_equal expected, doc.to_css
       end
 
       def test_import
@@ -177,7 +266,7 @@ module CSSPool
         end
       end
 
-      def test_selector_psuedo
+      def test_selector_pseudo
         input_output = {
           "pseudo" => ":pseudo",
           "\"quotes\"" => ":\\000022quotes\\000022",

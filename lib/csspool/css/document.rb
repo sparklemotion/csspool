@@ -40,7 +40,7 @@ module CSSPool
 
       def [] selector
         selectors = CSSPool.CSS("#{selector} {}").rule_sets.first.selectors
-        rule_sets.find_all { |rs| rs.selectors == selectors}
+        rule_sets.find_all { |rs| rs.selectors == selectors }
       end
     end
   end
