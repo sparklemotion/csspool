@@ -48,6 +48,50 @@ module CSSPool
       rs.declarations.each { |del| assert_equal rs, del.rule_set }
     end
 
+    def test_general_sibling_selector
+      doc = CSSPool.CSS <<-eocss
+        a ~ b { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal :~, rs.selectors.first.simple_selectors[1].combinator
+    end
+
+    def test_attribute_prefix_match
+      doc = CSSPool.CSS <<-eocss
+        a[href^="http"] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Attribute, rs.selectors.first.simple_selectors.first.additional_selectors.first.class
+      assert_equal Selectors::Attribute::PREFIXMATCH, rs.selectors.first.simple_selectors.first.additional_selectors.first.match_way
+    end
+
+    def test_attribute_suffix_match
+      doc = CSSPool.CSS <<-eocss
+        a[href$="http"] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Attribute, rs.selectors.first.simple_selectors.first.additional_selectors.first.class
+      assert_equal Selectors::Attribute::SUFFIXMATCH, rs.selectors.first.simple_selectors.first.additional_selectors.first.match_way
+    end
+
+    def test_attribute_substring_match
+      doc = CSSPool.CSS <<-eocss
+        a[href*="http"] { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal Selectors::Attribute, rs.selectors.first.simple_selectors.first.additional_selectors.first.class
+      assert_equal Selectors::Attribute::SUBSTRINGMATCH, rs.selectors.first.simple_selectors.first.additional_selectors.first.match_way
+    end
+
+    def test_not_pseudo_class
+      doc = CSSPool.CSS <<-eocss
+        a:not(b) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'a', rs.selectors.first.simple_selectors.first.name
+      assert_equal ':not(b)', rs.selectors.first.simple_selectors.first.additional_selectors.first.to_s
+    end
+
     def test_nth_integer
       doc = CSSPool.CSS <<-eocss
         a:nth-child(1) { background: red; }
@@ -181,6 +225,22 @@ module CSSPool
       rs = doc.rule_sets.first
       assert_equal '*', rs.selectors.first.simple_selectors.first.additional_selectors.first.namespace
       assert_equal 'c', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_matches_pseudoclass
+      doc = CSSPool.CSS <<-eocss
+        :matches(section, article, aside, nav) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal 'section, article, aside, nav', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_matches_pseudoclass_complex
+      doc = CSSPool.CSS <<-eocss
+        :matches(#id[attribute="selector"], #main-id[another="attribute"]) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '#id[attribute="selector"], #main-id[another="attribute"]', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
     end
 
   end

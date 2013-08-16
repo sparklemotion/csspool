@@ -4,9 +4,14 @@ token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
-token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
-token IMPORTANT_SYM MEDIA_SYM
+token DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token NAMESPACE_SYM SUPPORTS_SYM QUERY_NOT QUERY_OR QUERY_AND
+token TILDE 
+token PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
+token NOT_PSEUDO_CLASS
+token KEYFRAMES_SYM
+token MATCHES_PSEUDO_CLASS
+token MATH
 
 rule
   document
@@ -58,8 +63,10 @@ rule
   body
     : ruleset body
     | conditional_rule body
+    | keyframes_rule body
     | ruleset
     | conditional_rule
+    | keyframes_rule
     ;
   conditional_rule
     : media
@@ -139,6 +146,38 @@ rule
   supports_declaration_condition
     : '(' declaration_internal RPAREN { result = val.join('') }
     | '(' S declaration_internal RPAREN { result = val.join('') }
+  ;
+  keyframes_rule
+    : start_keyframes_rule keyframes_blocks RBRACE
+    | start_keyframes_rule RBRACE
+    ;
+  start_keyframes_rule
+    : KEYFRAMES_SYM IDENT LBRACE {
+        @handler.start_keyframes_rule val[1]
+      }
+    ;
+  keyframes_blocks
+    : keyframes_block keyframes_blocks
+    | keyframes_block
+    ;
+  keyframes_block
+    : start_keyframes_block declarations RBRACE { @handler.end_keyframes_block }
+    | start_keyframes_block RBRACE { @handler.end_keyframes_block }
+    ;
+  start_keyframes_block
+    : keyframes_selectors LBRACE {
+        @handler.start_keyframes_block val[0]
+      }
+    ;
+  keyframes_selectors
+    | keyframes_selector COMMA keyframes_selectors {
+         result = val[0] + ', ' + val[2]
+      }
+    | keyframes_selector
+    ;
+  keyframes_selector
+    : IDENT
+    | PERCENTAGE { result = val[0].strip }
     ;
   ruleset
     : start_selector declarations RBRACE {
@@ -179,6 +218,7 @@ rule
     : S       { result = :s }
     | GREATER { result = :> }
     | PLUS    { result = :+ }
+    | TILDE   { result = :~ }
     ;
   simple_selector
     : element_name hcap {
@@ -193,6 +233,10 @@ rule
         ss.additional_selectors = val.flatten
         result = [ss]
       }
+    ;
+  simple_selectors
+    : simple_selector COMMA simple_selectors { result = [val[0], val[2]].flatten }
+    | simple_selector
     ;
   ident_with_namespace
     : IDENT { result = [interpret_identifier(val[0]), nil] }
@@ -275,6 +319,54 @@ rule
           val[1][1]
         )
       }
+    | LSQUARE ident_with_namespace PREFIXMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_identifier(val[3]),
+          Selectors::Attribute::PREFIXMATCH,
+          val[1][1]
+        )
+      }
+    | LSQUARE ident_with_namespace PREFIXMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_string(val[3]),
+          Selectors::Attribute::PREFIXMATCH,
+          val[1][1]
+        )
+      }
+    | LSQUARE ident_with_namespace SUFFIXMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_identifier(val[3]),
+          Selectors::Attribute::SUFFIXMATCH,
+          val[1][1]
+        )
+      }
+    | LSQUARE ident_with_namespace SUFFIXMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_string(val[3]),
+          Selectors::Attribute::SUFFIXMATCH,
+          val[1][1]
+        )
+      }
+    | LSQUARE ident_with_namespace SUBSTRINGMATCH IDENT RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_identifier(val[3]),
+          Selectors::Attribute::SUBSTRINGMATCH,
+          val[1][1]
+        )
+      }
+    | LSQUARE ident_with_namespace SUBSTRINGMATCH STRING RSQUARE {
+        result = Selectors::Attribute.new(
+          val[1][0],
+          interpret_string(val[3]),
+          Selectors::Attribute::SUBSTRINGMATCH,
+          val[1][1]
+        )
+      }
     | LSQUARE ident_with_namespace RSQUARE {
         result = Selectors::Attribute.new(
           val[1][0],
@@ -305,10 +397,22 @@ rule
           interpret_identifier(val[2])
         )
       }
+    | ':' NOT_PSEUDO_CLASS simple_selector RPAREN {
+        result = Selectors::PseudoClass.new(
+          'not',
+          val[2].first.to_s
+        )
+      }
     | ':' NTH_PSEUDO_CLASS {
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\(.*/, '')),
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
+        )
+      }
+    | ':' MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
+        result = Selectors::PseudoClass.new(
+          val[1].split('(').first.strip,
+          val[2].join(', ')
         )
       }
     ;
@@ -365,6 +469,7 @@ rule
     | string
     | uri
     | hexcolor
+    | math
     | function
     ;
   function
@@ -384,6 +489,14 @@ rule
         parts = val.first.split('(')
         name = interpret_identifier parts.first
         result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
+      }
+    ;
+  math
+    : MATH {
+        parts = val.first.split('(', 2)
+        name = parts[0].strip
+        expression = parts[1][0..parts[1].rindex(')')-1].strip
+        result = Terms::Math.new(name, expression)
       }
     ;
   hexcolor
@@ -453,7 +566,7 @@ def interpret_identifier s
 end
 
 def interpret_uri s
-  interpret_escapes s.match(/^url\((.*)\)$/mu)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
+  interpret_escapes s.match(/^url\((.*)\)$/mui)[1].strip.match(/^(['"]?)((?:\\.|.)*)\1$/mu)[2]
 end
 
 def interpret_string_no_quote s

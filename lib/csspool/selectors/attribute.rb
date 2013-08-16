@@ -11,6 +11,9 @@ module CSSPool
       EQUALS    = 2
       INCLUDES  = 3
       DASHMATCH = 4
+      PREFIXMATCH = 5
+      SUFFIXMATCH = 6
+      SUBSTRINGMATCH = 7
 
       def initialize name, value, match_way, namespace = nil
         @name = name

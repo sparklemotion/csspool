@@ -1,6 +1,7 @@
 .autotest
 CHANGELOG.rdoc
 Gemfile
+Gemfile.lock
 Manifest.txt
 README.rdoc
 Rakefile
@@ -13,6 +14,8 @@ lib/csspool/css/document.rb
 lib/csspool/css/document_handler.rb
 lib/csspool/css/document_query.rb
 lib/csspool/css/import_rule.rb
+lib/csspool/css/keyframes_block.rb
+lib/csspool/css/keyframes_rule.rb
 lib/csspool/css/media.rb
 lib/csspool/css/namespace_rule.rb
 lib/csspool/css/parser.rb
@@ -41,6 +44,7 @@ lib/csspool/terms.rb
 lib/csspool/terms/function.rb
 lib/csspool/terms/hash.rb
 lib/csspool/terms/ident.rb
+lib/csspool/terms/math.rb
 lib/csspool/terms/number.rb
 lib/csspool/terms/rgb.rb
 lib/csspool/terms/string.rb
@@ -51,9 +55,11 @@ lib/csspool/visitors/comparable.rb
 lib/csspool/visitors/iterator.rb
 lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
+test/_local_helper.rb
 test/css/test_document.rb
 test/css/test_document_query.rb
 test/css/test_import_rule.rb
+test/css/test_keyframes_rule.rb
 test/css/test_namespace_rule.rb
 test/css/test_parser.rb
 test/css/test_supports_rule.rb
@@ -67,6 +73,7 @@ test/test_collection.rb
 test/test_declaration.rb
 test/test_parser.rb
 test/test_selector.rb
+test/test_term.rb
 test/visitors/test_children.rb
 test/visitors/test_comparable.rb
 test/visitors/test_each.rb
