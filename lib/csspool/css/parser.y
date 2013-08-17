@@ -4,14 +4,14 @@ token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
-token IMPORTANT_SYM MEDIA_SYM DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
-token IMPORTANT_SYM MEDIA_SYM
-token NAMESPACE_SYM TILDE
-token NAMESPACE_SYM PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
-token NAMESPACE_SYM NOT_PSEUDO_CLASS
-token NAMESPACE_SYM KEYFRAMES_SYM
-token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
-token NAMESPACE_SYM MATH
+token DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
+token NAMESPACE_SYM SUPPORTS_SYM
+token TILDE 
+token PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
+token NOT_PSEUDO_CLASS
+token KEYFRAMES_SYM
+token MATCHES_PSEUDO_CLASS
+token MATH
 
 rule
   document
@@ -71,6 +71,7 @@ rule
   conditional_rule
     : media
     | document_query
+    | supports
     ;
   media
     : start_media body RBRACE { @handler.end_media val.first }
@@ -104,6 +105,47 @@ rule
     | function
     | uri
     ;
+  supports
+    : start_supports body RBRACE { @handler.end_supports }
+    | start_supports RBRACE { @handler.end_supports }
+    ;
+  start_supports
+    : SUPPORTS_SYM supports_condition_root LBRACE {
+        @handler.start_supports val[1]
+      }
+    ;
+  supports_condition_root
+    : supports_negation { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_condition
+    : supports_negation { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_condition_in_parens
+    : '(' supports_condition RPAREN { result = val.join('') }
+    | '(' S supports_condition RPAREN { result = val.join('') }
+    | supports_declaration_condition { result = val.join('') }
+    ;
+  supports_negation
+    : IDENT S supports_condition_in_parens {
+        throw Racc::ParseError.new("Invalid @supports statement '#{val.join('')}'") unless val[0] == 'not'
+        result = val.join('')
+      }
+    ;
+  supports_conjunction_or_disjunction
+    : supports_condition_in_parens S IDENT S supports_condition_in_parens { 
+        throw Racc::ParseError.new("Invalid @supports statement '#{val.join('')}'") unless ['and', 'or'].include?(val[2])
+        result = val.join('')
+    }
+    | supports_conjunction_or_disjunction S IDENT S supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_declaration_condition
+    : '(' declaration_internal RPAREN { result = val.join('') }
+    | '(' S declaration_internal RPAREN { result = val.join('') }
+  ;
   keyframes_rule
     : start_keyframes_rule keyframes_blocks RBRACE
     | start_keyframes_rule RBRACE
@@ -386,14 +428,18 @@ rule
     | one_or_more_semis
     ;
   declaration
+    : declaration_internal
+      { @handler.property val.first }
+    ;
+  declaration_internal
     : property ':' expr prio
-      { @handler.property val.first, val[2], val[3] }
+      { result = Declaration.new(val.first, val[2], val[3]) }
     | property ':' S expr prio
-      { @handler.property val.first, val[3], val[4] }
+      { result = Declaration.new(val.first, val[3], val[4]) }
     | property S ':' expr prio
-      { @handler.property val.first, val[3], val[4] }
+      { result = Declaration.new(val.first, val[3], val[4]) }
     | property S ':' S expr prio
-      { @handler.property val.first, val[4], val[5] }
+      { result = Declaration.new(val.first, val[4], val[5]) }
     ;
   prio
     : IMPORTANT_SYM { result = true }
