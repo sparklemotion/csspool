@@ -5,7 +5,7 @@ token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH RPAREN FUNCTION GREATER PLUS
 token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NTH_PSEUDO_CLASS
 token DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
-token NAMESPACE_SYM SUPPORTS_SYM QUERY_NOT QUERY_OR QUERY_AND
+token NAMESPACE_SYM SUPPORTS_SYM
 token TILDE 
 token PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 token NOT_PSEUDO_CLASS
@@ -114,17 +114,14 @@ rule
         @handler.start_supports val[1]
       }
     ;
-  # don't eat the whitespace QUERY_NOT needs
   supports_condition_root
     : supports_negation { result = val.join('') }
-    | S supports_conjunction { result = val.join('') }
-    | S supports_disjunction { result = val.join('') }
-    | S supports_condition_in_parens { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
     ;
   supports_condition
     : supports_negation { result = val.join('') }
-    | supports_conjunction { result = val.join('') }
-    | supports_disjunction { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
     | supports_condition_in_parens { result = val.join('') }
     ;
   supports_condition_in_parens
@@ -133,15 +130,17 @@ rule
     | supports_declaration_condition { result = val.join('') }
     ;
   supports_negation
-    : QUERY_NOT supports_condition_in_parens { result = val.join('') }
+    : IDENT S supports_condition_in_parens {
+        throw Racc::ParseError.new("Invalid @supports statement '#{val.join('')}'") unless val[0] == 'not'
+        result = val.join('')
+      }
     ;
-  supports_conjunction
-    : supports_condition_in_parens QUERY_AND supports_condition_in_parens { result = val.join('') }
-    | supports_conjunction QUERY_AND supports_condition_in_parens { result = val.join('') }
-    ;
-  supports_disjunction
-    : supports_condition_in_parens QUERY_OR supports_condition_in_parens { result = val.join('') }
-    | supports_disjunction QUERY_OR supports_condition_in_parens { result = val.join('') }
+  supports_conjunction_or_disjunction
+    : supports_condition_in_parens S IDENT S supports_condition_in_parens { 
+        throw Racc::ParseError.new("Invalid @supports statement '#{val.join('')}'") unless ['and', 'or'].include?(val[2])
+        result = val.join('')
+    }
+    | supports_conjunction_or_disjunction S IDENT S supports_condition_in_parens { result = val.join('') }
     ;
   supports_declaration_condition
     : '(' declaration_internal RPAREN { result = val.join('') }

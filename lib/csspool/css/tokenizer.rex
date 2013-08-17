@@ -65,17 +65,11 @@ rule
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@media{w}     { [:MEDIA_SYM, st(text)] }
             {w}@document{w}  { [:DOCUMENT_QUERY_SYM, st(text)] }
-            # no {w} at the end because QUERY_NOT (which requires whitespace) may come immediately after
-            {w}@supports     { [:SUPPORTS_SYM, st(text)] }
+            {w}@supports{w}  { [:SUPPORTS_SYM, st(text)] }
             {w}@({vendorprefix})?document{w} { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
             {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
-
-            # these require whitespace around them so that things like ".notification" are not matched
-            [\s]+not[\s]+    { [:QUERY_NOT, st(text)] }
-            [\s]+and[\s]+    { [:QUERY_AND, st(text)] }
-            [\s]+or[\s]+     { [:QUERY_OR, st(text)] }
 
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }

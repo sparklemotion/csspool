@@ -86,9 +86,37 @@ module CSSPool
         doc = CSSPool.CSS <<-eocss
           /* and */
           .and { display: flexbox; content: " and ";}
+          and { and: and; }
         eocss
       end
 
+      def test_invalid_keyword_in_place_of_and_or
+        exception_happened = false
+        begin
+          doc = CSSPool.CSS <<-eocss
+            @supports ( display: flexbox ) xor ( display: block ) {
+              body { display: flexbox; }
+            }
+          eocss
+        rescue
+          exception_happened = true
+        end
+        assert exception_happened
+      end
+
+      def test_invalid_keyword_in_place_of_not
+        exception_happened = false
+        begin
+          doc = CSSPool.CSS <<-eocss
+            @supports isnt ( display: flexbox ) {
+              body { display: flexbox; }
+            }
+          eocss
+        rescue
+          exception_happened = true
+        end
+        assert exception_happened
+      end
     end
   end
 end
