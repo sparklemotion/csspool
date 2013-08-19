@@ -16,7 +16,10 @@ lib/csspool/css/document_query.rb
 lib/csspool/css/import_rule.rb
 lib/csspool/css/keyframes_block.rb
 lib/csspool/css/keyframes_rule.rb
-lib/csspool/css/media.rb
+lib/csspool/css/media_feature.rb
+lib/csspool/css/media_query.rb
+lib/csspool/css/media_query_list.rb
+lib/csspool/css/media_type.rb
 lib/csspool/css/namespace_rule.rb
 lib/csspool/css/parser.rb
 lib/csspool/css/parser.y
@@ -45,6 +48,7 @@ lib/csspool/terms/hash.rb
 lib/csspool/terms/ident.rb
 lib/csspool/terms/math.rb
 lib/csspool/terms/number.rb
+lib/csspool/terms/resolution.rb
 lib/csspool/terms/rgb.rb
 lib/csspool/terms/string.rb
 lib/csspool/terms/uri.rb
@@ -54,11 +58,11 @@ lib/csspool/visitors/comparable.rb
 lib/csspool/visitors/iterator.rb
 lib/csspool/visitors/to_css.rb
 lib/csspool/visitors/visitor.rb
-test/_local_helper.rb
 test/css/test_document.rb
 test/css/test_document_query.rb
 test/css/test_import_rule.rb
 test/css/test_keyframes_rule.rb
+test/css/test_media_rule.rb
 test/css/test_namespace_rule.rb
 test/css/test_parser.rb
 test/css/test_tokenizer.rb

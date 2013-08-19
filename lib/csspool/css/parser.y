@@ -12,6 +12,7 @@ token KEYFRAMES_SYM
 token MATCHES_PSEUDO_CLASS
 token NAMESPACE_SYM MATH
 token RESOLUTION
+token COLON
 
 rule
   document
@@ -70,8 +71,8 @@ rule
     | media_expr optional_and_exprs                        { result = MediaQuery.new(nil, val[0], val[1]) }
     ;
   optional_only_or_not
-    : ONLY S              { result = :only }
-    | NOT S               { result = :not }
+    : ONLY                { result = :only }
+    | NOT                 { result = :not }
     |                     { result = nil }
     ;
   media_type
@@ -79,15 +80,15 @@ rule
     ;
   media_expr
     : LPAREN optional_space IDENT optional_space RPAREN                            { result = MediaType.new(val[2]) }
-    | LPAREN optional_space IDENT optional_space ':' optional_space expr RPAREN    { result = MediaFeature.new(val[2], val[6][0]) }
+    | LPAREN optional_space IDENT optional_space COLON optional_space expr RPAREN  { result = MediaFeature.new(val[2], val[6][0]) }
     ;
   optional_space
     : S                 { result = val[0] }
     |                   { result = nil }
     ;
   optional_and_exprs
-    : optional_and_exprs S AND media_expr  { result = val[0] << val[3] }
-    |                                      { result = [] }
+    : optional_and_exprs AND media_expr  { result = val[0] << val[2] }
+    |                                    { result = [] }
     ;
   resolution
     : RESOLUTION {

@@ -39,6 +39,28 @@ rule
 
 # [:state]  pattern  [actions]
 
+# "Logical queries", such as those used by @supports and @media, include keywords that match our IDENT pattern.
+# Including these as lexical words makes their use anywhere else (even inside other words!) not possible.
+# So we define a new state, and list the things that can occur.
+:LOGICQUERY {w}(and|only|not)[\s]+ { [text.upcase.strip.intern, st(text)] }
+:LOGICQUERY {w}{num}(dpi|dpcm)     { [:RESOLUTION, st(text)]}
+:LOGICQUERY {w}{ems}{w}      { [:EMS, st(text)] }
+:LOGICQUERY {w}{exs}{w}      { [:EXS, st(text)] }
+:LOGICQUERY {w}{length}{w}   { [:LENGTH, st(text)] }
+:LOGICQUERY {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }
+:LOGICQUERY {w}{num}(ms|s){w} { [:TIME, st(text)] }
+:LOGICQUERY {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
+:LOGICQUERY {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
+:LOGICQUERY {w}{num}{w}      { [:NUMBER, st(text)] }
+:LOGICQUERY {ident}          { [:IDENT, st(text)] }
+:LOGICQUERY {w},{w}          { [:COMMA, st(',')] }
+:LOGICQUERY {w}\)            { [:RPAREN, st(text)] }
+:LOGICQUERY {w}\(            { [:LPAREN, st(text)] }
+:LOGICQUERY \:               { [:COLON, st(text)] }
+# this marks the end of our logical query
+:LOGICQUERY {w}\{{w}         { @state = nil; [:LBRACE, st(text)] }
+:LOGICQUERY [\s]+            { [:S, st(text)] }
+
             url\({w}{string}{w}\) { [:URI, st(text)] }
             url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, st(text)] }
             U\+[0-9a-fA-F?]{1,6}(-[0-9a-fA-F]{1,6})?  {[:UNICODE_RANGE, st(text)] }
@@ -46,7 +68,6 @@ rule
 
             # this one takes a selector as a parameter
             not\({w}            { [:NOT_PSEUDO_CLASS, st(text)] }
-            and|only|not        { [text.upcase.intern, st(text)] }
 
             # this one takes an "nth" value
             (nth\-child|nth\-last\-child|nth\-of\-type|nth\-last\-of\-type)\({w}{nth}{w}\) { [:NTH_PSEUDO_CLASS, st(text)] }
@@ -60,14 +81,14 @@ rule
 
             {w}{math}        { [:MATH, st(text)] }
 
-            {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
-            {w}@media{w}     { [:MEDIA_SYM, st(text)] }
+            {w}@media{w}     { @state = :LOGICQUERY; [:MEDIA_SYM, st(text)] }
             {w}@({vendorprefix})?document{w} { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
             {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
+            {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }
@@ -97,7 +118,6 @@ rule
             {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }
             {w}{num}(ms|s){w} { [:TIME, st(text)] }
             {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
-            {w}{num}(dpi|dpcm) { [:RESOLUTION, st(text)]}
 
             {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
             {w}{num}{w}      { [:NUMBER, st(text)] }
