@@ -146,6 +146,47 @@ module CSSPool
       assert_equal 'even', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
     end
 
+    def test_mozilla_pseudo_element
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_brackets_without_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line() { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_single_parameter
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_multiple_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one, two, three) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    # -moz-tree-cell and -moz-tree-cell-text are both mozilla pseudo-elements, make sure we don't stop at -moz-tree-cell
+    def test_mozilla_pseudo_element_name_within
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-cell-text() { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-cell-text', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
     def test_element_with_namespace
       doc = CSSPool.CSS <<-eocss
         a|b { background: red; }

@@ -12,6 +12,7 @@ token NAMESPACE_SYM NOT_PSEUDO_CLASS
 token NAMESPACE_SYM KEYFRAMES_SYM
 token NAMESPACE_SYM MATCHES_PSEUDO_CLASS
 token NAMESPACE_SYM MATH
+token MOZ_PSEUDO_ELEMENT
 
 rule
   document
@@ -372,6 +373,24 @@ rule
           val[2].join(', ')
         )
       }
+    | ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[1].sub(/\($/, ''))
+        )
+      }
+    | ':' ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+        result = Selectors::PseudoElement.new(
+          interpret_identifier(val[2].sub(/\($/, ''))
+        )
+      }
+    ;
+  any_number_of_idents
+    :
+    | multiple_idents
+    ;
+  multiple_idents
+    : IDENT
+    | IDENT COMMA multiple_idents
     ;
   # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
   one_or_more_semis
