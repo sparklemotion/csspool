@@ -113,8 +113,9 @@ module CSSPool
       visitor_for CSS::Declaration do |target|
         important = target.important? ? ' !important' : ''
 
+        # only output indents and semicolons if this is in a ruleset
         indent {
-          "#{indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
+          "#{target.rule_set.nil? ? '' : indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
 
             op = '/' == exp.operator ? ' /' : exp.operator
 
@@ -122,7 +123,7 @@ module CSSPool
               op,
               exp.accept(self),
             ].join ' '
-          }.join.strip + "#{important};"
+          }.join.strip + important + (target.rule_set.nil? ? '' : ';')
         }
       end
 

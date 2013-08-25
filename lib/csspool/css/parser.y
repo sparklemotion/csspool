@@ -14,6 +14,8 @@ token NAMESPACE_SYM MATH
 token MOZ_PSEUDO_ELEMENT
 token RESOLUTION
 token COLON
+token SUPPORTS_SYM
+token OR
 
 rule
   document
@@ -109,6 +111,7 @@ rule
   conditional_rule
     : media
     | document_query
+    | supports
     ;
   body_in_media
     : body
@@ -146,6 +149,49 @@ rule
     | function
     | uri
     ;
+  supports
+    : start_supports body RBRACE { @handler.end_supports }
+    | start_supports RBRACE { @handler.end_supports }
+    ;
+  start_supports
+    : SUPPORTS_SYM supports_condition_root LBRACE {
+        @handler.start_supports val[1]
+      }
+    ;
+  supports_condition_root
+    : supports_negation { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_condition
+    : supports_negation { result = val.join('') }
+    | supports_conjunction_or_disjunction { result = val.join('') }
+    | supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_condition_in_parens
+    : LPAREN supports_condition RPAREN { result = val.join('') }
+    | LPAREN supports_condition RPAREN { result = val.join('') }
+    | supports_declaration_condition { result = val.join('') }
+    ;
+  supports_negation
+    : NOT supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_conjunction_or_disjunction
+    : supports_conjunction
+    | supports_disjunction
+    ;
+  supports_conjunction
+    : supports_condition_in_parens AND supports_condition_in_parens { result = val.join('') }
+    | supports_conjunction_or_disjunction AND supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_disjunction
+    : supports_condition_in_parens OR supports_condition_in_parens { result = val.join('') }
+    | supports_conjunction_or_disjunction OR supports_condition_in_parens { result = val.join('') }
+    ;
+  supports_declaration_condition
+    : LPAREN declaration_internal RPAREN { result = val.join('') }
+    | LPAREN S declaration_internal RPAREN { result = val.join('') }
+  ;
   keyframes_rule
     : start_keyframes_rule keyframes_blocks RBRACE
     | start_keyframes_rule RBRACE
@@ -381,50 +427,50 @@ rule
       }
     ;
   pseudo
-    : ':' IDENT {
+    : COLON IDENT {
         result = Selectors::pseudo interpret_identifier(val[1])
       }
-    | ':' ':' IDENT {
+    | COLON COLON IDENT {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[2])
         )
       }
-    | ':' FUNCTION RPAREN {
+    | COLON FUNCTION RPAREN {
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\($/, '')),
           ''
         )
       }
-    | ':' FUNCTION IDENT RPAREN {
+    | COLON FUNCTION IDENT RPAREN {
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\($/, '')),
           interpret_identifier(val[2])
         )
       }
-    | ':' NOT_PSEUDO_CLASS simple_selector RPAREN {
+    | COLON NOT_PSEUDO_CLASS simple_selector RPAREN {
         result = Selectors::PseudoClass.new(
           'not',
           val[2].first.to_s
         )
       }
-    | ':' NTH_PSEUDO_CLASS {
+    | COLON NTH_PSEUDO_CLASS {
         result = Selectors::PseudoClass.new(
           interpret_identifier(val[1].sub(/\(.*/, '')),
           interpret_identifier(val[1].sub(/.*\(/, '').sub(/\).*/, ''))
         )
       }
-    | ':' MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
+    | COLON MATCHES_PSEUDO_CLASS simple_selectors RPAREN {
         result = Selectors::PseudoClass.new(
           val[1].split('(').first.strip,
           val[2].join(', ')
         )
       }
-    | ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+    | COLON MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[1].sub(/\($/, ''))
         )
       }
-    | ':' ':' MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+    | COLON COLON MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[2].sub(/\($/, ''))
         )
@@ -451,14 +497,17 @@ rule
     | one_or_more_semis
     ;
   declaration
-    : property ':' expr prio
-      { @handler.property val.first, val[2], val[3] }
-    | property ':' S expr prio
-      { @handler.property val.first, val[3], val[4] }
-    | property S ':' expr prio
-      { @handler.property val.first, val[3], val[4] }
-    | property S ':' S expr prio
-      { @handler.property val.first, val[4], val[5] }
+    : declaration_internal { @handler.property val.first }
+    ;
+  declaration_internal
+    : property COLON expr prio
+      { result = Declaration.new(val.first, val[2], val[3]) }
+    | property COLON S expr prio
+      { result = Declaration.new(val.first, val[3], val[4]) }
+    | property S COLON expr prio
+      { result = Declaration.new(val.first, val[3], val[4]) }
+    | property S COLON S expr prio
+      { result = Declaration.new(val.first, val[4], val[5]) }
     ;
   prio
     : IMPORTANT_SYM { result = true }

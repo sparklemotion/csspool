@@ -12,7 +12,7 @@ module CSSPool
     class MyDoc < CSSPool::CSS::DocumentHandler
       attr_accessor :start_documents, :end_documents
       attr_accessor :charsets, :import_styles, :document_queries, :comments, :start_selectors
-      attr_accessor :end_selectors, :properties
+      attr_accessor :end_selectors, :properties, :supports_rules
 
       def initialize
         @start_documents  = []
@@ -26,8 +26,8 @@ module CSSPool
         @properties       = []
       end
 
-      def property name, expression, important
-        @properties << [name, expression]
+      def property declaration
+        @properties << [declaration.property, declaration.expressions]
       end
 
       def start_document

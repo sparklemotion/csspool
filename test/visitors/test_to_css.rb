@@ -315,9 +315,9 @@ eocss
 
       def test_property
         input_output = {
-          "property" => "  property: value;",
-          "colon:" => "  colon\\:: value;",
-          "space " => "  space\\ : value;"
+          "property" => "property: value",
+          "colon:" => "colon\\:: value",
+          "space " => "space\\ : value"
         }
         input_output.each_pair do |input, output|
           node = CSS::Declaration.new input, [Terms::Ident.new("value")], false, nil

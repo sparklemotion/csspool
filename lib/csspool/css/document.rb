@@ -22,6 +22,7 @@ module CSSPool
       attr_accessor :charsets
       attr_accessor :import_rules
       attr_accessor :document_queries
+      attr_accessor :supports_rules
       attr_accessor :namespaces
       attr_accessor :parent
       attr_accessor :parent_import_rule
@@ -32,6 +33,7 @@ module CSSPool
         @charsets     = []
         @import_rules = []
         @document_queries = []
+        @supports_rules = []
         @namespaces   = []
         @parent       = nil
         @parent_import_rule = nil

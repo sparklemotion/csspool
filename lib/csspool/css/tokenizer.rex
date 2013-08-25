@@ -42,7 +42,7 @@ rule
 # "Logical queries", such as those used by @supports and @media, include keywords that match our IDENT pattern.
 # Including these as lexical words makes their use anywhere else (even inside other words!) not possible.
 # So we define a new state, and list the things that can occur.
-:LOGICQUERY {w}(and|only|not)[\s]+ { [text.upcase.strip.intern, st(text)] }
+:LOGICQUERY {w}(and|only|not|or)[\s]+ { [text.upcase.strip.intern, st(text)] }
 :LOGICQUERY {w}{num}(dpi|dpcm)     { [:RESOLUTION, st(text)]}
 :LOGICQUERY {w}{ems}{w}      { [:EMS, st(text)] }
 :LOGICQUERY {w}{exs}{w}      { [:EXS, st(text)] }
@@ -57,6 +57,7 @@ rule
 :LOGICQUERY {w}\)            { [:RPAREN, st(text)] }
 :LOGICQUERY {w}\(            { [:LPAREN, st(text)] }
 :LOGICQUERY \:               { [:COLON, st(text)] }
+:LOGICQUERY {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
 # this marks the end of our logical query
 :LOGICQUERY {w}\{{w}         { @state = nil; [:LBRACE, st(text)] }
 :LOGICQUERY [\s]+            { [:S, st(text)] }
@@ -83,6 +84,8 @@ rule
             (\-moz\-non\-element|\-moz\-anonymous\-block|\-moz\-anonymous\-positioned\-block|\-moz\-mathml\-anonymous\-block|\-moz\-xul\-anonymous\-block|\-moz\-hframeset\-border|\-moz\-vframeset\-border|\-moz\-line\-frame|\-moz\-button\-content|\-moz\-buttonlabel|\-moz\-cell\-content|\-moz\-dropdown\-list|\-moz\-fieldset\-content|\-moz\-frameset\-blank|\-moz\-display\-comboboxcontrol\-frame|\-moz\-html\-canvas\-content|\-moz\-inline\-table|\-moz\-table|\-moz\-table\-cell|\-moz\-table\-column\-group|\-moz\-table\-column|\-moz\-table\-outer|\-moz\-table\-row\-group|\-moz\-table\-row|\-moz\-canvas|\-moz\-pagebreak|\-moz\-page|\-moz\-pagecontent|\-moz\-page\-sequence|\-moz\-scrolled\-content|\-moz\-scrolled\-canvas|\-moz\-scrolled\-page\-sequence|\-moz\-column\-content|\-moz\-viewport|\-moz\-viewport\-scroll|\-moz\-anonymous\-flex\-item|\-moz\-tree\-column|\-moz\-tree\-row|\-moz\-tree\-separator|\-moz\-tree\-cell|\-moz\-tree\-indentation|\-moz\-tree\-line|\-moz\-tree\-twisty|\-moz\-tree\-image|\-moz\-tree\-cell\-text|\-moz\-tree\-checkbox|\-moz\-tree\-progressmeter|\-moz\-tree\-drop\-feedback|\-moz\-svg\-outer\-svg\-anon\-child|\-moz\-svg\-foreign\-content|\-moz\-svg\-text)\( { [:MOZ_PSEUDO_ELEMENT, st(text)] }
 
             {w}@media{w}     { @state = :LOGICQUERY; [:MEDIA_SYM, st(text)] }
+            {w}@supports{w}  { @state = :LOGICQUERY; [:SUPPORTS_SYM, st(text)] }
+
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}{math}        { [:MATH, st(text)] }
 
@@ -113,6 +116,7 @@ rule
             {w}>{w}          { [:GREATER, st(text)] }
             {w},{w}          { [:COMMA, st(',')] }
             {w};{w}          { [:SEMI, st(';')] }
+            \:               { [:COLON, st(text)] }
             \*               { [:STAR, st(text)] }
             {w}~{w}          { [:TILDE, st(text)] }
             {w}{ems}{w}      { [:EMS, st(text)] }
