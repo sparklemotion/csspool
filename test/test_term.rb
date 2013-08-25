@@ -19,5 +19,10 @@ module CSSPool
       assert_equal '100%/3 - 2*1em - 2*1px', rs.declarations.first.expressions.first.expression
     end
 
+    def test_negative_multiplication
+      doc = CSSPool.CSS <<-eocss
+        a { top: calc(1.4 * -8px) }
+      eocss
+    end
   end
 end

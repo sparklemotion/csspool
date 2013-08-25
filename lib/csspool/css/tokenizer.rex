@@ -29,7 +29,7 @@ macro
   invalid   ({invalid1}|{invalid2})
   comment   \/\*(.|{w})*?\*\/
 
-  unit      ({num}|{length}|{percentage}|{ems}|{exs})
+  unit      [\+\-]?({num}|{length}|{percentage}|{ems}|{exs})
   product   {unit}({w}(\*{w}{unit}|\/{w}{num}))*
   sum       {product}([\s]+[\+\-][\s]+{product})*
   calc      ({vendorprefix})?calc\({w}{sum}{w}\)
