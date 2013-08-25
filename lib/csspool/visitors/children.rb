@@ -13,7 +13,7 @@ module CSSPool
         target.media_list
       end
 
-      visitor_for CSS::Media,
+      visitor_for CSS::MediaType,
         CSS::Charset,
         Selectors::Id,
         Selectors::Class,
@@ -25,7 +25,8 @@ module CSSPool
         Terms::Number,
         Terms::Hash,
         Terms::Function,
-        Terms::Rgb do |target|
+        Terms::Rgb,
+        Terms::Resolution do |target|
         []
       end
 
@@ -44,6 +45,15 @@ module CSSPool
       visitor_for Selectors::Type, Selectors::Universal, Selectors::Simple do |target|
         target.additional_selectors
       end
+
+      visitor_for CSS::MediaQuery do |target|
+        [target.media_expr].concat(target.and_exprs).compact
+      end
+
+      visitor_for CSS::MediaQueryList do |target|
+        target.media_queries
+      end
+
     end
   end
 end

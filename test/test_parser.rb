@@ -29,15 +29,6 @@ module CSSPool
       assert_equal 'background', rule_set.declarations.first.property
     end
 
-    def test_media
-      doc = CSSPool.CSS <<-eocss
-        @media print {
-          div { background: red, blue; }
-        }
-      eocss
-      assert_equal 1, doc.rule_sets.first.media.media_list.length
-    end
-
     def test_universal_to_css
       doc = CSSPool.CSS <<-eocss
         * { background: red, blue; }

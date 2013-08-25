@@ -38,13 +38,7 @@ module CSSPool
         }
       end
 
-      visitor_for CSS::Media do |target|
-        [:media_list].all? { |m|
-          target.send(m) == @other.send(m)
-        }
-      end
-
-      visitor_for Selectors::Id, Selectors::Class do |target|
+      visitor_for CSS::MediaType, Selectors::Id, Selectors::Class do |target|
         target.name == @other.name
       end
 
@@ -57,6 +51,24 @@ module CSSPool
 
       visitor_for CSS::Declaration do |target|
         [:property, :expressions, :important].all? { |m|
+          target.send(m) == @other.send(m)
+        }
+      end
+
+      visitor_for CSS::MediaFeature do |target|
+        [:property, :value].all? { |m|
+          target.send(m) == @other.send(m)
+        }
+      end
+
+      visitor_for CSS::MediaQuery do |target|
+        [:only_or_not, :media_expr, :and_exprs].all? { |m|
+          target.send(m) == @other.send(m)
+        }
+      end
+
+      visitor_for CSS::MediaQueryList do |target|
+        [:media_queries].all? { |m|
           target.send(m) == @other.send(m)
         }
       end
@@ -83,6 +95,13 @@ module CSSPool
           :green,
           :blue,
           :operator
+        ].all? { |m| target.send(m) == @other.send(m) }
+      end
+
+      visitor_for Terms::Resolution do |target|
+        [
+          :number,
+          :unit
         ].all? { |m| target.send(m) == @other.send(m) }
       end
     end
