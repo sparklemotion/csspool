@@ -106,10 +106,10 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_multiple_media
@@ -122,12 +122,12 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 2, doc.rule_sets.first.media_query_list.length
-        assert_equal 1, doc.rule_sets[1].media_query_list.length
+        assert doc.rule_sets.first.parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
+        assert doc.rule_sets[1].parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 2, doc.rule_sets.first.media_query_list.length
-        assert_equal 1, doc.rule_sets[1].media_query_list.length
+        assert doc.rule_sets.first.parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
+        assert doc.rule_sets[1].parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
       end
 
       def test_media_feature_space_after_colon
@@ -164,7 +164,7 @@ eocss
 eocss
         doc = CSSPool.CSS(css)
         assert_equal css.sub('AND', 'and'), doc.to_css
-        assert_equal 1, doc.rule_sets.first.media.size
+        assert_equal 1, doc.rule_sets.first.parent_rule.size
       end
 
       def test_media_query_with_only_and_not
@@ -176,7 +176,7 @@ eocss
 }
 eocss
         doc = CSSPool.CSS(css)
-        assert_equal 2, doc.rule_sets.first.media.size
+        assert_equal 2, doc.rule_sets.first.parent_rule.size
         assert_equal css, doc.to_css
       end
 

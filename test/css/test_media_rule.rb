@@ -11,7 +11,7 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_expression
@@ -20,7 +20,7 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_expression_no_space
@@ -29,14 +29,14 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_complex
         doc = CSSPool.CSS <<-eocss
           @media screen and (color), projection and (color) { }
         eocss
-        assert_equal 2, doc.rule_sets.first.media_query_list.length
+        assert_equal 2, doc.rule_sets.first.parent_rule.length
       end
 
       def test_type_not
@@ -45,7 +45,7 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_type_only
@@ -54,7 +54,7 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_in_document_query
@@ -63,7 +63,7 @@ module CSSPool
           @media(max-height: 800px){.dashboard{position: absolute;}}
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media_query_list.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_invalid_media_query_list

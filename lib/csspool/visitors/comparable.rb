@@ -17,7 +17,7 @@ module CSSPool
       end
 
       visitor_for CSS::RuleSet do |target|
-        [:selectors, :declarations, :media].all? { |m|
+        [:selectors, :declarations, :parent_rule].all? { |m|
           target.send(m) == @other.send(m)
         }
       end

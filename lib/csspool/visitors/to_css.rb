@@ -18,7 +18,13 @@ module CSSPool
       end
 
       visitor_for CSS::Document do |target|
-        current_media_query_list = []
+        # FIXME - this does not handle nested parent rules, like
+        # @document domain(example.com) {
+        #   @media screen {
+        #     a { color: blue; }
+        #   }
+        # }
+        current_parent_rule = []
 
         tokens = []
 
@@ -31,16 +37,17 @@ module CSSPool
         end
 
         target.rule_sets.each { |rs|
-          if rs.media_query_list != current_media_query_list
-            media = rs.media_query_list
+          # FIXME - handle other kinds of parents
+          if rs.parent_rule != current_parent_rule
+            media = rs.parent_rule
             tokens << "#{indent}@media #{media} {"
             @indent_level += 1
           end
 
           tokens << rs.accept(self)
 
-          if rs.media_query_list != current_media_query_list
-            current_media_query_list = rs.media_query_list
+          if rs.parent_rule != current_parent_rule
+            current_parent_rule = rs.parent_rule
             @indent_level -= 1
             tokens << "#{indent}}"
           end
