@@ -38,7 +38,7 @@ module CSSPool
         rs = RuleSet.new(
           selector_list,
           [],
-          @conditional_stack.last || []
+          @conditional_stack.last
         )
         @document.rule_sets << rs
         @conditional_stack.last.rule_sets << rs unless @conditional_stack.empty?

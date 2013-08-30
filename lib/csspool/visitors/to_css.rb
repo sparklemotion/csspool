@@ -38,7 +38,7 @@ module CSSPool
 
         target.rule_sets.each { |rs|
           # FIXME - handle other kinds of parents
-          if rs.parent_rule != current_parent_rule
+          if !rs.parent_rule.nil? and rs.parent_rule != current_parent_rule
             media = rs.parent_rule
             tokens << "#{indent}@media #{media} {"
             @indent_level += 1
@@ -48,8 +48,10 @@ module CSSPool
 
           if rs.parent_rule != current_parent_rule
             current_parent_rule = rs.parent_rule
-            @indent_level -= 1
-            tokens << "#{indent}}"
+            if !rs.parent_rule.nil?
+              @indent_level -= 1
+              tokens << "#{indent}}"
+            end
           end
         }
         tokens.join(line_break)
