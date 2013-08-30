@@ -663,3 +663,13 @@ def interpret_escapes s
     end
   end.join ''
 end
+
+# override racc's on_error so we can have context in our error messages
+def on_error(t, val, vstack)
+  errcontext = (@ss.pre_match[-10..-1] || @ss.pre_match) +
+                @ss.matched + @ss.post_match[0..9]
+  raise ParseError, sprintf("parse error on value %s (%s) " +
+                            "around \"%s\"",
+                            val.inspect, token_to_str(t) || '?',
+                            errcontext)
+end

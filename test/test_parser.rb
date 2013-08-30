@@ -111,5 +111,16 @@ module CSSPool
       #assert_equal "http://\\\r\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
     end
 
+    def test_error_message_context
+      begin
+        doc = CSSPool.CSS "syntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'syntax } error', ex.message 
+      end
+    end
+
   end
 end
