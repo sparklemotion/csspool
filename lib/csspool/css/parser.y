@@ -668,8 +668,9 @@ end
 def on_error(t, val, vstack)
   errcontext = (@ss.pre_match[-10..-1] || @ss.pre_match) +
                 @ss.matched + @ss.post_match[0..9]
+  line_number = @ss.pre_match.lines.count
   raise ParseError, sprintf("parse error on value %s (%s) " +
-                            "around \"%s\"",
+                            "on line %s around \"%s\"",
                             val.inspect, token_to_str(t) || '?',
-                            errcontext)
+                            line_number, errcontext)
 end
