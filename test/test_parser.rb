@@ -122,5 +122,16 @@ module CSSPool
       end
     end
 
+    def test_error_message_line
+      begin
+        doc = CSSPool.CSS "\n\n\nsyntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'line 4', ex.message 
+      end
+    end
+
   end
 end
