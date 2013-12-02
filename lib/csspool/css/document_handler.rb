@@ -2,6 +2,7 @@ module CSSPool
   module CSS
     class DocumentHandler < CSSPool::SAC::Document
       attr_accessor :document
+      attr_accessor :node_start_pos
 
       def initialize
         @document     = nil
@@ -50,22 +51,27 @@ module CSSPool
         rs.declarations << declaration
       end
 
-      def start_media media_query_list, parse_location = {}
+      def start_media media_query_list
         @conditional_stack << media_query_list
       end
 
-      def end_media media_query_list, parse_location = {}
+      def end_media media_query_list
         @conditional_stack.pop
       end
 
-      def start_document_query url_functions
+      def start_document_query url_functions, inner_start_pos = nil
         dq = CSS::DocumentQuery.new(url_functions)
+        dq.outer_start_pos = @node_start_pos
+        @node_start_pos = nil
+        dq.inner_start_pos = inner_start_pos
         @document.document_queries << dq
         @conditional_stack << dq
       end
 
-      def end_document_query
-        @conditional_stack.pop
+      def end_document_query inner_end_pos = nil, outer_end_pos = nil
+        last = @conditional_stack.pop
+        last.inner_end_pos = inner_end_pos
+        last.outer_end_pos = outer_end_pos
       end
       
       def start_supports conditions

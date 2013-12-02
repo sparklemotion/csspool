@@ -205,19 +205,6 @@ eocss
         assert_equal css.sub('( min-width: 800px )', '(min-width:800px)'), doc.to_css
       end
 
-      def test_empty_media_query_list
-        css = <<eocss.chomp
-@media {
-  div {
-    background: red;
-  }
-}
-eocss
-        expected = "div {\n  background: red;\n}"
-        doc = CSSPool.CSS(css)
-        assert_equal expected, doc.to_css
-      end
-
       def test_import
         doc = CSSPool.CSS <<-eocss
           @import "test.css";

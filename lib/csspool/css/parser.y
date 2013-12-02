@@ -125,15 +125,19 @@ rule
         result = val[1]
         @handler.start_media result
       }
-    | MEDIA_SYM LBRACE { result = MediaQueryList.new }
     ;
   document_query
-    : start_document_query body RBRACE { @handler.end_document_query }
-    | start_document_query RBRACE { @handler.end_document_query }
+    : start_document_query body RBRACE { @handler.end_document_query(before_pos(val), after_pos(val)) }
+    | start_document_query RBRACE { @handler.end_document_query(before_pos(val), after_pos(val)) }
     ;
   start_document_query
-    : DOCUMENT_QUERY_SYM url_match_fns LBRACE {
-        @handler.start_document_query val[1]
+    : start_document_query_pos url_match_fns LBRACE {
+        @handler.start_document_query(val[1], after_pos(val))
+      }
+    ;
+  start_document_query_pos
+    : DOCUMENT_QUERY_SYM {
+        @handler.node_start_pos = before_pos(val)
       }
     ;
   url_match_fns
@@ -673,4 +677,19 @@ def on_error(t, val, vstack)
                             "on line %s around \"%s\"",
                             val.inspect, token_to_str(t) || '?',
                             line_number, errcontext)
+end
+
+def before_pos(val)
+  # don't include leading whitespace
+  return current_pos - val.last.length + val.last[/\A\s*/].size
+end
+
+def after_pos(val)
+  # don't include trailing whitespace
+  return current_pos - val.last[/\s*\z/].size
+end
+
+# charpos will work with multibyte strings but is not available until ruby 2
+def current_pos
+  @ss.respond_to?('charpos') ? @ss.charpos : @ss.pos
 end
