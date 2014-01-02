@@ -24,5 +24,11 @@ module CSSPool
         a { top: calc(1.4 * -8px) }
       eocss
     end
+    
+    def test_function_no_params
+      doc = CSSPool.CSS <<-eocss
+        a { -webkit-filter: invert() }
+      eocss
+    end
   end
 end

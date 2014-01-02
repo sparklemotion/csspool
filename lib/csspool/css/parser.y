@@ -554,6 +554,10 @@ rule
           result = Terms::Function.new name, val[1]
         end
       }
+    | FUNCTION RPAREN {
+        name = interpret_identifier val.first.sub(/\($/, '')
+        result = Terms::Function.new name
+      }
     ;
   function_no_quote
     : function_no_quote S { result = val.first }
