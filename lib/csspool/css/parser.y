@@ -10,13 +10,14 @@ token PREFIXMATCH SUFFIXMATCH SUBSTRINGMATCH
 token NOT_PSEUDO_CLASS
 token KEYFRAMES_SYM
 token MATCHES_PSEUDO_CLASS
-token NAMESPACE_SYM MATH
+token NAMESPACE_SYM
 token MOZ_PSEUDO_ELEMENT
 token RESOLUTION
 token COLON
 token SUPPORTS_SYM
 token OR
 token VARIABLE_NAME
+token CALC_SYM
 
 rule
   document
@@ -541,7 +542,7 @@ rule
     | string
     | uri
     | hexcolor
-    | math
+    | calc
     | function
     | resolution
     | VARIABLE_NAME
@@ -569,13 +570,27 @@ rule
         result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
       }
     ;
-  math
-    : MATH {
-        parts = val.first.split('(', 2)
-        name = parts[0].strip
-        expression = parts[1][0..parts[1].rindex(')')-1].strip
-        result = Terms::Math.new(name, expression)
+  calc
+    : CALC_SYM calc_sum RPAREN {
+       result = Terms::Math.new(val.first.split('(').first, val[1])
       }
+    ;
+  # plus and minus are supposed to have whitespace around them, per http://dev.w3.org/csswg/css-values/#calc-syntax, but the numbers are eating trailing whitespace, so we inject it back in
+  calc_sum
+    : calc_product
+    | calc_product PLUS calc_sum { val.insert(1, ' '); result = val.join('') }
+    | calc_product MINUS calc_sum { val.insert(1, ' '); result = val.join('') }
+    | calc_product PLUS calc_product { val.insert(1, ' '); result = val.join('') }
+    | calc_product MINUS calc_product { val.insert(1, ' '); result = val.join('') }
+    ;
+  calc_product
+    : calc_value
+    | calc_value STAR calc_value { result = val.join('') }
+    | calc_value SLASH calc_value { result = val.join('') }
+    ;
+  calc_value
+    : numeric { result = val.join('') }
+    | LPAREN calc_sum RPAREN { result = val.join('') }
     ;
   hexcolor
     : hexcolor S { result = val.first }

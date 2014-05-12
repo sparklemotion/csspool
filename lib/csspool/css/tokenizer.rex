@@ -30,12 +30,6 @@ macro
   comment   \/\*(.|{w})*?\*\/
   variablename \-\-{name}
 
-  unit      [\+\-]?({num}|{length}|{percentage}|{ems}|{exs})
-  product   {unit}({w}(\*{w}{unit}|\/{w}{num}))*
-  sum       {product}([\s]+[\+\-][\s]+{product})*
-  calc      ({vendorprefix})?calc\({w}{sum}{w}\)
-  math      {calc}{w}
-
 rule
 
 # [:state]  pattern  [actions]
@@ -90,8 +84,8 @@ rule
             {w}@media{w}     { @state = :LOGICQUERY; [:MEDIA_SYM, st(text)] }
             {w}@supports{w}  { @state = :LOGICQUERY; [:SUPPORTS_SYM, st(text)] }
 
+            calc\(\s*        { [:CALC_SYM, st(text)] }
             {func}\(\s*      { [:FUNCTION, st(text)] }
-            {w}{math}        { [:MATH, st(text)] }
 
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }

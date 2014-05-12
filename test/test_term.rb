@@ -19,14 +19,24 @@ module CSSPool
       assert_equal '100%/3 - 2*1em - 2*1px', rs.declarations.first.expressions.first.expression
     end
 
+    def test_math_with_params
+      doc = CSSPool.CSS <<-eocss
+        a { top: calc((1em + 16px) / 2) }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '(1em + 16px)/2', rs.declarations.first.expressions.first.expression
+    end
+
     def test_negative_multiplication
       doc = CSSPool.CSS <<-eocss
         a { top: calc(1.4 * -8px) }
       eocss
+      rs = doc.rule_sets.first
+      assert_equal '1.4*-8px', rs.declarations.first.expressions.first.expression
     end
     
     def test_function_no_params
-      doc = CSSPool.CSS <<-eocss
+      CSSPool.CSS <<-eocss
         a { -webkit-filter: invert() }
       eocss
     end
