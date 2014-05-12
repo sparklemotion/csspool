@@ -175,7 +175,6 @@ rule
     ;
   supports_condition_in_parens
     : LPAREN supports_condition RPAREN { result = val.join('') }
-    | LPAREN supports_condition RPAREN { result = val.join('') }
     | supports_declaration_condition { result = val.join('') }
     ;
   supports_negation

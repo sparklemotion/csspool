@@ -43,6 +43,9 @@ rule
 # "Logical queries", such as those used by @supports and @media, include keywords that match our IDENT pattern.
 # Including these as lexical words makes their use anywhere else (even inside other words!) not possible.
 # So we define a new state, and list the things that can occur.
+:LOGICQUERY url\({w}{string}{w}\) { [:URI, st(text)] }
+:LOGICQUERY url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, st(text)] }
+:LOGICQUERY {func}\(\s*      { [:FUNCTION, st(text)] }
 :LOGICQUERY {w}(and|only|not|or)[\s]+ { [text.upcase.strip.intern, st(text)] }
 :LOGICQUERY {w}{num}(dpi|dpcm)     { [:RESOLUTION, st(text)]}
 :LOGICQUERY {w}{ems}{w}      { [:EMS, st(text)] }

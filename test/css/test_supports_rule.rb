@@ -116,6 +116,18 @@ module CSSPool
         end
         assert exception_happened
       end
+
+      def test_with_parens
+        doc = CSSPool.CSS <<-eocss
+          @supports ( filter: url(http://example.com) ) {
+            body { filter: url(http://example.com) }
+          }
+        eocss
+        assert_equal 1, doc.supports_rules.size
+        assert_match 'filter: url("http://example.com")', doc.supports_rules[0].conditions
+        assert_equal 1, doc.supports_rules[0].rule_sets.size
+      end
+
     end
   end
 end
