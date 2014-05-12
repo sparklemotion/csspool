@@ -16,6 +16,7 @@ token RESOLUTION
 token COLON
 token SUPPORTS_SYM
 token OR
+token VARIABLE_NAME
 
 rule
   document
@@ -520,6 +521,7 @@ rule
   property
     : IDENT { result = interpret_identifier val[0] }
     | STAR IDENT { result = interpret_identifier val.join }
+    | VARIABLE_NAME { result = interpret_identifier val[0] }
     ;
   operator
     : COMMA
@@ -543,6 +545,7 @@ rule
     | math
     | function
     | resolution
+    | VARIABLE_NAME
     ;
   function
     : function S { result = val.first }

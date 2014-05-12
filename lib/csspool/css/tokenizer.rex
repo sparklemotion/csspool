@@ -28,6 +28,7 @@ macro
   invalid2  '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*
   invalid   ({invalid1}|{invalid2})
   comment   \/\*(.|{w})*?\*\/
+  variablename \-\-{name}
 
   unit      [\+\-]?({num}|{length}|{percentage}|{ems}|{exs})
   product   {unit}({w}(\*{w}{unit}|\/{w}{num}))*
@@ -97,6 +98,7 @@ rule
             {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
             {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
+            {variablename}   { [:VARIABLE_NAME, st(text)] }
             {ident}          { [:IDENT, st(text)] }
             \#{name}         { [:HASH, st(text)] }
             {w}~={w}         { [:INCLUDES, st(text)] }
