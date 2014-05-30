@@ -151,7 +151,7 @@ module CSSPool
       visitor_for Terms::Function do |target|
         "#{escape_css_identifier target.name}(" +
           target.params.map { |x|
-            [
+            x.is_a?(String) ? x : [
               x.operator,
               x.accept(self)
             ].compact.join(' ')

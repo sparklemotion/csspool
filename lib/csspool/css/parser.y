@@ -588,6 +588,7 @@ rule
     ;
   calc_value
     : numeric { result = val.join('') }
+    | function { result = val.join('') } # for var() variable references
     | LPAREN calc_sum RPAREN { result = val.join('') }
     ;
   hexcolor

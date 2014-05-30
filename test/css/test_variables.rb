@@ -16,6 +16,18 @@ module CSSPool
           }
         eocss
       end
+
+      def test_var_in_calc
+        doc = CSSPool.CSS <<-eocss
+          :root {
+            --right-margin: 10px;
+          }
+          .one {
+            width: calc(100% + var(--right-margin));
+          }
+        eocss
+      end
+
     end
   end
 end
