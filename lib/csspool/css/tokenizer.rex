@@ -7,10 +7,8 @@ macro
   w         [\s]*
   nonascii  [^\0-\177]
   num       ([0-9]*\.[0-9]+|[0-9]+)
-  length    {num}(px|cm|mm|in|pt|pc)
+  length    {num}(px|cm|mm|in|pt|pc|mozmm|em|ex|ch|rem|vh|vw|vmin|vmax)
   percentage {num}%
-  ems       {num}em
-  exs       {num}ex
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
   nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
   vendorprefix \-[A-Za-z]+\-
@@ -42,8 +40,6 @@ rule
 :LOGICQUERY {func}\(\s*      { [:FUNCTION, st(text)] }
 :LOGICQUERY {w}(and|only|not|or)[\s]+ { [text.upcase.strip.intern, st(text)] }
 :LOGICQUERY {w}{num}(dpi|dpcm)     { [:RESOLUTION, st(text)]}
-:LOGICQUERY {w}{ems}{w}      { [:EMS, st(text)] }
-:LOGICQUERY {w}{exs}{w}      { [:EXS, st(text)] }
 :LOGICQUERY {w}{length}{w}   { [:LENGTH, st(text)] }
 :LOGICQUERY {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }
 :LOGICQUERY {w}{num}(ms|s){w} { [:TIME, st(text)] }
@@ -118,8 +114,6 @@ rule
             \:               { [:COLON, st(text)] }
             \*               { [:STAR, st(text)] }
             {w}~{w}          { [:TILDE, st(text)] }
-            {w}{ems}{w}      { [:EMS, st(text)] }
-            {w}{exs}{w}      { [:EXS, st(text)] }
 
             {w}{length}{w}   { [:LENGTH, st(text)] }
             {w}{num}(deg|rad|grad){w} { [:ANGLE, st(text)] }

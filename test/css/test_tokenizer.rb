@@ -14,8 +14,8 @@ module CSSPool
       end
 
       {
-        'em'    => :EMS,
-        'ex'    => :EXS,
+        'em'    => :LENGTH,
+        'ex'    => :LENGTH,
         'px'    => :LENGTH,
         'cm'    => :LENGTH,
         'mm'    => :LENGTH,

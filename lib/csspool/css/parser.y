@@ -2,7 +2,7 @@ class CSSPool::CSS::Parser
 
 token CHARSET_SYM IMPORT_SYM STRING SEMI IDENT S COMMA LBRACE RBRACE STAR HASH
 token LSQUARE RSQUARE EQUAL INCLUDES DASHMATCH LPAREN RPAREN FUNCTION GREATER PLUS
-token SLASH NUMBER MINUS LENGTH PERCENTAGE EMS EXS ANGLE TIME FREQ URI
+token SLASH NUMBER MINUS LENGTH PERCENTAGE ANGLE TIME FREQ URI
 token IMPORTANT_SYM MEDIA_SYM NOT ONLY AND NTH_PSEUDO_CLASS
 token DOCUMENT_QUERY_SYM FUNCTION_NO_QUOTE
 token TILDE
@@ -618,12 +618,6 @@ rule
     | LENGTH {
         unit    = val.first.gsub(/[\s\d.]/, '')
         result = Terms::Number.new numeric(val.first), nil, unit
-      }
-    | EMS {
-        result = Terms::Number.new numeric(val.first), nil, 'em'
-      }
-    | EXS {
-        result = Terms::Number.new numeric(val.first), nil, 'ex'
       }
     | ANGLE {
         unit    = val.first.gsub(/[\s\d.]/, '')
