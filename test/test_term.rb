@@ -34,7 +34,15 @@ module CSSPool
       rs = doc.rule_sets.first
       assert_equal '1.4*-8px', rs.declarations.first.expressions.first.expression
     end
-    
+
+    def test_two_in_a_row
+      doc = CSSPool.CSS <<-eocss
+        a { background-size: calc(-2px + 100%) calc(-2px + 100%); }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-2px + 100%', rs.declarations.first.expressions.first.expression
+    end
+
     def test_function_no_params
       CSSPool.CSS <<-eocss
         a { -webkit-filter: invert() }

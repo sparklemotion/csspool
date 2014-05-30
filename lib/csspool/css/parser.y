@@ -571,7 +571,7 @@ rule
       }
     ;
   calc
-    : CALC_SYM calc_sum RPAREN {
+    : CALC_SYM calc_sum RPAREN optional_space {
        result = Terms::Math.new(val.first.split('(').first, val[1])
       }
     ;
@@ -580,8 +580,6 @@ rule
     : calc_product
     | calc_product PLUS calc_sum { val.insert(1, ' '); result = val.join('') }
     | calc_product MINUS calc_sum { val.insert(1, ' '); result = val.join('') }
-    | calc_product PLUS calc_product { val.insert(1, ' '); result = val.join('') }
-    | calc_product MINUS calc_product { val.insert(1, ' '); result = val.join('') }
     ;
   calc_product
     : calc_value

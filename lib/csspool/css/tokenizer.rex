@@ -89,7 +89,6 @@ rule
             {w}@({vendorprefix})?document{w} { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
             {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
-            {func}\(\s*      { [:FUNCTION, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {variablename}   { [:VARIABLE_NAME, st(text)] }
             {ident}          { [:IDENT, st(text)] }
