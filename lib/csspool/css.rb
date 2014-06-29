@@ -1,5 +1,6 @@
 require 'csspool/css/tokenizer'
 require 'csspool/css/charset'
+require 'csspool/css/fontface_rule'
 require 'csspool/css/import_rule'
 require 'csspool/css/media_query'
 require 'csspool/css/media_query_list'

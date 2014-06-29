@@ -18,6 +18,7 @@ token SUPPORTS_SYM
 token OR
 token VARIABLE_NAME
 token CALC_SYM
+token FONTFACE_SYM
 
 rule
   document
@@ -109,6 +110,7 @@ rule
     | ruleset
     | conditional_rule
     | keyframes_rule
+    | fontface_rule
     ;
   conditional_rule
     : media
@@ -228,6 +230,15 @@ rule
   keyframes_selector
     : IDENT
     | PERCENTAGE { result = val[0].strip }
+    ;
+  fontface_rule
+    : start_fontface_rule declarations RBRACE { @handler.end_fontface_rule }
+    | start_fontface_rule RBRACE { @handler.end_fontface_rule }
+    ;
+  start_fontface_rule
+    : FONTFACE_SYM LBRACE {
+        @handler.start_fontface_rule
+      }
     ;
   ruleset
     : start_selector declarations RBRACE {

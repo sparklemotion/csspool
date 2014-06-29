@@ -16,8 +16,7 @@ macro
   escape    {unicode}|\\[^\n\r\f0-9A-Fa-f]
   nmchar    [_A-Za-z0-9-]|{nonascii}|{escape}
   nmstart   [_A-Za-z]|{nonascii}|{escape}
-  ident     [-@]?({nmstart})({nmchar})*
-  func      [-@]?({nmstart})({nmchar}|[.])*
+  ident     \-?({nmstart})({nmchar})*
   name      ({nmchar})+
   string1   "([^\n\r\f\\"]|\\{nl}|{nonascii}|{escape})*"
   string2   '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*'
@@ -37,7 +36,7 @@ rule
 # So we define a new state, and list the things that can occur.
 :LOGICQUERY url\({w}{string}{w}\) { [:URI, st(text)] }
 :LOGICQUERY url\({w}([!#\$%&*-~]|{nonascii}|{escape})*{w}\) { [:URI, st(text)] }
-:LOGICQUERY {func}\(\s*      { [:FUNCTION, st(text)] }
+:LOGICQUERY {ident}\(\s*      { [:FUNCTION, st(text)] }
 :LOGICQUERY {w}(and|only|not|or)[\s]+ { [text.upcase.strip.intern, st(text)] }
 :LOGICQUERY {w}{num}(dpi|dpcm)     { [:RESOLUTION, st(text)]}
 :LOGICQUERY {w}{length}{w}   { [:LENGTH, st(text)] }
@@ -81,13 +80,14 @@ rule
             {w}@supports{w}  { @state = :LOGICQUERY; [:SUPPORTS_SYM, st(text)] }
 
             calc\(\s*        { [:CALC_SYM, st(text)] }
-            {func}\(\s*      { [:FUNCTION, st(text)] }
+            {ident}\(\s*      { [:FUNCTION, st(text)] }
 
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
             {w}@page{w}      { [:PAGE_SYM, st(text)] }
             {w}@charset{w}   { [:CHARSET_SYM, st(text)] }
             {w}@({vendorprefix})?document{w} { [:DOCUMENT_QUERY_SYM, st(text)] }
             {w}@namespace{w} { [:NAMESPACE_SYM, st(text)] }
+            {w}@font\-face{w} { [:FONTFACE_SYM, st(text)] }
             {w}@({vendorprefix})?keyframes{w} { [:KEYFRAMES_SYM, st(text)] }
             {w}!({w}|{w}{comment}{w})important{w}  { [:IMPORTANT_SYM, st(text)] }
             {variablename}   { [:VARIABLE_NAME, st(text)] }

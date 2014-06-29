@@ -27,6 +27,7 @@ module CSSPool
       attr_accessor :parent
       attr_accessor :parent_import_rule
       attr_accessor :keyframes_rules
+      attr_accessor :fontface_rules
 
       def initialize
         @rule_sets    = []
@@ -38,6 +39,7 @@ module CSSPool
         @parent       = nil
         @parent_import_rule = nil
         @keyframes_rules = []
+        @fontface_rules = []
       end
 
       def [] selector

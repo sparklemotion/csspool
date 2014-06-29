@@ -8,6 +8,7 @@ module CSSPool
         @document     = nil
         @conditional_stack  = []
         @active_keyframes_block = nil
+        @active_fontface_rule = nil
       end
 
       def start_document
@@ -46,7 +47,13 @@ module CSSPool
       end
 
       def property declaration
-        rs = @active_keyframes_block.nil? ? @document.rule_sets.last : @active_keyframes_block
+        if !@active_fontface_rule.nil?
+          rs = @active_fontface_rule
+        elsif !@active_keyframes_block.nil?
+          rs = @active_keyframes_block
+        else
+          rs = @document.rule_sets.last
+        end
         declaration.rule_set = rs
         rs.declarations << declaration
       end
@@ -97,6 +104,14 @@ module CSSPool
         @active_keyframes_block = nil
       end
 
+      def start_fontface_rule
+        @active_fontface_rule = CSS::FontfaceRule.new
+        @document.fontface_rules << @active_fontface_rule
+      end
+
+      def end_fontface_rule
+        @active_fontface_rule = nil
+      end
     end
   end
 end

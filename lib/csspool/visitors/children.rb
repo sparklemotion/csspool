@@ -38,6 +38,10 @@ module CSSPool
         target.selectors + target.declarations
       end
 
+      visitor_for CSS::FontfaceRule do |target|
+        target.declarations
+      end
+
       visitor_for Selector do |target|
         target.simple_selectors
       end

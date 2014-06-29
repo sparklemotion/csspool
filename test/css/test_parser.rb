@@ -284,7 +284,7 @@ module CSSPool
       end
 
       def test_ruleset_div_pseudo_function_with_arg
-        assert_attribute 'div:foo.bar(bar) { }'
+        assert_attribute 'div:foo(bar) { }'
       end
 
       def test_ruleset_div_pseudo_function

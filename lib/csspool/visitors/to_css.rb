@@ -36,6 +36,10 @@ module CSSPool
           tokens << ir.accept(self)
         end
 
+        target.fontface_rules.each do |ffr|
+          tokens << ffr.accept(self)
+        end
+
         target.rule_sets.each { |rs|
           # FIXME - handle other kinds of parents
           if !rs.parent_rule.nil? and rs.parent_rule != current_parent_rule
@@ -85,6 +89,13 @@ module CSSPool
 
       visitor_for CSS::Charset do |target|
         "@charset \"#{escape_css_string target.name}\";"
+      end
+
+      visitor_for CSS::FontfaceRule do |target|
+        "@font-face {#{line_break}" +
+        "#{indent}" +
+          target.declarations.map { |decl| decl.accept self }.join(line_break) +
+          "#{line_break}#{indent}}"
       end
 
       visitor_for CSS::ImportRule do |target|
