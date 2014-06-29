@@ -17,15 +17,16 @@ module CSSPool
     def specificity
       a = b = c = 0
       simple_selectors.each do |s|
-        if !s.name.nil?
+        if s.is_a?(Selectors::Type) && s.name && s.name != ''
           c += 1
         end
         s.additional_selectors.each do |additional_selector|
-          if Selectors::Id === additional_selector
+          case additional_selector
+          when Selectors::Id
             a += 1
-          elsif Selectors::PseudoElement === additional_selector
+          when Selectors::PseudoElement
             c += 1
-          else
+          when Selectors::Class, Selectors::PseudoClass, Selectors::Attribute
             b += 1
           end
         end

@@ -132,7 +132,7 @@ module CSSPool
         @parser.scan_str css
         property = @parser.handler.calls.find { |x|
           x.first == :property
-        }[1][1].first
+        }[1][0].expressions.first
 
         term.each do |k,v|
           assert_equal v, property.send(k)
@@ -159,7 +159,7 @@ module CSSPool
         @parser.scan_str 'div { background: red; padding: 0; }'
         names = @parser.handler.calls.find_all { |x|
           x.first == :property
-        }.map { |y| y[1].first }
+        }.map { |y| y[1].first.property }
         assert_equal %w{ background padding }, names
       end
 
@@ -176,7 +176,7 @@ module CSSPool
         declarations = @parser.handler.calls.find_all { |x|
           x.first == :property
         }
-        names = declarations.map { |y| y[1].first }
+        names = declarations.map { |y| y[1].first.property }
         assert_equal %w{color color *color _color}, names
         # values = declarations.map { |y| y[1][1].first.to_s }
         # assert_equal %w{black green\\9 blue red}, values
@@ -363,15 +363,15 @@ module CSSPool
       def test_missing_semicolon
         @parser.scan_str 'div { border: none }'
         assert_equal 'div', doc.calls[1][1][0].join
-        assert_equal 'border', doc.calls[2][1][0]
-        assert_equal 'none', doc.calls[2][1][1].join
+        assert_equal 'border', doc.calls[2][1][0].property
+        assert_equal 'none', doc.calls[2][1][0].expressions.first.value
       end
 
       def test_whitespaces
         @parser.scan_str 'div { border : none }'
         assert_equal 'div', doc.calls[1][1][0].join
-        assert_equal 'border', doc.calls[2][1][0]
-        assert_equal 'none', doc.calls[2][1][1].join
+        assert_equal 'border', doc.calls[2][1][0].property
+        assert_equal 'none', doc.calls[2][1][0].expressions.first.value
       end
 
       def test_import_medium
@@ -387,33 +387,6 @@ module CSSPool
         assert_equal 'foo', doc.calls[1][1][1].value
         assert_equal 'page', doc.calls[1][1].first.first.value
         assert_equal 'print', doc.calls[1][1].first[1].value
-      end
-
-      def test_document_query_url
-        @parser.scan_str '@document url("http://example.com") { div {} }'
-        assert_equal :start_document_query, doc.calls[1].first
-        assert_equal 1, doc.calls[1][1][0].size
-        assert_equal CSSPool::Terms::URI, doc.calls[1][1][0][0].class
-      end
-
-      def test_document_query_function
-        @parser.scan_str '@document domain("example.com") { div {} }'
-        assert_equal :start_document_query, doc.calls[1].first
-        assert_equal 1, doc.calls[1][1][0].size
-        assert_equal CSSPool::Terms::Function, doc.calls[1][1][0][0].class
-      end
-
-      def test_document_query_function_no_quotes
-        @parser.scan_str '@document domain(example.com) { div {} }'
-        assert_equal :start_document_query, doc.calls[1].first
-        assert_equal 1, doc.calls[1][1][0].size
-        assert_equal CSSPool::Terms::Function, doc.calls[1][1][0][0].class
-      end
-
-      def test_document_query_multiple
-        @parser.scan_str '@document url("http://example.com"), domain("example.com") { div {} }'
-        assert_equal :start_document_query, doc.calls[1].first
-        assert_equal 2, doc.calls[1][1][0].size
       end
 
       def test_start_stop
@@ -441,12 +414,12 @@ module CSSPool
         assert_equal :property, @parser.handler.calls[2].first
         assert_equal :end_selector, @parser.handler.calls[3].first
 
-        property = @parser.handler.calls[2][1]
-        assert_equal name, property.first
+        declaration = @parser.handler.calls[2][1].first
+        assert_equal name, declaration.property
 
-        assert_equal values, property[1].map { |x| x.value }
+        assert_equal values, declaration.expressions.map { |x| x.value }
         if ops
-          assert_equal ops, property[1].map { |x| x.operator }
+          assert_equal ops, declaration.expressions.map { |x| x.operator }
         end
       end
 

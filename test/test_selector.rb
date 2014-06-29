@@ -4,14 +4,14 @@ module CSSPool
   class TestSelector < CSSPool::TestCase
     def test_specificity
       doc = CSSPool.CSS <<-eocss
-        *, foo > bar, #hover, :hover, div#a, a.foo, a:hover, a[href][int="10"], :before, ::before { background: red; }
+        *, foo > bar, #hover, :hover, div#a, a.foo, a:hover, a[href][int="10"], p::selection { background: red; }
       eocss
       selectors = doc.rule_sets.first.selectors
       specs = selectors.map do |sel|
         sel.specificity
       end
       assert_equal [
-       [0, 0, 1],
+       [0, 0, 0],
        [0, 0, 2],
        [1, 0, 0],
        [0, 1, 0],
@@ -19,8 +19,7 @@ module CSSPool
        [0, 1, 1],
        [0, 1, 1],
        [0, 2, 1],
-       [0, 0, 1],
-       [0, 0, 1]
+       [0, 0, 2]
       ], specs
     end
 
@@ -144,6 +143,47 @@ module CSSPool
       rs = doc.rule_sets.first
       assert_equal 'nth-child', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
       assert_equal 'even', rs.selectors.first.simple_selectors.first.additional_selectors.first.extra
+    end
+
+    def test_mozilla_pseudo_element
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_brackets_without_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line() { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_single_parameter
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    def test_mozilla_pseudo_element_multiple_parameters
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line(one, two, three) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
+    # -moz-tree-cell and -moz-tree-cell-text are both mozilla pseudo-elements, make sure we don't stop at -moz-tree-cell
+    def test_mozilla_pseudo_element_name_within
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-cell-text() { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-cell-text', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
     end
 
     def test_element_with_namespace

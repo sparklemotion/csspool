@@ -29,15 +29,6 @@ module CSSPool
       assert_equal 'background', rule_set.declarations.first.property
     end
 
-    def test_media
-      doc = CSSPool.CSS <<-eocss
-        @media print {
-          div { background: red, blue; }
-        }
-      eocss
-      assert_equal 1, doc.rule_sets.first.media.media_list.length
-    end
-
     def test_universal_to_css
       doc = CSSPool.CSS <<-eocss
         * { background: red, blue; }
@@ -118,6 +109,28 @@ module CSSPool
       doc = CSSPool.CSS "div { background: url('http://\\\r\nexample.com/image.png') }"
       # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
       #assert_equal "http://\\\r\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_error_message_context
+      begin
+        doc = CSSPool.CSS "syntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'syntax } error', ex.message 
+      end
+    end
+
+    def test_error_message_line
+      begin
+        doc = CSSPool.CSS "\n\n\nsyntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'line 4', ex.message 
+      end
     end
 
   end

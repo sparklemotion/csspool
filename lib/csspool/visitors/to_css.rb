@@ -18,8 +18,13 @@ module CSSPool
       end
 
       visitor_for CSS::Document do |target|
-        # Default media list is []
-        current_media_type = []
+        # FIXME - this does not handle nested parent rules, like
+        # @document domain(example.com) {
+        #   @media screen {
+        #     a { color: blue; }
+        #   }
+        # }
+        current_parent_rule = []
 
         tokens = []
 
@@ -32,23 +37,50 @@ module CSSPool
         end
 
         target.rule_sets.each { |rs|
-          if rs.media != current_media_type
-            media = " " + rs.media.media_list.map do |medium|
-              escape_css_identifier medium.value
-            end.join(', ')
-            tokens << "#{indent}@media#{media} {"
+          # FIXME - handle other kinds of parents
+          if !rs.parent_rule.nil? and rs.parent_rule != current_parent_rule
+            media = rs.parent_rule
+            tokens << "#{indent}@media #{media} {"
             @indent_level += 1
           end
 
           tokens << rs.accept(self)
 
-          if rs.media != current_media_type
-            current_media_type = rs.media
-            @indent_level -= 1
-            tokens << "#{indent}}"
+          if rs.parent_rule != current_parent_rule
+            current_parent_rule = rs.parent_rule
+            if !rs.parent_rule.nil?
+              @indent_level -= 1
+              tokens << "#{indent}}"
+            end
           end
         }
         tokens.join(line_break)
+      end
+
+      visitor_for CSS::MediaType do |target|
+        escape_css_identifier(target.name)
+      end
+
+      visitor_for CSS::MediaFeature do |target|
+        "(#{escape_css_identifier(target.property)}:#{target.value})"
+      end
+
+      visitor_for CSS::MediaQuery do |target|
+        ret = ''
+        if target.only_or_not
+          ret << target.only_or_not.to_s + ' '
+        end
+        ret << target.media_expr.accept(self)
+        if target.and_exprs.any?
+          ret << ' and '
+        end
+        ret << target.and_exprs.map { |expr| expr.accept(self) }.join(' and ')
+      end
+
+      visitor_for CSS::MediaQueryList do |target|
+        target.media_queries.map do |m|
+          m.accept(self)
+        end.join(', ')
       end
 
       visitor_for CSS::Charset do |target|
@@ -58,7 +90,7 @@ module CSSPool
       visitor_for CSS::ImportRule do |target|
         media = ''
         media = " " + target.media_list.map do |medium|
-          escape_css_identifier medium.value
+          escape_css_identifier medium.name
         end.join(', ') if target.media_list.length > 0
 
         "#{indent}@import #{target.uri.accept(self)}#{media};"
@@ -77,17 +109,22 @@ module CSSPool
       end
 
       visitor_for CSS::RuleSet do |target|
-        "#{indent}" +
-          target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
-          target.declarations.map { |decl| decl.accept self }.join(line_break) +
-          "#{line_break}#{indent}}"
+        if target.selectors.any?
+          "#{indent}" +
+            target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
+            target.declarations.map { |decl| decl.accept self }.join(line_break) +
+            "#{line_break}#{indent}}"
+        else
+          ''
+        end
       end
 
       visitor_for CSS::Declaration do |target|
         important = target.important? ? ' !important' : ''
 
+        # only output indents and semicolons if this is in a ruleset
         indent {
-          "#{indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
+          "#{target.rule_set.nil? ? '' : indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
 
             op = '/' == exp.operator ? ' /' : exp.operator
 
@@ -95,7 +132,7 @@ module CSSPool
               op,
               exp.accept(self),
             ].join ' '
-          }.join.strip + "#{important};"
+          }.join.strip + important + (target.rule_set.nil? ? '' : ';')
         }
       end
 
@@ -114,7 +151,7 @@ module CSSPool
       visitor_for Terms::Function do |target|
         "#{escape_css_identifier target.name}(" +
           target.params.map { |x|
-            [
+            x.is_a?(String) ? x : [
               x.operator,
               x.accept(self)
             ].compact.join(' ')
@@ -145,6 +182,10 @@ module CSSPool
         ].compact.join
       end
 
+      visitor_for Terms::Resolution do |target|
+        "#{target.number}#{target.unit}"
+      end
+
       visitor_for Selector do |target|
         target.simple_selectors.map { |ss| ss.accept self }.join
       end
@@ -153,7 +194,8 @@ module CSSPool
         combo = {
           :s => ' ',
           :+ => ' + ',
-          :> => ' > '
+          :> => ' > ',
+          :~ => ' ~ '
         }[target.combinator]
 
         name = [nil, '*'].include?(target.name) ? target.name : escape_css_identifier(target.name)

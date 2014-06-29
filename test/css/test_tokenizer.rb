@@ -14,8 +14,8 @@ module CSSPool
       end
 
       {
-        'em'    => :EMS,
-        'ex'    => :EXS,
+        'em'    => :LENGTH,
+        'ex'    => :LENGTH,
         'px'    => :LENGTH,
         'cm'    => :LENGTH,
         'mm'    => :LENGTH,
@@ -206,7 +206,7 @@ module CSSPool
       def test_scan_pseudo
         @scanner.scan('a:visited')
         assert_tokens([ [:IDENT, 'a'],
-                        [':', ':'],
+                        [:COLON, ':'],
                         [:IDENT, 'visited']
         ], @scanner)
       end
@@ -256,7 +256,7 @@ module CSSPool
       def test_scan_function_selector
         @scanner.scan('x:eq(0)')
         assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
+                        [:COLON, ':'],
                         [:FUNCTION, 'eq('],
                         [:NUMBER, "0"],
                         [:RPAREN, ')'],
