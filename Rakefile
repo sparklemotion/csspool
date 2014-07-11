@@ -16,6 +16,7 @@ Hoe.spec('csspool') do
   self.readme_file   = 'README.rdoc'
   self.history_file  = 'CHANGELOG.rdoc'
   self.extra_rdoc_files  = FileList['*.rdoc']
+  self.licenses      = ['MIT']
 
   %w{racc rexical hoe-git hoe-gemspec hoe-bundler}.each do |dep|
     self.extra_dev_deps << [dep, '>= 0']
