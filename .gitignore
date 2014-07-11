@@ -4,3 +4,4 @@
 /lib/csspool/css/tokenizer.rb
 /lib/csspool/css/parser.rb
 /Gemfile.lock
+lib/csspool/css/parser.output

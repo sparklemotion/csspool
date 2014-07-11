@@ -12,6 +12,7 @@ module CSSPool
           /* This is a comment */
           div a.foo, #bar, * { background: red; }
           div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+          ::selection, q:before { background: red; }
         eocss
         @parser = CSSPool::SAC::Parser.new(@doc)
         @parser.parse(@css)
@@ -74,7 +75,6 @@ module CSSPool
         assert_equal 'foo', foo_class.name
       end
 
-      # div#a, a.foo, a:hover, a[href='watever'] { background: red; }
       def test_id_additional_selector
         selectors_for_rule = @doc.start_selectors[1]
         selector = selectors_for_rule.first # => div#a
@@ -82,7 +82,6 @@ module CSSPool
         assert_equal 'a', simple_selector.additional_selectors.first.name
       end
 
-      # div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
       def test_pseudo_additional_selector
         selectors_for_rule = @doc.start_selectors[1]
         selector = selectors_for_rule[2] # => 'a:hover'
@@ -91,7 +90,7 @@ module CSSPool
         assert_nil simple_selector.additional_selectors.first.extra
       end
 
-      # div#a, a.foo, a:hover, a[href][int="10"]{ background: red; }
+      # div#a, a.foo, a::hover, a[href][int="10"]{ background: red; }
       def test_attribute_selector
         selectors_for_rule = @doc.start_selectors[1]
         selector = selectors_for_rule[3] # => a[href][int="10"]
@@ -105,6 +104,21 @@ module CSSPool
         assert_equal '10', simple_selector.additional_selectors[1].value
         assert_equal 2, simple_selector.additional_selectors[1].match_way
       end
+
+      def test_pseudo_element_additional_selector
+        selectors_for_rule = @doc.start_selectors[2]
+        selector = selectors_for_rule[0]
+
+        simple_selector = selector.simple_selectors[0] # ::selection
+        assert_equal 'selection', simple_selector.additional_selectors.first.name
+        assert_nil simple_selector.additional_selectors.first.css2
+
+        selector = selectors_for_rule[1]
+        simple_selector = selector.simple_selectors[0] # q.before
+        assert_equal 'before', simple_selector.additional_selectors.first.name
+        assert_equal true, simple_selector.additional_selectors.first.css2
+      end
+
     end
   end
 end

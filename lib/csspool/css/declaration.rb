@@ -8,7 +8,7 @@ module CSSPool
 
       alias :important? :important
 
-      def initialize property, expressions, important, rule_set
+      def initialize property, expressions, important, rule_set = nil
         @property = property
         @expressions = expressions
         @important = important

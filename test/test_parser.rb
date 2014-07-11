@@ -29,15 +29,6 @@ module CSSPool
       assert_equal 'background', rule_set.declarations.first.property
     end
 
-    def test_media
-      doc = CSSPool.CSS <<-eocss
-        @media print {
-          div { background: red, blue; }
-        }
-      eocss
-      assert_equal 1, doc.rule_sets.first.media.length
-    end
-
     def test_universal_to_css
       doc = CSSPool.CSS <<-eocss
         * { background: red, blue; }
@@ -88,24 +79,59 @@ module CSSPool
       assert_match('foo(1, 2)', doc.to_css)
     end
 
-    def test_missing_semicolon
+    def test_url
       doc = CSSPool.CSS <<-eocss
-        div { border: none }
+        div { background: url(http://example.com); }
       eocss
-      assert_match('none', doc.to_css)
-      doc = CSSPool.CSS <<-eocss
-        div { border: none; background: #fff }
-      eocss
-      assert_match('none', doc.to_css)
-      assert_match('#fff', doc.to_css)
+      assert_match 'http://example.com', doc.to_css
     end
 
-    def test_whitespaces
+    def test_url_capitalized
       doc = CSSPool.CSS <<-eocss
-        div { border : none; }
+        div { background: URL(http://example.com); }
       eocss
-      assert_match('none', doc.to_css)
-      assert_match('border:', doc.to_css)
+      assert_match 'http://example.com', doc.to_css
     end
+
+    def test_uri_linefeed_n
+      doc = CSSPool.CSS "div { background: url('http://\\\nexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_r
+      doc = CSSPool.CSS "div { background: url('http://\\\rexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\rexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_uri_linefeed_rn
+      doc = CSSPool.CSS "div { background: url('http://\\\r\nexample.com/image.png') }"
+      # FIXME: (mt) Sort this out; these tests don't currently run, but should both run and pass
+      #assert_equal "http://\\\r\nexample.com/image.png", doc.rule_sets.first.declarations.first.expressions.first.value
+    end
+
+    def test_error_message_context
+      begin
+        doc = CSSPool.CSS "syntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'syntax } error', ex.message 
+      end
+    end
+
+    def test_error_message_line
+      begin
+        doc = CSSPool.CSS "\n\n\nsyntax } error"
+        # should not reach this
+        assert false
+      rescue ParseError => ex
+        # ensure the context around the failing token (the bracket) are included
+        assert_match 'line 4', ex.message 
+      end
+    end
+
   end
 end

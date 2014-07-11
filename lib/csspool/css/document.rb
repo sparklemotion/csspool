@@ -21,20 +21,30 @@ module CSSPool
       attr_accessor :rule_sets
       attr_accessor :charsets
       attr_accessor :import_rules
+      attr_accessor :document_queries
+      attr_accessor :supports_rules
+      attr_accessor :namespaces
       attr_accessor :parent
       attr_accessor :parent_import_rule
+      attr_accessor :keyframes_rules
+      attr_accessor :fontface_rules
 
       def initialize
         @rule_sets    = []
         @charsets     = []
         @import_rules = []
+        @document_queries = []
+        @supports_rules = []
+        @namespaces   = []
         @parent       = nil
         @parent_import_rule = nil
+        @keyframes_rules = []
+        @fontface_rules = []
       end
 
       def [] selector
         selectors = CSSPool.CSS("#{selector} {}").rule_sets.first.selectors
-        rule_sets.find_all { |rs| rs.selectors == selectors}
+        rule_sets.find_all { |rs| rs.selectors == selectors }
       end
     end
   end

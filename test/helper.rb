@@ -11,22 +11,23 @@ module CSSPool
 
     class MyDoc < CSSPool::CSS::DocumentHandler
       attr_accessor :start_documents, :end_documents
-      attr_accessor :charsets, :import_styles, :comments, :start_selectors
-      attr_accessor :end_selectors, :properties
+      attr_accessor :charsets, :import_styles, :document_queries, :comments, :start_selectors
+      attr_accessor :end_selectors, :properties, :supports_rules
 
       def initialize
         @start_documents  = []
         @end_documents    = []
         @charsets         = []
         @import_styles    = []
+        @document_queries = []
         @comments         = []
         @start_selectors  = []
         @end_selectors    = []
         @properties       = []
       end
 
-      def property name, expression, important
-        @properties << [name, expression]
+      def property declaration
+        @properties << [declaration.property, declaration.expressions]
       end
 
       def start_document
@@ -43,6 +44,10 @@ module CSSPool
 
       def import_style media_list, uri, default_ns = nil, location = {}
         @import_styles << [media_list, uri, default_ns, location]
+      end
+
+      def document_query string
+        @document_queries << string
       end
 
       def namespace_declaration prefix, uri, location

@@ -2,10 +2,13 @@ module CSSPool
   module CSS
     class DocumentHandler < CSSPool::SAC::Document
       attr_accessor :document
+      attr_accessor :node_start_pos
 
       def initialize
         @document     = nil
-        @media_stack  = []
+        @conditional_stack  = []
+        @active_keyframes_block = nil
+        @active_fontface_rule = nil
       end
 
       def start_document
@@ -16,35 +19,98 @@ module CSSPool
         @document.charsets << CSS::Charset.new(name, location)
       end
 
-      def import_style media_list, uri, ns = nil, loc = {}
+      def import_style media, uri, ns = nil, loc = {}
         @document.import_rules << CSS::ImportRule.new(
           uri,
           ns,
-          media_list.map { |x| CSS::Media.new(x, loc) },
+          media,
           @document,
           loc
         )
       end
 
-      def start_selector selector_list
-        @document.rule_sets << RuleSet.new(
-          selector_list,
-          [],
-          @media_stack.last || []
+      def namespace prefix, uri
+        @document.namespaces << CSS::NamespaceRule.new(
+          prefix,
+          uri
         )
       end
 
-      def property name, exp, important
-        rs = @document.rule_sets.last
-        rs.declarations << Declaration.new(name, exp, important, rs)
+      def start_selector selector_list
+        rs = RuleSet.new(
+          selector_list,
+          [],
+          @conditional_stack.last
+        )
+        @document.rule_sets << rs
+        @conditional_stack.last.rule_sets << rs unless @conditional_stack.empty?
       end
 
-      def start_media media_list, parse_location = {}
-        @media_stack << media_list.map { |x| CSS::Media.new(x, parse_location) }
+      def property declaration
+        if !@active_fontface_rule.nil?
+          rs = @active_fontface_rule
+        elsif !@active_keyframes_block.nil?
+          rs = @active_keyframes_block
+        else
+          rs = @document.rule_sets.last
+        end
+        declaration.rule_set = rs
+        rs.declarations << declaration
       end
 
-      def end_media media_list, parse_location = {}
-        @media_stack.pop
+      def start_media media_query_list
+        @conditional_stack << media_query_list
+      end
+
+      def end_media media_query_list
+        @conditional_stack.pop
+      end
+
+      def start_document_query url_functions, inner_start_pos = nil
+        dq = CSS::DocumentQuery.new(url_functions)
+        dq.outer_start_pos = @node_start_pos
+        @node_start_pos = nil
+        dq.inner_start_pos = inner_start_pos
+        @document.document_queries << dq
+        @conditional_stack << dq
+      end
+
+      def end_document_query inner_end_pos = nil, outer_end_pos = nil
+        last = @conditional_stack.pop
+        last.inner_end_pos = inner_end_pos
+        last.outer_end_pos = outer_end_pos
+      end
+      
+      def start_supports conditions
+        sr = CSS::SupportsRule.new(conditions)
+        @document.supports_rules << sr
+        @conditional_stack << sr
+      end
+
+      def end_supports
+        @conditional_stack.pop
+      end
+
+      def start_keyframes_rule name
+        @document.keyframes_rules << CSS::KeyframesRule.new(name)
+      end
+
+      def start_keyframes_block keyText
+        @active_keyframes_block = CSS::KeyframesBlock.new(keyText)
+        @document.keyframes_rules.last.rule_sets << @active_keyframes_block
+      end
+
+      def end_keyframes_block
+        @active_keyframes_block = nil
+      end
+
+      def start_fontface_rule
+        @active_fontface_rule = CSS::FontfaceRule.new
+        @document.fontface_rules << @active_fontface_rule
+      end
+
+      def end_fontface_rule
+        @active_fontface_rule = nil
       end
     end
   end

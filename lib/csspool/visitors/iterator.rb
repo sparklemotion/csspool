@@ -14,7 +14,7 @@ module CSSPool
         @block.call target
       end
 
-      visitor_for Selectors::Universal, Selectors::Simple do |target|
+      visitor_for Selectors::Universal, Selectors::Simple, CSS::MediaQuery, CSS::MediaQueryList do |target|
         target.children.each do |node|
           node.accept self
         end
@@ -26,13 +26,13 @@ module CSSPool
       end
 
       visitor_for CSS::ImportRule do |target|
-        target.media.each do |node|
+        target.media_list.each do |node|
           node.accept self
         end
         @block.call target
       end
 
-      visitor_for CSS::Media,
+      visitor_for CSS::MediaType,
         Selectors::Id,
         Selectors::Class,
         Selectors::PseudoClass,
@@ -43,7 +43,9 @@ module CSSPool
         Terms::Number,
         Terms::Hash,
         Terms::Function,
-        Terms::Rgb do |target|
+        Terms::Rgb,
+        Terms::Resolution,
+        CSS::MediaFeature do |target|
         @block.call target
       end
 

@@ -32,9 +32,6 @@ module CSSPool
           new_doc = ir.load do |url|
             "div { background: red; }"
           end
-          new_doc.rule_sets.each do |rs|
-            assert_equal ir.media, rs.media
-          end
         end
       end
     end

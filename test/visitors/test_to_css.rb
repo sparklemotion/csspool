@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'helper'
 
 module CSSPool
@@ -16,18 +17,24 @@ module CSSPool
           doc.rule_sets.first.declarations.first.to_css.strip
       end
 
-      # FIXME: this is a bug in libcroco
-      #def test_ident_followed_by_id
-      #  doc = CSSPool.CSS 'p#div { font: foo, #666; }'
-      #  assert_equal 'p#div', doc.rule_sets.first.selectors.first.to_css
+      def test_combinators
 
-      #  p doc.rule_sets.first.selectors
+        selectors = %w{* p #id .cl :hover ::selection [href]}
+        combinators = ['', ' ', ' > ', ' + ']
 
-      #  doc = CSSPool.CSS 'p #div { font: foo, #666; }'
+        combinations = selectors.product(combinators).map do |s,c|
+          if s != '*' && c != ''
+            s + c
+          end
+        end.compact
+        combinations = combinations.product(selectors).map { |s,c| s + c}
 
-      #  p doc.rule_sets.first.selectors
-      #  assert_equal 'p #div', doc.rule_sets.first.selectors.first.to_css
-      #end
+        combinations.each do |s|
+          doc = CSSPool.CSS(s + ' { }')
+          assert_equal s, doc.rule_sets.first.selectors.first.to_css
+        end
+
+      end
 
       def test_hash_operator
         doc = CSSPool.CSS 'p { font: foo, #666; }'
@@ -99,10 +106,10 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 1, doc.rule_sets.first.media.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 1, doc.rule_sets.first.media.length
+        assert_equal 1, doc.rule_sets.first.parent_rule.length
       end
 
       def test_multiple_media
@@ -115,12 +122,87 @@ module CSSPool
             div { background: red, blue; }
           }
         eocss
-        assert_equal 2, doc.rule_sets.first.media.length
-        assert_equal 1, doc.rule_sets[1].media.length
+        assert doc.rule_sets.first.parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
+        assert doc.rule_sets[1].parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
 
         doc = CSSPool.CSS(doc.to_css)
-        assert_equal 2, doc.rule_sets.first.media.length
-        assert_equal 1, doc.rule_sets[1].media.length
+        assert doc.rule_sets.first.parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
+        assert doc.rule_sets[1].parent_rule.is_a?(CSSPool::CSS::MediaQueryList)
+      end
+
+      def test_media_feature_space_after_colon
+        css = <<eocss.chomp
+@media (orientation: portrait) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub(' portrait', 'portrait'), doc.to_css
+      end
+
+      def test_media_feature_space_before_colon
+        css = <<eocss.chomp
+@media (orientation :portrait) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub(' :portrait', ':portrait'), doc.to_css
+      end
+
+      def test_media_features_with_and
+        css = <<eocss.chomp
+@media screen and (min-width:400px) AND (max-width:600px) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css.sub('AND', 'and'), doc.to_css
+        assert_equal 1, doc.rule_sets.first.parent_rule.size
+      end
+
+      def test_media_query_with_only_and_not
+        css = <<eocss.chomp
+@media print and (min-width:200pt) and (max-color:16), not screen and (max-width:400px) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal 2, doc.rule_sets.first.parent_rule.size
+        assert_equal css, doc.to_css
+      end
+
+      def test_media_query_with_resolution
+        css = <<eocss.chomp
+@media screen and (min-resolution:800dpi) {
+  div {
+    background: red;
+  }
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal css, doc.to_css
+      end
+
+      def test_media_query_list_with_empty_ruleset
+        css = <<eocss.chomp
+@media screen and ( min-width: 800px ) {
+
+}
+eocss
+        doc = CSSPool.CSS(css)
+        assert_equal 1, doc.rule_sets.size
+        assert doc.rule_sets.first.selectors.empty?
+        assert doc.rule_sets.first.declarations.empty?
+        assert_equal css.sub('( min-width: 800px )', '(min-width:800px)'), doc.to_css
       end
 
       def test_import
@@ -131,12 +213,12 @@ module CSSPool
         eocss
 
         assert_equal 3, doc.import_rules.length
-        assert_equal 2, doc.import_rules.last.media.length
+        assert_equal 2, doc.import_rules.last.media_list.length
 
         doc = CSSPool.CSS(doc.to_css)
 
         assert_equal 3, doc.import_rules.length
-        assert_equal 2, doc.import_rules.last.media.length
+        assert_equal 2, doc.import_rules.last.media_list.length
       end
 
       def test_charsets
@@ -166,11 +248,12 @@ module CSSPool
           "new\nline" => "[new\\00000aline=\"value\"]"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          assert_equal output, node.to_css
         end
       end
 
-      def test_selector_psuedo
+      def test_selector_pseudo
         input_output = {
           "pseudo" => ":pseudo",
           "\"quotes\"" => ":\\000022quotes\\000022",
@@ -182,14 +265,18 @@ module CSSPool
         end
 
         input_output = {
-          "" => ":psuedo()",
-          "ident" => ":psuedo(ident)",
-          " " => ":psuedo(\\ )",
-          "\"quote\"" => ":psuedo(\\000022quoted\\000022)"
+          "" => ":pseudo()",
+          "ident" => ":pseudo(ident)",
+          " " => ":pseudo(\\ )",
+          "\"quoted\"" => ":pseudo(\\000022quoted\\000022)"
         }
         input_output.each_pair do |input, output|
-          Selectors::Attribute.new input, 'value', Selectors::Attribute::EQUALS
+          node = Selectors::PseudoClass.new "pseudo", input
+          assert_equal output, node.to_css
         end
+
+        assert_equal "::before", Selectors::PseudoElement.new("before").to_css
+        assert_equal ":before", Selectors::PseudoElement.new("before", true).to_css
       end
 
       def test_selector_other
@@ -215,9 +302,9 @@ module CSSPool
 
       def test_property
         input_output = {
-          "property" => "  property: value;",
-          "colon:" => "  colon\\:: value;",
-          "space " => "  space\\ : value;"
+          "property" => "property: value",
+          "colon:" => "colon\\:: value",
+          "space " => "space\\ : value"
         }
         input_output.each_pair do |input, output|
           node = CSS::Declaration.new input, [Terms::Ident.new("value")], false, nil

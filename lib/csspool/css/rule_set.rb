@@ -3,15 +3,16 @@ module CSSPool
     class RuleSet < CSSPool::Node
       attr_accessor :selectors
       attr_accessor :declarations
-      attr_accessor :media
+      attr_accessor :parent_rule
 
-      def initialize selectors, declarations = [], media = []
+      def initialize selectors, declarations = [], parent_rule = nil
         @selectors    = selectors
         @declarations = declarations
-        @media        = media
+        @parent_rule  = parent_rule
 
         selectors.each { |sel| sel.rule_set = self }
       end
+
     end
   end
 end

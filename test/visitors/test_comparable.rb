@@ -97,6 +97,14 @@ module CSSPool
         equalitest '@import "foo.css" screen, print;'
         equalitest '@import "foo.css";'
       end
+
+      def test_media_query_list_with_empty_body
+        equalitest "@media screen and (min-width:400px) and (max-width:600px) {}"
+      end
+
+      def test_media_query_list_with_body
+        equalitest "@media screen and (min-width:400px) and (max-width:600px) { div { color: inherit; } }"
+      end
     end
   end
 end

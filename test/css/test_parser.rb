@@ -132,7 +132,7 @@ module CSSPool
         @parser.scan_str css
         property = @parser.handler.calls.find { |x|
           x.first == :property
-        }[1][1].first
+        }[1][0].expressions.first
 
         term.each do |k,v|
           assert_equal v, property.send(k)
@@ -159,7 +159,7 @@ module CSSPool
         @parser.scan_str 'div { background: red; padding: 0; }'
         names = @parser.handler.calls.find_all { |x|
           x.first == :property
-        }.map { |y| y[1].first }
+        }.map { |y| y[1].first.property }
         assert_equal %w{ background padding }, names
       end
 
@@ -176,7 +176,7 @@ module CSSPool
         declarations = @parser.handler.calls.find_all { |x|
           x.first == :property
         }
-        names = declarations.map { |y| y[1].first }
+        names = declarations.map { |y| y[1].first.property }
         assert_equal %w{color color *color _color}, names
         # values = declarations.map { |y| y[1][1].first.to_s }
         # assert_equal %w{black green\\9 blue red}, values
@@ -193,7 +193,7 @@ module CSSPool
         assert_attribute 'div:foo[a] { }'
         assert_attribute 'div#foo[a] { }'
         assert_attribute 'div.foo[a] { }'
-        assert_attribute 'div.foo[a] { }'
+        assert_attribute 'div[a]::foo { }'
       end
 
       def test_additional_selectors_id_pesuedoclass
@@ -252,6 +252,10 @@ module CSSPool
           { Selectors::PseudoClass => 'foo' }, ':foo() { }')
         assert_additional_selector(
           { Selectors::PseudoClass => 'foo' }, ':foo(a) { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'foo' }, '::foo { }')
+        assert_additional_selector(
+          { Selectors::PseudoElement => 'before' }, ':before { }')
       end
 
       def test_additional_selectors_id
@@ -280,7 +284,7 @@ module CSSPool
       end
 
       def test_ruleset_div_pseudo_function_with_arg
-        assert_attribute 'div:foo.bar(bar) { }'
+        assert_attribute 'div:foo(bar) { }'
       end
 
       def test_ruleset_div_pseudo_function
@@ -356,6 +360,20 @@ module CSSPool
         assert_equal :import_style, doc.calls[1].first
       end
 
+      def test_missing_semicolon
+        @parser.scan_str 'div { border: none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0].property
+        assert_equal 'none', doc.calls[2][1][0].expressions.first.value
+      end
+
+      def test_whitespaces
+        @parser.scan_str 'div { border : none }'
+        assert_equal 'div', doc.calls[1][1][0].join
+        assert_equal 'border', doc.calls[2][1][0].property
+        assert_equal 'none', doc.calls[2][1][0].expressions.first.value
+      end
+
       def test_import_medium
         @parser.scan_str '@import "foo" page;'
         assert_equal :import_style, doc.calls[1].first
@@ -396,12 +414,12 @@ module CSSPool
         assert_equal :property, @parser.handler.calls[2].first
         assert_equal :end_selector, @parser.handler.calls[3].first
 
-        property = @parser.handler.calls[2][1]
-        assert_equal name, property.first
+        declaration = @parser.handler.calls[2][1].first
+        assert_equal name, declaration.property
 
-        assert_equal values, property[1].map { |x| x.value }
+        assert_equal values, declaration.expressions.map { |x| x.value }
         if ops
-          assert_equal ops, property[1].map { |x| x.operator }
+          assert_equal ops, declaration.expressions.map { |x| x.operator }
         end
       end
 

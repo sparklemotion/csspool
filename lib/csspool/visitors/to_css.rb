@@ -18,8 +18,13 @@ module CSSPool
       end
 
       visitor_for CSS::Document do |target|
-        # Default media list is []
-        current_media_type = []
+        # FIXME - this does not handle nested parent rules, like
+        # @document domain(example.com) {
+        #   @media screen {
+        #     a { color: blue; }
+        #   }
+        # }
+        current_parent_rule = []
 
         tokens = []
 
@@ -31,51 +36,106 @@ module CSSPool
           tokens << ir.accept(self)
         end
 
+        target.fontface_rules.each do |ffr|
+          tokens << ffr.accept(self)
+        end
+
         target.rule_sets.each { |rs|
-          if rs.media != current_media_type
-            media = " " + rs.media.map do |medium|
-              escape_css_identifier medium.name.value
-            end.join(', ')
-            tokens << "#{indent}@media#{media} {"
+          # FIXME - handle other kinds of parents
+          if !rs.parent_rule.nil? and rs.parent_rule != current_parent_rule
+            media = rs.parent_rule
+            tokens << "#{indent}@media #{media} {"
             @indent_level += 1
           end
 
           tokens << rs.accept(self)
 
-          if rs.media != current_media_type
-            current_media_type = rs.media
-            @indent_level -= 1
-            tokens << "#{indent}}"
+          if rs.parent_rule != current_parent_rule
+            current_parent_rule = rs.parent_rule
+            if !rs.parent_rule.nil?
+              @indent_level -= 1
+              tokens << "#{indent}}"
+            end
           end
         }
         tokens.join(line_break)
+      end
+
+      visitor_for CSS::MediaType do |target|
+        escape_css_identifier(target.name)
+      end
+
+      visitor_for CSS::MediaFeature do |target|
+        "(#{escape_css_identifier(target.property)}:#{target.value})"
+      end
+
+      visitor_for CSS::MediaQuery do |target|
+        ret = ''
+        if target.only_or_not
+          ret << target.only_or_not.to_s + ' '
+        end
+        ret << target.media_expr.accept(self)
+        if target.and_exprs.any?
+          ret << ' and '
+        end
+        ret << target.and_exprs.map { |expr| expr.accept(self) }.join(' and ')
+      end
+
+      visitor_for CSS::MediaQueryList do |target|
+        target.media_queries.map do |m|
+          m.accept(self)
+        end.join(', ')
       end
 
       visitor_for CSS::Charset do |target|
         "@charset \"#{escape_css_string target.name}\";"
       end
 
+      visitor_for CSS::FontfaceRule do |target|
+        "@font-face {#{line_break}" +
+        "#{indent}" +
+          target.declarations.map { |decl| decl.accept self }.join(line_break) +
+          "#{line_break}#{indent}}"
+      end
+
       visitor_for CSS::ImportRule do |target|
         media = ''
-        media = " " + target.media.map do |medium|
-          escape_css_identifier medium.name.value
-        end.join(', ') if target.media.length > 0
+        media = " " + target.media_list.map do |medium|
+          escape_css_identifier medium.name
+        end.join(', ') if target.media_list.length > 0
 
         "#{indent}@import #{target.uri.accept(self)}#{media};"
       end
 
+      visitor_for CSS::DocumentQuery do |target|
+        "#{indent}@document #{target.url_functions.join(', ')} {}"
+      end
+
+      visitor_for CSS::NamespaceRule do |target|
+        if target.prefix.nil?
+          "#{indent}@namespace #{target.uri.accept(self)}"
+        else
+          "#{indent}@namespace #{target.prefix.value} #{target.uri.accept(self)}"
+        end
+      end
+
       visitor_for CSS::RuleSet do |target|
-        "#{indent}" +
-          target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
-          target.declarations.map { |decl| decl.accept self }.join(line_break) +
-          "#{line_break}#{indent}}"
+        if target.selectors.any?
+          "#{indent}" +
+            target.selectors.map { |sel| sel.accept self }.join(", ") + " {#{line_break}" +
+            target.declarations.map { |decl| decl.accept self }.join(line_break) +
+            "#{line_break}#{indent}}"
+        else
+          ''
+        end
       end
 
       visitor_for CSS::Declaration do |target|
         important = target.important? ? ' !important' : ''
 
+        # only output indents and semicolons if this is in a ruleset
         indent {
-          "#{indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
+          "#{target.rule_set.nil? ? '' : indent}#{escape_css_identifier target.property}: " + target.expressions.map { |exp|
 
             op = '/' == exp.operator ? ' /' : exp.operator
 
@@ -83,7 +143,7 @@ module CSSPool
               op,
               exp.accept(self),
             ].join ' '
-          }.join.strip + "#{important};"
+          }.join.strip + important + (target.rule_set.nil? ? '' : ';')
         }
       end
 
@@ -95,12 +155,6 @@ module CSSPool
         "##{target.value}"
       end
 
-      visitor_for Selectors::Simple, Selectors::Universal do |target|
-        ([target.name] + target.additional_selectors.map { |x|
-          x.accept self
-        }).join
-      end
-
       visitor_for Terms::URI do |target|
         "url(\"#{escape_css_string target.value}\")"
       end
@@ -108,7 +162,7 @@ module CSSPool
       visitor_for Terms::Function do |target|
         "#{escape_css_identifier target.name}(" +
           target.params.map { |x|
-            [
+            x.is_a?(String) ? x : [
               x.operator,
               x.accept(self)
             ].compact.join(' ')
@@ -131,28 +185,33 @@ module CSSPool
         "\"#{escape_css_string target.value}\""
       end
 
-      visitor_for Selector do |target|
-        target.simple_selectors.map { |ss| ss.accept self }.join
-      end
-
-      visitor_for Selectors::Type do |target|
-        combo = {
-          :s => ' ',
-          :+ => ' + ',
-          :> => ' > '
-        }[target.combinator]
-
-        name = target.name == '*' ? '*' : escape_css_identifier(target.name)
-        [combo, name].compact.join +
-          target.additional_selectors.map { |as| as.accept self }.join
-      end
-
       visitor_for Terms::Number do |target|
         [
           target.unary_operator == :minus ? '-' : nil,
           target.value,
           target.type
         ].compact.join
+      end
+
+      visitor_for Terms::Resolution do |target|
+        "#{target.number}#{target.unit}"
+      end
+
+      visitor_for Selector do |target|
+        target.simple_selectors.map { |ss| ss.accept self }.join
+      end
+
+      visitor_for Selectors::Simple, Selectors::Universal, Selectors::Type do |target|
+        combo = {
+          :s => ' ',
+          :+ => ' + ',
+          :> => ' > ',
+          :~ => ' ~ '
+        }[target.combinator]
+
+        name = [nil, '*'].include?(target.name) ? target.name : escape_css_identifier(target.name)
+        [combo, name].compact.join +
+          target.additional_selectors.map { |as| as.accept self }.join
       end
 
       visitor_for Selectors::Id do |target|
@@ -171,6 +230,14 @@ module CSSPool
         end
       end
 
+      visitor_for Selectors::PseudoElement do |target|
+        if target.css2.nil?
+          "::#{escape_css_identifier target.name}"
+        else
+          ":#{escape_css_identifier target.name}"
+        end
+      end
+
       visitor_for Selectors::Attribute do |target|
         case target.match_way
         when Selectors::Attribute::SET
@@ -181,6 +248,12 @@ module CSSPool
           "[#{escape_css_identifier target.name} ~= \"#{escape_css_string target.value}\"]"
         when Selectors::Attribute::DASHMATCH
           "[#{escape_css_identifier target.name} |= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::PREFIXMATCH
+          "[#{escape_css_identifier target.name} ^= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::SUFFIXMATCH
+          "[#{escape_css_identifier target.name} $= \"#{escape_css_string target.value}\"]"
+        when Selectors::Attribute::SUBSTRINGMATCH
+          "[#{escape_css_identifier target.name} *= \"#{escape_css_string target.value}\"]"
         else
           raise "no matching matchway"
         end

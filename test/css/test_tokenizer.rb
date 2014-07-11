@@ -14,8 +14,8 @@ module CSSPool
       end
 
       {
-        'em'    => :EMS,
-        'ex'    => :EXS,
+        'em'    => :LENGTH,
+        'ex'    => :LENGTH,
         'px'    => :LENGTH,
         'cm'    => :LENGTH,
         'mm'    => :LENGTH,
@@ -162,16 +162,6 @@ module CSSPool
         ], @scanner)
       end
 
-      def test_negation
-        @scanner.scan("p:not(.a)")
-        assert_tokens([ [:IDENT, 'p'],
-                        [:NOT, ':not('],
-                        ['.', '.'],
-                        [:IDENT, 'a'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-      end
-
       def test_function
         @scanner.scan("script comment()")
         assert_tokens([ [:IDENT, 'script'],
@@ -216,7 +206,7 @@ module CSSPool
       def test_scan_pseudo
         @scanner.scan('a:visited')
         assert_tokens([ [:IDENT, 'a'],
-                        [':', ':'],
+                        [:COLON, ':'],
                         [:IDENT, 'visited']
         ], @scanner)
       end
@@ -266,44 +256,9 @@ module CSSPool
       def test_scan_function_selector
         @scanner.scan('x:eq(0)')
         assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
+                        [:COLON, ':'],
                         [:FUNCTION, 'eq('],
                         [:NUMBER, "0"],
-                        [:RPAREN, ')'],
-        ], @scanner)
-      end
-
-      def test_scan_an_plus_b
-        @scanner.scan('x:nth-child(5n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:NUMBER, '5'],
-                        [:IDENT, 'n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-
-        @scanner.scan('x:nth-child(-1n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:MINUS, '-'],
-                        [:NUMBER, '1'],
-                        [:IDENT, 'n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
-                        [:RPAREN, ')'],
-        ], @scanner)
-
-        @scanner.scan('x:nth-child(-n+3)')
-        assert_tokens([ [:IDENT, 'x'],
-                        [':', ':'],
-                        [:FUNCTION, 'nth-child('],
-                        [:IDENT, '-n'],
-                        [:PLUS, '+'],
-                        [:NUMBER, '3'],
                         [:RPAREN, ')'],
         ], @scanner)
       end
