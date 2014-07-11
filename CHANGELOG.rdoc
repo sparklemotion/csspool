@@ -1,3 +1,15 @@
+== 4.0.0
+
+* New Features
+
+  * Support for parsing many new CSS features, including `:not`, `calc`, and `@supports`.
+  * Line number and context in parser error messages
+  * Some nodes types will remember their start and end positions, allowing developers to retrieve their original code.
+
+* Bugfixes
+
+  * Updated parsing for unusual syntax.
+
 == 3.0.2
 
 * New Features
