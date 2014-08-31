@@ -481,12 +481,12 @@ rule
           val[2].join(', ')
         )
       }
-    | COLON MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+    | COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents optional_space RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[1].sub(/\($/, ''))
         )
       }
-    | COLON COLON MOZ_PSEUDO_ELEMENT any_number_of_idents RPAREN {
+    | COLON COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents optional_space RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[2].sub(/\($/, ''))
         )

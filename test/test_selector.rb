@@ -169,6 +169,14 @@ module CSSPool
       assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
     end
 
+    def test_mozilla_pseudo_element_single_parameter_with_whitespace
+      doc = CSSPool.CSS <<-eocss
+        treechildren::-moz-tree-line( one ) { background: red; }
+      eocss
+      rs = doc.rule_sets.first
+      assert_equal '-moz-tree-line', rs.selectors.first.simple_selectors.first.additional_selectors.first.name
+    end
+
     def test_mozilla_pseudo_element_multiple_parameters
       doc = CSSPool.CSS <<-eocss
         treechildren::-moz-tree-line(one, two, three) { background: red; }
