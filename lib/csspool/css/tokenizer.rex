@@ -79,7 +79,7 @@ rule
             {w}@media{w}     { @state = :LOGICQUERY; [:MEDIA_SYM, st(text)] }
             {w}@supports{w}  { @state = :LOGICQUERY; [:SUPPORTS_SYM, st(text)] }
 
-            calc\(\s*        { [:CALC_SYM, st(text)] }
+            ({vendorprefix})?calc\(\s* { [:CALC_SYM, st(text)] }
             {ident}\(\s*      { [:FUNCTION, st(text)] }
 
             {w}@import{w}    { [:IMPORT_SYM, st(text)] }
