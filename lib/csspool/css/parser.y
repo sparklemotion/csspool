@@ -594,8 +594,8 @@ rule
     ;
   calc_product
     : calc_value
-    | calc_value STAR calc_value { result = val.join('') }
-    | calc_value SLASH calc_value { result = val.join('') }
+    | calc_value optional_space STAR calc_value { result = val.join('') }
+    | calc_value optional_space SLASH calc_value { result = val.join('') }
     ;
   calc_value
     : numeric { result = val.join('') }

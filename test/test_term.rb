@@ -35,6 +35,18 @@ module CSSPool
       assert_equal '1.4*-8px', rs.declarations.first.expressions.first.expression
     end
 
+    def test_space_after_param
+      CSSPool.CSS <<-eocss
+        a { left: calc((100% - 48.5em) * 0.4 + 0.4em); }
+      eocss
+    end
+
+    def test_space_before_param
+      CSSPool.CSS <<-eocss
+        a { left: calc(0.4 * (100% - 48.5em) + 0.4em); }
+      eocss
+    end
+
     def test_two_in_a_row
       doc = CSSPool.CSS <<-eocss
         a { background-size: calc(-2px + 100%) calc(-2px + 100%); }
