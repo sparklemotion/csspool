@@ -1,3 +1,9 @@
+== 4.0.2
+
+* Bugfixes
+
+  * Allow @font-face in places where it should be allowed
+
 == 4.0.1
 
 * Bugfixes
