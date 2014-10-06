@@ -11,6 +11,22 @@ module CSSPool
         assert_equal "@font-face {\n  font-weight: normal;\n}", doc.to_css
       end
 
+      def test_before_document_rule
+        CSSPool.CSS <<-eocss
+          @font-face { font-weight: normal; }
+          @document domain(example.com) {}
+        eocss
+      end
+
+      def test_in_document_rule
+        CSSPool.CSS <<-eocss
+          @document domain(example.com) {
+            @font-face { font-weight: normal; }
+            #element { display: none; }
+          }
+        eocss
+      end
+
     end
   end
 end

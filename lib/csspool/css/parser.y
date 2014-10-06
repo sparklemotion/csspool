@@ -107,6 +107,7 @@ rule
     : ruleset body
     | conditional_rule body
     | keyframes_rule body
+    | fontface_rule body
     | ruleset
     | conditional_rule
     | keyframes_rule
