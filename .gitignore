@@ -5,3 +5,5 @@
 /lib/csspool/css/parser.rb
 /Gemfile.lock
 lib/csspool/css/parser.output
+.ruby-gemset
+.ruby-version
