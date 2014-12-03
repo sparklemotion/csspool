@@ -68,5 +68,45 @@ module CSSPool
         a { -webkit-filter: invert() }
       eocss
     end
+
+    def test_unicode_range_single
+      CSSPool.CSS <<-eocss
+        @font-face {
+          font-family: 'Ampersand';
+          src: local('Times New Roman');
+          unicode-range: U+26;
+        }
+      eocss
+    end
+
+    def test_unicode_range_range
+      CSSPool.CSS <<-eocss
+        @font-face {
+          font-family: 'Ampersand';
+          src: local('Times New Roman');
+          unicode-range: U+0025-00FF;
+        }
+      eocss
+    end
+
+    def test_unicode_range_wildcard
+      CSSPool.CSS <<-eocss
+        @font-face {
+          font-family: 'Ampersand';
+          src: local('Times New Roman');
+          unicode-range: U+4??;
+        }
+      eocss
+    end
+
+    def test_unicode_range_wildcard_range
+      CSSPool.CSS <<-eocss
+        @font-face {
+          font-family: 'Ampersand';
+          src: local('Times New Roman');
+          unicode-range: U+0025-00FF, U+4??;
+        }
+      eocss
+    end
   end
 end

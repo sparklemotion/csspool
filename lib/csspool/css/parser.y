@@ -19,6 +19,7 @@ token OR
 token VARIABLE_NAME
 token CALC_SYM
 token FONTFACE_SYM
+token UNICODE_RANGE
 
 rule
   document
@@ -558,6 +559,7 @@ rule
     | function
     | resolution
     | VARIABLE_NAME
+    | uranges
     ;
   function
     : function S { result = val.first }
@@ -581,6 +583,10 @@ rule
         name = interpret_identifier parts.first
         result = Terms::Function.new(name, [Terms::String.new(interpret_string_no_quote(parts.last))])
       }
+    ;
+  uranges
+    : UNICODE_RANGE COMMA uranges
+    | UNICODE_RANGE
     ;
   calc
     : CALC_SYM calc_sum RPAREN optional_space {
