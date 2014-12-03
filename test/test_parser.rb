@@ -1,4 +1,5 @@
 require 'helper'
+require 'benchmark'
 
 module CSSPool
   class TestParser < CSSPool::TestCase
@@ -139,5 +140,54 @@ module CSSPool
       eocss
     end
 
+    def test_comments
+      CSSPool.CSS <<-eocss
+        /* Comment */
+        a { color: blue;}
+      eocss
+    end
+
+    def test_comments_linebreak
+      CSSPool.CSS <<-eocss
+        /* Multi
+        line
+        comment */
+        a { color: blue;}
+      eocss
+    end
+
+    def test_comments_with_asterisk
+      CSSPool.CSS <<-eocss
+        /* Don't get confused by the * in this comment */
+        a { color: blue;}
+      eocss
+    end
+
+    def test_broken_comment
+      time = Benchmark.measure {
+        begin
+          CSSPool.CSS <<-eocss
+            /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          eocss
+        rescue
+        end
+      }
+      assert time.real < 1
+    end
   end
 end

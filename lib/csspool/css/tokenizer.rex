@@ -24,7 +24,7 @@ macro
   invalid1  "([^\n\r\f\\"]|\\{nl}|{nonascii}|{escape})*
   invalid2  '([^\n\r\f\\']|\\{nl}|{nonascii}|{escape})*
   invalid   ({invalid1}|{invalid2})
-  comment   \/\*(.|{w})*?\*\/
+  comment   \/\*(.|\s)*?\*\/
   variablename \-\-{name}
 
 rule
