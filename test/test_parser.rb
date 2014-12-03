@@ -189,5 +189,33 @@ module CSSPool
       }
       assert time.real < 1
     end
+
+    def test_broken_comment_exclamation
+      time = Benchmark.measure {
+        begin
+          CSSPool.CSS <<-eocss
+!
+/**/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          eocss
+        rescue
+        end
+      }
+      assert time.real < 1
+    end
+
   end
 end
