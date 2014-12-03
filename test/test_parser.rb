@@ -133,5 +133,11 @@ module CSSPool
       end
     end
 
+    def test_only_comments
+      CSSPool.CSS <<-eocss
+        /* Comment */
+      eocss
+    end
+
   end
 end

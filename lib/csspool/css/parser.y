@@ -35,6 +35,7 @@ rule
     | import
     | namespace
     | body
+    |
     ;
   charset
     : CHARSET_SYM STRING SEMI { @handler.charset interpret_string(val[1]), {} }
