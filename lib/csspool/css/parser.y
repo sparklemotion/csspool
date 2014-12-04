@@ -683,22 +683,16 @@ def interpret_string s
 end
 
 def interpret_escapes s
-  token_exp = /\\([0-9a-fA-F]{1,6}(?:\r\n|\s)?)|\\(.)|(.)/mu
-  characters = s.scan(token_exp).map do |u_escape, i_escape, ident|
-    if u_escape
-      code = u_escape.chomp.to_i 16
+  token_exp = /\\(?:([0-9a-fA-F]{1,6}(?:\r\n|\s)?)|(.))/mu
+  return s.gsub(token_exp) do |escape_sequence|
+    if !$1.nil?
+      code = $1.chomp.to_i 16
       code = 0xFFFD if code > 0x10FFFF
-      [code].pack('U')
-    elsif i_escape
-      if i_escape == "\n"
-        ''
-      else
-        i_escape
-      end
-    else
-      ident
+      next [code].pack('U')
     end
-  end.join ''
+    next '' if $2 == "\n"
+    next $2
+  end
 end
 
 # override racc's on_error so we can have context in our error messages
