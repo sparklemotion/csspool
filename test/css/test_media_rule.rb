@@ -87,6 +87,20 @@ module CSSPool
         eocss
       end
 
+      def test_ratio
+        CSSPool.CSS <<-eocss
+          @media all and (min-aspect-ratio: 4/3) {
+          }
+        eocss
+      end
+
+      def test_ratio_with_spaces
+        CSSPool.CSS <<-eocss
+          @media all and (min-aspect-ratio: 4 / 3) {
+          }
+        eocss
+      end
+
     end
   end
 end

@@ -20,6 +20,7 @@ token VARIABLE_NAME
 token CALC_SYM
 token FONTFACE_SYM
 token UNICODE_RANGE
+token RATIO
 
 rule
   document
@@ -552,6 +553,7 @@ rule
     ;
   term
     : ident
+    | ratio
     | numeric
     | string
     | uri
@@ -648,6 +650,11 @@ rule
     | FREQ {
         unit    = val.first.gsub(/[\s\d.]/, '')
         result = Terms::Number.new numeric(val.first), nil, unit
+      }
+    ;
+  ratio
+    : RATIO {
+        result = Terms::Ratio.new(val[0], val[1])
       }
     ;
   unary_operator

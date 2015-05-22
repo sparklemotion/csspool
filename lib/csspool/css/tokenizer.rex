@@ -7,8 +7,11 @@ macro
   w         [\s]*
   nonascii  [^\0-\177]
   num       ([0-9]*\.[0-9]+|[0-9]+)
+  positiveint [1-9][0-9]*
   length    {num}(px|cm|mm|in|pt|pc|mozmm|em|ex|ch|rem|vh|vw|vmin|vmax)
   percentage {num}%
+  # http://dev.w3.org/csswg/mediaqueries-3/#values
+  ratio     {positiveint}{w}\/{w}{positiveint}
   unicode   \\[0-9A-Fa-f]{1,6}(\r\n|[\s])?
   nth       ([\+\-]?[0-9]*n({w}[\+\-]{w}[0-9]+)?|[\+\-]?[0-9]+|odd|even)
   vendorprefix \-[A-Za-z]+\-
@@ -44,6 +47,7 @@ rule
 :LOGICQUERY {w}{num}(ms|s){w} { [:TIME, st(text)] }
 :LOGICQUERY {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
 :LOGICQUERY {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
+:LOGICQUERY {w}{ratio}{w}    { [:RATIO, st(text)] }
 :LOGICQUERY {w}{num}{w}      { [:NUMBER, st(text)] }
 :LOGICQUERY {ident}          { [:IDENT, st(text)] }
 :LOGICQUERY {w},{w}          { [:COMMA, st(',')] }
@@ -120,6 +124,7 @@ rule
             {w}{num}[k]?hz{w} { [:FREQ, st(text)] }
 
             {w}{percentage}{w} { [:PERCENTAGE, st(text)] }
+            {w}{ratio}{w}    { [:RATIO, st(text)] }
             {w}{num}{w}      { [:NUMBER, st(text)] }
             {w}\/\/{w}       { [:DOUBLESLASH, st(text)] }
             {w}\/{w}         { [:SLASH, st('/')] }
