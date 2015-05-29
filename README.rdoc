@@ -1,22 +1,12 @@
 = CSSPool
 
 * http://csspool.rubyforge.org
-* http://github.com/tenderlove/csspool
+* https://github.com/sparklemotion/csspool
 
 == DESCRIPTION:
 
 CSSPool is a CSS parser.  CSSPool provides a SAC interface for parsing CSS as
 well as a document oriented interface for parsing CSS.
-
-== FEATURES/PROBLEMS:
-
-CSSPool no longer depends on libcroco! There is now a dependency on both the
-{racc}[http://github.com/tenderlove/racc] and
-{rexical}[http://github.com/tenderlove/rexical] gems, so make sure to install
-them first.
-
-$ sudo gem install racc
-$ sudo gem install rexical
 
 == SYNOPSIS:
 
@@ -26,11 +16,6 @@ $ sudo gem install rexical
   end
 
   puts doc.to_css
-
-== REQUIREMENTS:
-
-* racc ("sudo gem install racc")
-* rexical ("sudo gem install rexical")
 
 == INSTALL:
 
