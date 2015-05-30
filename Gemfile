@@ -11,7 +11,7 @@ gem "rexical", ">=0", :group => [:development, :test]
 gem "hoe-git", ">=0", :group => [:development, :test]
 gem "hoe-gemspec", ">=0", :group => [:development, :test]
 gem "hoe-bundler", ">=0", :group => [:development, :test]
-gem "test-unit", ">=0", :group => [:development, :test]
+gem "minitest", ">=0", :group => [:development, :test]
 gem "hoe", "~>3.13", :group => [:development, :test]
 
 # vim: syntax=ruby
