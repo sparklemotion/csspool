@@ -1,35 +1,34 @@
-= CSSPool
-
 * http://csspool.rubyforge.org
 * https://github.com/sparklemotion/csspool
 
-== DESCRIPTION:
+[![Build Status](https://travis-ci.org/sparklemotion/csspool.svg?branch=master)](https://travis-ci.org/sparklemotion/csspool)
 
-CSSPool is a CSS parser.  CSSPool provides a SAC interface for parsing CSS as
-well as a document oriented interface for parsing CSS.
+CSSPool is a CSS parser.  CSSPool provides a SAC interface for parsing CSS as well as a document oriented interface for parsing CSS.
 
-== SYNOPSIS:
+## Install
 
-  doc = CSSPool.CSS open('/path/to/css.css')
-  doc.rule_sets.each do |rs|
-    puts rs.to_css
-  end
+`gem install csspool`
 
-  puts doc.to_css
+## Example
 
-== INSTALL:
+```ruby
+doc = CSSPool.CSS open('/path/to/css.css')
+doc.rule_sets.each do |rs|
+  puts rs.to_css
+end
 
-* sudo gem install csspool
+puts doc.to_css
+```
 
-== LICENSE:
+## License
 
 (The MIT License)
 
 Copyright (c) 2007-2015
 
-* {Aaron Patterson}[http://tenderlovemaking.com]
-* {John Barnette}[http://www.jbarnette.com/]
-* Jason Barnabe
+- [Aaron Patterson](http://tenderlovemaking.com)
+- [John Barnette](http://www.jbarnette.com/)
+- Jason Barnabe
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
