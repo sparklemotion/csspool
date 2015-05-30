@@ -1,8 +1,12 @@
-== 4.0.4
+== 4.0.5
 
 * New Features
 
   * Support the ratio data type
+
+== 4.0.4
+
+(Broken release, do not use)
 
 == 4.0.3
 
