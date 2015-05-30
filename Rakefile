@@ -18,6 +18,7 @@ Hoe.spec('csspool') do
   self.history_file  = 'CHANGELOG.rdoc'
   self.extra_rdoc_files  = FileList['*.rdoc']
   self.licenses      = ['MIT']
+  self.spec_extras[:homepage] = 'https://github.com/sparklemotion/csspool/'
 
   %w{racc rexical hoe-git hoe-gemspec hoe-bundler minitest}.each do |dep|
     self.extra_dev_deps << [dep, '>= 0']
