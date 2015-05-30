@@ -50,6 +50,7 @@ lib/csspool/terms/hash.rb
 lib/csspool/terms/ident.rb
 lib/csspool/terms/math.rb
 lib/csspool/terms/number.rb
+lib/csspool/terms/ratio.rb
 lib/csspool/terms/resolution.rb
 lib/csspool/terms/rgb.rb
 lib/csspool/terms/string.rb
