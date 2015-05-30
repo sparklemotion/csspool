@@ -14,7 +14,7 @@ Hoe.spec('csspool') do
   developer('Aaron Patterson', 'aaronp@rubyforge.org')
   developer('John Barnette', 'jbarnette@rubyforge.org')
   developer('Jason Barnabe', 'jason.barnabe@gmail.com')
-  self.readme_file   = 'README.rdoc'
+  self.readme_file   = 'README.md'
   self.history_file  = 'CHANGELOG.rdoc'
   self.extra_rdoc_files  = FileList['*.rdoc']
   self.licenses      = ['MIT']
