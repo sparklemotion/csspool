@@ -1,8 +1,8 @@
-require "test/unit"
+require "minitest/unit"
 require "csspool"
 
 module CSSPool
-  class TestCase < Test::Unit::TestCase
+  class TestCase < Minitest::Test
     unless RUBY_VERSION >= '1.9'
       undef :default_test
     end
