@@ -3,7 +3,7 @@ CHANGELOG.rdoc
 Gemfile
 Gemfile.lock
 Manifest.txt
-README.rdoc
+README.md
 Rakefile
 lib/csspool.rb
 lib/csspool/collection.rb
