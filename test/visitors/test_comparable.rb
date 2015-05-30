@@ -26,7 +26,7 @@ module CSSPool
 
       def test_not_equal
         doc1 = CSSPool.CSS 'div { border: foo(1, 2); }'
-        assert_not_equal nil, doc1
+        assert nil != doc1
       end
 
       def test_hash_range
