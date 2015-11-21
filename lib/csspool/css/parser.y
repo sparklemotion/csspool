@@ -28,15 +28,15 @@ rule
       stylesheet
       { @handler.end_document }
     ;
-  stylesheet
-    : charset stylesheet
-    | import stylesheet
-    | namespace stylesheet
-    | charset
-    | import
-    | namespace
-    | body
+  stylesheet_head
+    : stylesheet_head charset
+    | stylesheet_head import
+    | stylesheet_head namespace
     |
+    ;
+  stylesheet
+    : stylesheet_head body
+    | stylesheet_head
     ;
   charset
     : CHARSET_SYM STRING SEMI { @handler.charset interpret_string(val[1]), {} }
@@ -107,10 +107,10 @@ rule
       }
     ;
   body
-    : ruleset body
-    | conditional_rule body
-    | keyframes_rule body
-    | fontface_rule body
+    : body ruleset
+    | body conditional_rule
+    | body keyframes_rule
+    | body fontface_rule
     | ruleset
     | conditional_rule
     | keyframes_rule
@@ -213,7 +213,7 @@ rule
       }
     ;
   keyframes_blocks
-    : keyframes_block keyframes_blocks
+    : keyframes_blocks keyframes_block
     | keyframes_block
     ;
   keyframes_block
@@ -226,7 +226,7 @@ rule
       }
     ;
   keyframes_selectors
-    | keyframes_selector COMMA keyframes_selectors {
+    | keyframes_selectors COMMA keyframes_selector {
          result = val[0] + ', ' + val[2]
       }
     | keyframes_selector
@@ -507,7 +507,7 @@ rule
   # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
   one_or_more_semis
     : SEMI
-    | SEMI one_or_more_semis
+    | one_or_more_semis SEMI
     ;
   declarations
     : declaration one_or_more_semis declarations
