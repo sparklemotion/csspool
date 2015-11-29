@@ -485,12 +485,12 @@ rule
           val[2].join(', ')
         )
       }
-    | COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents optional_space RPAREN {
+    | COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[1].sub(/\($/, ''))
         )
       }
-    | COLON COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents optional_space RPAREN {
+    | COLON COLON MOZ_PSEUDO_ELEMENT optional_space any_number_of_idents RPAREN {
         result = Selectors::PseudoElement.new(
           interpret_identifier(val[2].sub(/\($/, ''))
         )
@@ -498,23 +498,18 @@ rule
     ;
   any_number_of_idents
     :
-    | multiple_idents
+    | multiple_idents optional_space
     ;
   multiple_idents
     : IDENT
     | IDENT COMMA multiple_idents
     ;
   # declarations can be separated by one *or more* semicolons. semi-colons at the start or end of a ruleset are also allowed
-  one_or_more_semis
-    : SEMI
-    | one_or_more_semis SEMI
-    ;
   declarations
-    : declaration one_or_more_semis declarations
-    | one_or_more_semis declarations
-    | declaration one_or_more_semis
+    : declarations SEMI
+    | declarations declaration
     | declaration
-    | one_or_more_semis
+    | SEMI
     ;
   declaration
     : declaration_internal { @handler.property val.first }
