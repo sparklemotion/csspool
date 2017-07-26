@@ -1,3 +1,5 @@
+**csspool is looking for a maintainer. If you are interested, email jason.barnabe@gmail.com.**
+
 * http://csspool.rubyforge.org
 * https://github.com/sparklemotion/csspool
 
